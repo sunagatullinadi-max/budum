@@ -339,7 +339,7 @@ window.doLogin = async function() {
     errEl.style.display = 'none'
 
     // Собираем email из ника (как при регистрации)
-    const fakeEmail = `${nick}@budum.internal`
+    const fakeEmail = `${nick}@budum-user.com`
 
     const { data, error } = await supabase.auth.signInWithPassword({
         email: fakeEmail,
