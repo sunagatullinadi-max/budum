@@ -339,9 +339,8 @@ window.doRegister = async function() {
 
     if (existing) return showErr('Этот никнейм уже занят — попробуй другой')
 
-    // Регистрируем через Supabase Auth
-    // Email не нужен — генерируем внутренний
-    const fakeEmail = `${nick}@budum.internal`
+    // Генерируем внутренний email — Supabase требует валидный формат
+    const fakeEmail = `${nick}@budum-user.com`
 
     const { data, error } = await supabase.auth.signUp({
         email: fakeEmail,
