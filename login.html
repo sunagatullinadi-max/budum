@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>БУДУМ — Вход</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Unbounded:wght@200;300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+    width:100%; height:100%;
+    background:#05050a;
+    font-family:'Cormorant Garamond', serif;
+    color:#f0ece4;
+    overflow-x:hidden;
+}
+
+.stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.star {
+    position:absolute; border-radius:50%; background:white;
+    animation:twinkle ease-in-out infinite;
+}
+@keyframes twinkle { 0%,100%{ opacity:0.06; } 50%{ opacity:0.45; } }
+
+.grain {
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity:0.4; mix-blend-mode:screen;
+}
+
+.shell {
+    position:relative; z-index:10;
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+}
+
+/* LEFT */
+.left {
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:3rem; padding:2rem; position:relative;
+}
+.logo {
+    position:absolute; top:2rem; left:50%; transform:translateX(-50%);
+    font-family:'Unbounded',sans-serif; font-weight:200;
+    font-size:0.7rem; letter-spacing:0.5em; text-transform:uppercase;
+    color:rgba(255,255,255,0.3); white-space:nowrap;
+    animation:fadeDown 1.6s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+}
+.left-text {
+    text-align:center;
+    animation:fadeUp 1.6s cubic-bezier(0.16,1,0.3,1) 0.6s both;
+}
+.left-eyebrow {
+    font-family:'DM Mono',monospace; font-size:0.54rem;
+    letter-spacing:0.28em; text-transform:uppercase;
+    color:rgba(255,255,255,0.2); margin-bottom:0.7rem;
+}
+.left-title {
+    font-size:clamp(1.3rem,2.2vw,1.9rem); font-weight:300;
+    font-style:italic; color:rgba(255,255,255,0.65); line-height:1.3;
+}
+.left-title em { font-style:normal; color:#fff; }
+
+.orbs {
+    display:grid; grid-template-columns:1fr 1fr; gap:2.5rem;
+    animation:fadeUp 1.6s cubic-bezier(0.16,1,0.3,1) 0.9s both;
+}
+.orb-item { display:flex; flex-direction:column; align-items:center; gap:0.75rem; }
+.orb { width:90px; height:90px; border-radius:50%; position:relative; overflow:hidden; flex-shrink:0; }
+.o-water {
+    background: radial-gradient(ellipse 65% 45% at 35% 28%, rgba(150,220,255,0.4) 0%, transparent 55%), radial-gradient(at 50% 50%, #0b2448 0%, #071630 50%, #03080f 100%);
+    animation:wMorph 9s ease-in-out infinite;
+    box-shadow: inset 0 14px 28px rgba(120,215,255,0.13), inset 0 -8px 20px rgba(8,45,140,0.38);
+}
+@keyframes wMorph { 0%,100%{ border-radius:62% 38% 55% 45% / 48% 52% 48% 52%; } 50%{ border-radius:40% 60% 60% 40% / 44% 56% 44% 56%; } }
+.o-air {
+    background: radial-gradient(ellipse 100% 45% at 50% 100%, rgba(200,155,50,0.45) 0%, transparent 70%), radial-gradient(at 50% 50%, #0e0c2a 0%, #06040e 60%, #100e18 100%);
+    animation:aMorph 10s ease-in-out infinite;
+    box-shadow: inset 0 -20px 40px rgba(200,155,50,0.18), inset 0 20px 35px rgba(10,8,30,0.6);
+}
+@keyframes aMorph { 0%,100%{ border-radius:50%; } 50%{ border-radius:48% 52% 55% 45% / 52% 48% 46% 54%; } }
+.o-fire {
+    background: radial-gradient(ellipse 60% 80% at 50% 80%, rgba(220,70,5,0.9) 0%, transparent 70%), radial-gradient(at 50% 50%, #100402 0%, #0d0503 100%);
+    animation:fMorph 3.2s ease-in-out infinite;
+    box-shadow: inset 0 -16px 32px rgba(255,95,10,0.18);
+}
+@keyframes fMorph { 0%,100%{ border-radius:44% 56% 34% 66% / 62% 38% 66% 34%; } 50%{ border-radius:48% 52% 42% 58% / 62% 38% 58% 42%; } }
+.o-earth {
+    background: radial-gradient(ellipse 68% 48% at 34% 32%, rgba(78,175,38,0.22) 0%, transparent 56%), radial-gradient(at 50% 50%, #0d1b07 0%, #081303 52%, #050a02 100%);
+    animation:eMorph 13s ease-in-out infinite;
+    box-shadow: inset 0 12px 26px rgba(98,195,48,0.09), inset 0 -8px 20px rgba(8,58,4,0.48);
+}
+@keyframes eMorph { 0%,100%{ border-radius:50% 50% 56% 44% / 44% 56% 50% 50%; } 50%{ border-radius:54% 46% 48% 52% / 48% 52% 46% 54%; } }
+
+.orb-name {
+    font-family:'Unbounded',sans-serif; font-weight:200;
+    font-size:0.56rem; letter-spacing:0.2em; text-transform:uppercase;
+}
+.orb-item.ow .orb-name { color:#78c8e8; }
+.orb-item.oa .orb-name { color:#c8a860; }
+.orb-item.of .orb-name { color:#e87840; }
+.orb-item.oe .orb-name { color:#78b048; }
+
+/* RIGHT */
+.right {
+    display:flex; flex-direction:column; justify-content:center;
+    padding:3rem 4.5rem 3rem 3rem;
+    border-left:1px solid rgba(255,255,255,0.045);
+    animation:fadeLeft 1.6s cubic-bezier(0.16,1,0.3,1) 0.5s both;
+}
+.form-eyebrow {
+    font-family:'DM Mono',monospace; font-size:0.54rem;
+    letter-spacing:0.28em; text-transform:uppercase;
+    color:rgba(255,255,255,0.2); margin-bottom:0.9rem;
+}
+.form-title {
+    font-size:clamp(1.9rem,2.8vw,2.8rem); font-weight:300;
+    line-height:1.15; color:#fff; margin-bottom:0.4rem;
+}
+.form-title em { font-style:italic; color:rgba(255,255,255,0.5); }
+.form-sub {
+    font-size:0.88rem; color:rgba(255,255,255,0.28);
+    margin-bottom:2rem; line-height:1.7;
+}
+
+.field { margin-bottom:1rem; }
+.field-label {
+    display:block; font-family:'DM Mono',monospace; font-size:0.56rem;
+    letter-spacing:0.15em; text-transform:uppercase;
+    color:rgba(255,255,255,0.22); margin-bottom:0.45rem;
+}
+.field-input {
+    width:100%; padding:0.82rem 1.05rem;
+    background:rgba(255,255,255,0.048);
+    border:1px solid rgba(255,255,255,0.082);
+    border-radius:0.85rem; color:#fff;
+    font-family:'Cormorant Garamond',serif; font-size:1rem;
+    outline:none; transition:border-color 0.25s, background 0.25s;
+}
+.field-input:focus {
+    border-color:rgba(255,255,255,0.22);
+    background:rgba(255,255,255,0.072);
+}
+.field-input::placeholder { color:rgba(255,255,255,0.18); }
+
+.error-box {
+    display:none;
+    padding:0.7rem 1rem;
+    background:rgba(220,80,40,0.15);
+    border:1px solid rgba(220,80,40,0.3);
+    border-radius:0.75rem;
+    color:#e05a3a; font-size:0.85rem;
+    margin-bottom:1rem;
+}
+
+.btn-enter {
+    width:100%; padding:0.88rem;
+    background:rgba(255,255,255,0.9); color:#05050a;
+    border:none; border-radius:0.85rem;
+    font-family:'DM Mono',monospace; font-size:0.68rem;
+    letter-spacing:0.12em; text-transform:uppercase;
+    cursor:pointer; margin-top:0.4rem;
+    transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.btn-enter:hover { background:#fff; transform:translateY(-2px); box-shadow:0 8px 28px rgba(255,255,255,0.12); }
+.btn-enter:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+/* Восстановление пароля */
+.recovery-toggle {
+    background:none; border:none; cursor:pointer;
+    font-family:'DM Mono',monospace; font-size:0.6rem;
+    letter-spacing:0.1em; text-transform:uppercase;
+    color:rgba(255,255,255,0.25);
+    margin-top:1rem; padding:0;
+    transition:color 0.3s;
+    display:block; width:100%; text-align:center;
+}
+.recovery-toggle:hover { color:rgba(255,255,255,0.5); }
+
+.recovery-box {
+    display:none;
+    margin-top:1rem;
+    padding:1.25rem;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:1rem;
+    font-size:0.88rem;
+    color:rgba(255,255,255,0.4);
+    line-height:1.8;
+    animation:fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+.recovery-box.open { display:block; }
+.recovery-box strong {
+    color:rgba(255,255,255,0.7);
+    font-weight:400;
+}
+
+.divider {
+    display:flex; align-items:center; gap:1rem; margin:1.4rem 0;
+}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.062); }
+.divider span { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.18); }
+
+.btn-reg {
+    width:100%; padding:0.82rem;
+    background:transparent; color:rgba(255,255,255,0.52);
+    border:1px solid rgba(255,255,255,0.09); border-radius:0.85rem;
+    font-family:'DM Mono',monospace; font-size:0.65rem;
+    letter-spacing:0.1em; text-transform:uppercase; cursor:pointer;
+    transition:all 0.3s; text-decoration:none; display:block; text-align:center;
+}
+.btn-reg:hover { border-color:rgba(255,255,255,0.22); color:#fff; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeDown { from{opacity:0;transform:translateX(-50%) translateY(-8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+@keyframes fadeLeft { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+
+@media(max-width:820px){
+    .shell{ grid-template-columns:1fr; }
+    .left{ padding:4rem 1.5rem 2rem; }
+    .right{ border-left:none; border-top:1px solid rgba(255,255,255,0.05); padding:2rem 1.5rem 4rem; }
+    .orbs{ gap:1.2rem; }
+    .orb{ width:80px; height:80px; }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="grain"></div>
+
+<div class="shell">
+
+    <!-- LEFT -->
+    <div class="left">
+        <div class="logo">БУДУМ</div>
+        <div class="left-text">
+            <div class="left-eyebrow">Твоё пространство</div>
+            <div class="left-title">Четыре стихии —<br><em>один ты</em></div>
+        </div>
+        <div class="orbs">
+            <div class="orb-item ow"><div class="orb o-water"></div><div class="orb-name">Вода</div></div>
+            <div class="orb-item oa"><div class="orb o-air"></div><div class="orb-name">Воздух</div></div>
+            <div class="orb-item of"><div class="orb o-fire"></div><div class="orb-name">Огонь</div></div>
+            <div class="orb-item oe"><div class="orb o-earth"></div><div class="orb-name">Земля</div></div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+        <div class="form-eyebrow">Войти в БУДУМ</div>
+        <div class="form-title">Вернись<br><em>к своим стихиям</em></div>
+        <div class="form-sub">Твои коллекции ждут тебя.</div>
+
+        <div class="error-box" id="login-error"></div>
+
+        <div class="field">
+            <label class="field-label">Никнейм</label>
+            <input class="field-input" type="text" id="f-nick"
+                placeholder="my-nickname"
+                autocomplete="username" autocapitalize="none" spellcheck="false">
+        </div>
+
+        <div class="field">
+            <label class="field-label">Пароль</label>
+            <input class="field-input" type="password" id="f-pass"
+                placeholder="••••••••"
+                autocomplete="current-password">
+        </div>
+
+        <button class="btn-enter" id="login-btn" onclick="doLogin()">Войти →</button>
+
+        <!-- Восстановление пароля -->
+        <button class="recovery-toggle" onclick="toggleRecovery()">Забыл(-а) пароль?</button>
+        <div class="recovery-box" id="recovery-box">
+            Для восстановления пароля напиши на почту администрации:<br>
+            <strong>пока оставь пустым</strong><br><br>
+            В письме укажи:<br>
+            — <strong>имя пользователя (никнейм)</strong><br>
+            — <strong>кодовое слово</strong> которое ты задал(-а) при регистрации<br>
+            — <strong>месяц и год регистрации</strong>
+        </div>
+
+        <div class="divider"><span>нет аккаунта?</span></div>
+        <a href="register.html" class="btn-reg">Создать аккаунт →</a>
+    </div>
+
+</div>
+
+<script type="module">
+import { supabase } from './js/supabase-client.js'
+
+// Звёзды
+const sc = document.getElementById('stars')
+for (let i = 0; i < 110; i++) {
+    const s = document.createElement('div'); s.className = 'star'
+    const z = 0.6 + Math.random() * 1.7
+    s.style.cssText = `width:${z}px;height:${z}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2.5+Math.random()*5.5}s;animation-delay:-${Math.random()*7}s;`
+    sc.appendChild(s)
+}
+
+// Живая валидация ника
+document.getElementById('f-nick').addEventListener('input', function() {
+    this.value = this.value.toLowerCase().replace(/[^a-z0-9\-]/g, '')
+})
+
+// Enter → submit
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin()
+})
+
+// Восстановление
+window.toggleRecovery = function() {
+    const box = document.getElementById('recovery-box')
+    box.classList.toggle('open')
+}
+
+window.doLogin = async function() {
+    const nick = document.getElementById('f-nick').value.trim().toLowerCase()
+    const pass = document.getElementById('f-pass').value
+    const errEl = document.getElementById('login-error')
+    const btn   = document.getElementById('login-btn')
+
+    function showErr(msg) {
+        errEl.style.display = 'block'
+        errEl.textContent = msg
+        btn.textContent = 'Войти →'
+        btn.disabled = false
+    }
+
+    if (!nick) return showErr('Введи никнейм')
+    if (!pass)  return showErr('Введи пароль')
+
+    btn.textContent = 'Входим...'
+    btn.disabled = true
+    errEl.style.display = 'none'
+
+    // Собираем email из ника (как при регистрации)
+    const fakeEmail = `${nick}@budum.internal`
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: fakeEmail,
+        password: pass,
+    })
+
+    if (error) {
+        if (error.message.includes('Invalid login'))
+            return showErr('Неверный никнейм или пароль')
+        return showErr('Ошибка входа: ' + error.message)
+    }
+
+    // Сохраняем никнейм для быстрого доступа
+    localStorage.setItem('budum_nick', nick)
+
+    // Редирект на выбор стихии
+    window.location.href = 'stihii.html'
+}
+
+// Если уже залогинен — редирект
+;(async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) window.location.href = 'stihii.html'
+})()
+</script>
+
+</body>
+</html>
