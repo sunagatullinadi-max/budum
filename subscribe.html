@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>БУДУМ — Стать Хранителем</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Unbounded:wght@200;300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; min-height:100%; background:#05050a; font-family:'Cormorant Garamond',serif; color:#f0ece4; overflow-x:hidden; }
+
+/* ── STARS ── */
+.stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.star { position:absolute; border-radius:50%; background:white; animation:twinkle ease-in-out infinite; }
+@keyframes twinkle { 0%,100%{opacity:0.05} 50%{opacity:0.4} }
+.grain { position:fixed; inset:0; z-index:1; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity:0.4; mix-blend-mode:screen; }
+
+/* ── GLOW ── */
+.page-glow {
+    position:fixed; top:0; left:50%; transform:translateX(-50%);
+    width:80vw; height:60vh; pointer-events:none; z-index:0;
+    background:radial-gradient(ellipse, rgba(120,200,232,0.06) 0%, transparent 70%);
+    animation:glowPulse 6s ease-in-out infinite;
+}
+@keyframes glowPulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+/* ── HEADER ── */
+.header { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between;
+    padding:1.2rem 2.5rem; background:rgba(5,5,10,0.72); backdrop-filter:blur(24px);
+    border-bottom:1px solid rgba(255,255,255,0.05); }
+.logo-btn { font-family:'Unbounded',sans-serif; font-weight:200; font-size:0.72rem; letter-spacing:0.45em;
+    text-transform:uppercase; color:rgba(255,255,255,0.4); text-decoration:none; transition:color 0.3s; }
+.logo-btn:hover { color:rgba(255,255,255,0.8); }
+.btn-ghost { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
+    padding:0.5rem 1.1rem; background:transparent; color:rgba(255,255,255,0.4);
+    border:1px solid rgba(255,255,255,0.1); border-radius:9999px; cursor:pointer; transition:all 0.3s; text-decoration:none; }
+.btn-ghost:hover { color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.22); }
+
+/* ── MAIN ── */
+.main { position:relative; z-index:10; max-width:900px; margin:0 auto; padding:5rem 2.5rem 8rem; }
+
+/* ── HERO ── */
+.hero { text-align:center; margin-bottom:5rem; animation:fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
+.hero-eyebrow { font-family:'DM Mono',monospace; font-size:0.56rem; letter-spacing:0.28em; text-transform:uppercase;
+    color:rgba(255,255,255,0.2); margin-bottom:1.2rem; }
+.hero-title { font-size:clamp(2.5rem,5vw,4.2rem); font-weight:300; line-height:1.15; color:#fff; margin-bottom:1rem; }
+.hero-title em { font-style:italic; color:rgba(255,255,255,0.6); }
+.hero-sub { font-size:1.1rem; color:rgba(255,255,255,0.4); line-height:1.8; max-width:520px; margin:0 auto; }
+
+/* ── TIERS ── */
+.tiers { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:4rem;
+    animation:fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s both; }
+
+.tier-card { border-radius:1.75rem; padding:2.5rem; position:relative; overflow:hidden; }
+
+/* Искатель */
+.tier-seeker {
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+}
+.tier-seeker .tier-badge { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.4); }
+
+/* Хранитель */
+.tier-keeper {
+    background:linear-gradient(145deg, rgba(120,200,232,0.08) 0%, rgba(80,160,200,0.04) 50%, rgba(200,168,96,0.06) 100%);
+    border:1px solid rgba(120,200,232,0.2);
+}
+.tier-keeper::before {
+    content:''; position:absolute; inset:0; border-radius:1.75rem;
+    background:radial-gradient(ellipse 80% 50% at 50% 0%, rgba(120,200,232,0.08) 0%, transparent 70%);
+    pointer-events:none;
+}
+.tier-keeper .tier-badge { background:rgba(120,200,232,0.15); color:#78c8e8; border:1px solid rgba(120,200,232,0.3); }
+
+.tier-badge { display:inline-flex; align-items:center; gap:0.5rem; padding:0.3rem 0.9rem;
+    border-radius:9999px; font-family:'DM Mono',monospace; font-size:0.58rem;
+    letter-spacing:0.12em; text-transform:uppercase; margin-bottom:1.5rem; }
+.tier-badge-dot { width:5px; height:5px; border-radius:50%; background:currentColor; animation:dotPulse 2s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.tier-name { font-size:1.8rem; font-weight:300; color:#fff; margin-bottom:0.4rem; }
+.tier-price { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; color:rgba(255,255,255,0.3); margin-bottom:2rem; }
+.tier-keeper .tier-price { color:#78c8e8; }
+
+.tier-features { list-style:none; display:flex; flex-direction:column; gap:0.85rem; margin-bottom:2.5rem; }
+.tier-feature { display:flex; gap:0.75rem; align-items:flex-start; font-size:0.95rem; color:rgba(255,255,255,0.55); line-height:1.5; }
+.tier-feature-icon { font-size:0.75rem; color:rgba(255,255,255,0.2); flex-shrink:0; padding-top:0.2rem; }
+.tier-keeper .tier-feature-icon { color:#78c8e8; opacity:0.7; }
+.tier-feature strong { color:#fff; font-weight:400; }
+
+.btn-subscribe { width:100%; padding:1rem; border-radius:1rem; font-family:'DM Mono',monospace;
+    font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; transition:all 0.3s; border:none; }
+.btn-subscribe-keeper { background:#78c8e8; color:#05050a; }
+.btn-subscribe-keeper:hover { filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 8px 28px rgba(120,200,232,0.25); }
+.btn-subscribe-seeker { background:transparent; color:rgba(255,255,255,0.3); border:1px solid rgba(255,255,255,0.1); cursor:default; }
+
+/* ── FREEZE SECTION ── */
+.freeze-section { animation:fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.7s both; }
+.freeze-card {
+    border-radius:1.75rem; overflow:hidden; position:relative;
+    background:linear-gradient(145deg, rgba(120,200,255,0.04) 0%, rgba(180,220,255,0.02) 100%);
+    border:1px solid rgba(120,200,255,0.1);
+    padding:3rem;
+}
+.freeze-card::before {
+    content:''; position:absolute; inset:0;
+    background:
+        radial-gradient(ellipse 60% 40% at 30% 20%, rgba(150,210,255,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 35% at 70% 80%, rgba(120,190,255,0.04) 0%, transparent 55%);
+    pointer-events:none;
+}
+
+/* Ледяной эффект */
+.freeze-ice { position:absolute; inset:0; pointer-events:none; overflow:hidden; border-radius:1.75rem; opacity:0.15; }
+.freeze-ice-crystal { position:absolute; border-radius:50%; background:radial-gradient(circle, rgba(180,230,255,0.6) 0%, transparent 70%); animation:icePulse ease-in-out infinite; }
+@keyframes icePulse { 0%,100%{opacity:0.3;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.1)} }
+
+.freeze-content { position:relative; z-index:2; }
+.freeze-title { font-size:1.6rem; font-weight:300; line-height:1.3; color:rgba(255,255,255,0.85); margin-bottom:1rem; }
+.freeze-title em { font-style:italic; color:rgba(180,230,255,0.8); }
+.freeze-text { font-size:0.95rem; color:rgba(255,255,255,0.38); line-height:1.85; max-width:580px; }
+.freeze-text strong { color:rgba(255,255,255,0.65); font-weight:400; }
+
+/* ── TOAST ── */
+.toast-area { position:fixed; bottom:2rem; right:2rem; z-index:999; display:flex; flex-direction:column; gap:0.5rem; }
+.toast { padding:0.75rem 1.25rem; background:rgba(14,14,22,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:0.75rem;
+    font-size:0.82rem; color:#fff; animation:toastIn 0.3s cubic-bezier(0.16,1,0.3,1); max-width:300px; backdrop-filter:blur(20px); }
+.toast.success { border-color:#78c8e8; color:#78c8e8; }
+.toast.error { border-color:#e05a3a; color:#e05a3a; }
+
+@keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes toastIn  { from{opacity:0;transform:translateX(1rem)} to{opacity:1;transform:translateX(0)} }
+
+@media (max-width:700px) {
+    .tiers { grid-template-columns:1fr; }
+    .main { padding:3rem 1.25rem 6rem; }
+    .header { padding:1rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="grain"></div>
+<div class="page-glow"></div>
+<div class="toast-area" id="toast-area"></div>
+
+<header class="header">
+    <a href="stihii.html" class="logo-btn">БУДУМ</a>
+    <a href="profile.html" class="btn-ghost">← Профиль</a>
+</header>
+
+<main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-eyebrow">Подписка</div>
+        <h1 class="hero-title">Стань<br><em>Хранителем</em></h1>
+        <p class="hero-sub">Больше коллекций, социальная магия дружбы и репостов — всё, что нужно для настоящего архива стихий.</p>
+    </div>
+
+    <!-- TIERS -->
+    <div class="tiers">
+
+        <!-- Искатель -->
+        <div class="tier-card tier-seeker">
+            <div class="tier-badge"><span class="tier-badge-dot"></span>Сейчас</div>
+            <div class="tier-name">Искатель</div>
+            <div class="tier-price">Бесплатно</div>
+            <ul class="tier-features">
+                <li class="tier-feature"><span class="tier-feature-icon">◎</span><span>3 коллекции <strong>в каждой стихии</strong> (12 всего)</span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">◎</span><span>5 материалов <strong>в каждой коллекции</strong></span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">—</span><span style="opacity:0.3">Друзья и лента</span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">—</span><span style="opacity:0.3">Репосты чужих коллекций</span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">—</span><span style="opacity:0.3">Инвайт-ссылки</span></li>
+            </ul>
+            <button class="btn-subscribe btn-subscribe-seeker" disabled>Текущий тариф</button>
+        </div>
+
+        <!-- Хранитель -->
+        <div class="tier-card tier-keeper">
+            <div class="tier-badge"><span class="tier-badge-dot"></span>Рекомендуем</div>
+            <div class="tier-name">Хранитель</div>
+            <div class="tier-price">799 ₽ / месяц</div>
+            <ul class="tier-features">
+                <li class="tier-feature"><span class="tier-feature-icon">◎</span><span>20 коллекций <strong>в каждой стихии</strong> (80 всего)</span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">◎</span><span>50 материалов <strong>в каждой коллекции</strong></span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">◎</span><span><strong>Друзья</strong> — видеть их публичные коллекции</span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">◎</span><span><strong>Репост</strong> — копировать чужую подборку к себе</span></li>
+                <li class="tier-feature"><span class="tier-feature-icon">◎</span><span><strong>Инвайт-ссылки</strong> — приглашать друзей</span></li>
+            </ul>
+            <button class="btn-subscribe btn-subscribe-keeper" onclick="startSubscription()" id="sub-btn">
+                Стать Хранителем →
+            </button>
+        </div>
+
+    </div>
+
+    <!-- FREEZE SECTION -->
+    <div class="freeze-section">
+        <div class="freeze-card">
+            <div class="freeze-ice" id="freeze-ice"></div>
+            <div class="freeze-content">
+                <div class="freeze-title">Что будет,<br><em>если отменить подписку?</em></div>
+                <p class="freeze-text">
+                    Если ты отключишь подписку — твои коллекции <strong>не удалятся</strong>.<br><br>
+                    Все коллекции сверх лимита Искателя замораживаются в вечном льду. Ты будешь видеть только <strong>первые 3 коллекции в каждой стихии</strong> и все материалы внутри них. Остальные — ждут тебя.<br><br>
+                    Как только ты снова станешь Хранителем — они <strong>разморозятся в том же виде</strong>, в котором ты их оставил. Ничего не пропадёт.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script type="module">
+import { supabase, getCurrentUser } from './js/supabase-client.js'
+
+// ── ЗВЁЗДЫ ──
+const sc = document.getElementById('stars')
+for (let i = 0; i < 100; i++) {
+    const s = document.createElement('div'); s.className = 'star'
+    const sz = 0.6 + Math.random() * 1.6
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2.5+Math.random()*5}s;animation-delay:-${Math.random()*7}s;`
+    sc.appendChild(s)
+}
+
+// ── КРИСТАЛЛЫ ЛЬДА ──
+const ic = document.getElementById('freeze-ice')
+for (let i = 0; i < 12; i++) {
+    const c = document.createElement('div'); c.className = 'freeze-ice-crystal'
+    const sz = 30 + Math.random() * 80
+    c.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${3+Math.random()*4}s;animation-delay:-${Math.random()*5}s;`
+    ic.appendChild(c)
+}
+
+// ── TOAST ──
+function toast(msg, type='') {
+    const a = document.getElementById('toast-area')
+    const d = document.createElement('div'); d.className = 'toast '+type; d.textContent = msg
+    a.appendChild(d); setTimeout(() => d.remove(), 4000)
+}
+
+// ── ПРОВЕРЯЕМ ТЕКУЩИЙ ТАРИФ ──
+;(async () => {
+    const user = await getCurrentUser()
+    if (!user) return
+    if (user.profile?.tier === 'keeper') {
+        const btn = document.getElementById('sub-btn')
+        if (btn) { btn.textContent = 'Ты уже Хранитель ◎'; btn.style.opacity = '0.6'; btn.disabled = true; }
+    }
+})()
+
+// ── ПОДПИСКА ──
+// Оплата через Т-Банк эквайринг — подключим позже
+// Сейчас показываем уведомление
+window.startSubscription = async function() {
+    const user = await getCurrentUser()
+    if (!user) { window.location.href = 'login.html'; return }
+
+    const btn = document.getElementById('sub-btn')
+    btn.textContent = 'Открываем оплату...'
+    btn.disabled = true
+
+    // TODO: здесь будет инициализация платежа через Т-Банк
+    // const paymentUrl = await initTinkoffPayment(user.id, 799)
+    // window.location.href = paymentUrl
+
+    // Временно — прямая активация для тестирования
+    toast('Оплата через Т-Банк будет добавлена скоро. Сейчас активируем тестовый доступ...', '')
+
+    setTimeout(async () => {
+        const expires = new Date()
+        expires.setMonth(expires.getMonth() + 1)
+
+        await supabase.from('profiles').update({
+            tier: 'keeper',
+            tier_expires_at: expires.toISOString()
+        }).eq('id', user.id)
+
+        await supabase.from('subscriptions').insert({
+            user_id: user.id,
+            expires_at: expires.toISOString(),
+            status: 'active'
+        })
+
+        toast('Добро пожаловать, Хранитель! ◎', 'success')
+        setTimeout(() => window.location.href = 'profile.html', 1500)
+    }, 1500)
+}
+</script>
+
+</body>
+</html>
