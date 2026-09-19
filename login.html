@@ -318,6 +318,18 @@ window.toggleRecovery = function() {
     box.classList.toggle('open')
 }
 
+// Получаем стихию из профиля для редиректа
+async function getProfileElement(userId) {
+    try {
+        const { data } = await supabase
+            .from('profiles')
+            .select('element')
+            .eq('id', userId)
+            .single()
+        return data?.element || null
+    } catch { return null }
+}
+
 window.doLogin = async function() {
     const nick = document.getElementById('f-nick').value.trim().toLowerCase()
     const pass = document.getElementById('f-pass').value
@@ -355,8 +367,13 @@ window.doLogin = async function() {
     // Сохраняем никнейм для быстрого доступа
     localStorage.setItem('budum_nick', nick)
 
-    // Редирект на выбор стихии
-    window.location.href = 'stihii.html'
+    // Редирект — на последнюю стихию если была, иначе на выбор
+    const elementPages = { water:'water.html', air:'air.html', fire:'fire.html', earth:'earth.html' }
+    const lastElement = data.session?.user
+        ? await getProfileElement(data.session.user.id)
+        : null
+    const dest = (lastElement && elementPages[lastElement]) ? elementPages[lastElement] : 'stihii.html'
+    window.location.href = dest
 }
 
 // Если уже залогинен — редирект
