@@ -213,7 +213,30 @@ html, body { width:100%; min-height:100%; background:#040e1e; font-family:'Cormo
 .thought-box { background:var(--accent-3); border:1px solid var(--accent-2); border-radius:0.75rem; padding:1rem; margin-bottom:1.25rem; }
 .thought-box .form-label { color:var(--accent); }
 
-/* ── LOADING ── */
+/* ── ЗАМОРОЗКА ── */
+.col-card-frozen { position:relative; pointer-events:none; }
+.col-card-frozen::after {
+    content:''; position:absolute; inset:0; border-radius:1.25rem; z-index:10;
+    background:linear-gradient(145deg, rgba(140,210,255,0.18) 0%, rgba(180,230,255,0.08) 50%, rgba(120,190,255,0.14) 100%);
+    border:1px solid rgba(160,220,255,0.25);
+    backdrop-filter:blur(3px);
+}
+.col-card-frozen .col-card-title,
+.col-card-frozen .col-card-desc { filter:blur(3px); user-select:none; }
+.freeze-banner {
+    margin-top:1.5rem; padding:2rem 2.5rem;
+    background:linear-gradient(145deg, rgba(140,210,255,0.06) 0%, rgba(180,230,255,0.03) 100%);
+    border:1px solid rgba(160,220,255,0.15); border-radius:1.25rem;
+    position:relative; overflow:hidden;
+}
+.freeze-banner::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(160,220,255,0.08) 0%, transparent 60%);
+    pointer-events:none;
+}
+.freeze-banner-title { font-size:1.1rem; font-weight:300; color:rgba(180,230,255,0.8); margin-bottom:0.75rem; position:relative; }
+.freeze-banner-text { font-size:0.88rem; color:rgba(255,255,255,0.3); line-height:1.85; position:relative; }
+.freeze-banner-text strong { color:rgba(255,255,255,0.6); font-weight:400; }
 .loading { display:flex; align-items:center; gap:0.5rem; padding:3rem 0; justify-content:center;
     font-family:'DM Mono',monospace; font-size:0.7rem; color:rgba(255,255,255,0.2); letter-spacing:0.1em; }
 .loading-dot { width:5px; height:5px; border-radius:50%; background:var(--accent); animation:ldot 1.2s ease-in-out infinite; }
@@ -477,12 +500,37 @@ async function loadMyCollections() {
     const gridDiv = document.createElement('div')
     gridDiv.className = 'collections-grid'
 
-    for (const col of elCols) {
+    const frozenCols = userTier === 'seeker' ? elCols.slice(limit) : []
+    const visibleCols = userTier === 'seeker' ? elCols.slice(0, limit) : elCols
+
+    for (const col of visibleCols) {
         gridDiv.appendChild(renderCard(col, cols))
+    }
+    // Замороженные карточки
+    for (const col of frozenCols) {
+        const card = renderCard(col, cols)
+        card.classList.add('col-card-frozen')
+        gridDiv.appendChild(card)
     }
     grid.appendChild(gridDiv)
 
-    // Баннер лимита
+    // Баннер заморозки
+    if (frozenCols.length > 0) {
+        const banner = document.createElement('div')
+        banner.className = 'freeze-banner'
+        banner.innerHTML = `
+            <div class="freeze-banner-title">❄ Вы отключили подписку</div>
+            <div class="freeze-banner-text">
+                Ваши <strong>${elCols.length} коллекций</strong> заморожены в вечном льду. Вы видите только первые <strong>${limit} коллекции</strong> и все материалы внутри них. Остальные <strong>${frozenCols.length} коллекции</strong> не удалены — они ждут вашего возвращения.<br><br>
+                Как только вы снова станете Хранителем — они разморозятся в том же виде, в котором вы их оставили.
+            </div>
+            <button class="btn-primary" style="margin-top:1.25rem" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>
+        `
+        grid.appendChild(banner)
+        return
+    }
+
+    // Баннер лимита (ещё не превышен, но достигнут)
     if (atLimit && userTier === 'seeker') {
         const banner = document.createElement('div')
         banner.className = 'limit-banner'
