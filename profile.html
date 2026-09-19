@@ -431,7 +431,8 @@ window.openInviteModal = async function() {
         status: 'pending'
     })
 
-    const link = `${window.location.origin}/profile.html?invite=${token}`
+    const base = window.location.href.split('?')[0].split('#')[0]
+    const link = `${base}?invite=${token}`
     document.getElementById('invite-link-input').value = link
     document.getElementById('invite-modal').classList.add('open')
 }
