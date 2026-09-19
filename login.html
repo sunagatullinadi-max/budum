@@ -367,6 +367,14 @@ window.doLogin = async function() {
     // Сохраняем никнейм для быстрого доступа
     localStorage.setItem('budum_nick', nick)
 
+    // Если есть ?next= — редиректим туда (например инвайт-ссылка)
+    const params = new URLSearchParams(window.location.search)
+    const next = params.get('next')
+    if (next && next.startsWith(window.location.origin)) {
+        window.location.href = next
+        return
+    }
+
     // Редирект — на последнюю стихию если была, иначе на выбор
     const elementPages = { water:'water.html', air:'air.html', fire:'fire.html', earth:'earth.html' }
     const lastElement = data.session?.user
