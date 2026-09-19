@@ -374,9 +374,16 @@ async function loadMyCollections() {
     document.getElementById('mine-count').textContent = `${elCols.length} коллекций`
     if (!elCols.length) { grid.innerHTML=`<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Пока пусто</div><div class="empty-sub">Создай первую коллекцию огня — всё, что тебя зажигает.</div></div>`; return }
     grid.innerHTML=''; const gd=document.createElement('div'); gd.className='collections-grid'
-    for (const col of elCols) gd.appendChild(renderCard(col))
+    const frozenCols = userTier==='seeker' ? elCols.slice(limit) : []
+    const visibleCols = userTier==='seeker' ? elCols.slice(0, limit) : elCols
+    for (const col of visibleCols) gd.appendChild(renderCard(col))
+    for (const col of frozenCols) { const card=renderCard(col); card.classList.add('col-card-frozen'); gd.appendChild(card) }
     grid.appendChild(gd)
-    if (elCols.length>=limit && userTier==='seeker') { const b=document.createElement('div'); b.className='limit-banner'; b.innerHTML=`<div class="limit-banner-title">◈ Коллекций огня: ${elCols.length} из ${limit}</div><div class="limit-banner-sub">У Искателя — 3 коллекции в каждой стихии.<br>Стань Хранителем — открой до 20.</div><button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>`; grid.appendChild(b) }
+    if (frozenCols.length > 0) {
+        const b=document.createElement('div'); b.className='freeze-banner'
+        b.innerHTML=`<div class="freeze-banner-title">❄ Вы отключили подписку</div><div class="freeze-banner-text">Ваши <strong>${elCols.length} коллекций</strong> заморожены в вечном льду. Вы видите только первые <strong>${limit} коллекции</strong> и все материалы внутри них. Остальные <strong>${frozenCols.length} коллекции</strong> не удалены — они ждут вашего возвращения.<br><br>Как только вы снова станете Хранителем — они разморозятся в том же виде, в котором вы их оставили.</div><button class="btn-primary" style="margin-top:1.25rem" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>`
+        grid.appendChild(b)
+    } else if (elCols.length>=limit && userTier==='seeker') { const b=document.createElement('div'); b.className='limit-banner'; b.innerHTML=`<div class="limit-banner-title">◈ Коллекций огня: ${elCols.length} из ${limit}</div><div class="limit-banner-sub">У Искателя — 3 коллекции в каждой стихии.<br>Стань Хранителем — открой до 20.</div><button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>`; grid.appendChild(b) }
 }
 
 function renderCard(col) {
