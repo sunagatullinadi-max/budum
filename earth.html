@@ -435,8 +435,45 @@ async function loadMaterials(colId) {
 }
 
 async function loadFriends() {
-    const c=document.getElementById('friends-content')
-    if(userTier==='seeker'){c.innerHTML=`<div class="friends-locked"><div class="friends-locked-glyph">◉</div><div class="friends-locked-title">Лента друзей — для Хранителей</div><div class="friends-locked-sub">Подпишись чтобы видеть коллекции друзей.</div><button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button></div>`;return}
+    const c = document.getElementById('friends-content')
+    if (userTier === 'seeker') {
+        c.innerHTML = `<div class="friends-locked"><div class="friends-locked-glyph">◉</div><div class="friends-locked-title">Лента друзей — для Хранителей</div><div class="friends-locked-sub">Подпишись чтобы видеть коллекции друзей.</div><button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button></div>`
+        return
+    }
+    c.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем ленту</span></div>'
+    const { data: friendships } = await supabase.from('friendships').select('user_from, user_to').eq('status','accepted').or(`user_from.eq.${currentUser.id},user_to.eq.${currentUser.id}`)
+    if (!friendships?.length) { c.innerHTML = `<div class="empty-state"><div class="empty-glyph">◉</div><div class="empty-title">Пока тихо</div><div class="empty-sub">Пригласи друзей — их коллекции появятся здесь.</div><button class="btn-ghost" style="margin-top:1rem" onclick="window.location.href='profile.html'">Пригласить друга →</button></div>`; return }
+    const friendIds = [...new Set(friendships.map(f => f.user_from === currentUser.id ? f.user_to : f.user_from).filter(Boolean))]
+    const { data: profiles } = await supabase.from('profiles').select('id, nickname, element').in('id', friendIds)
+    const { data: cols } = await supabase.from('collections').select('*, materials(count)').in('user_id', friendIds).eq('element', ELEMENT).eq('is_public', true).order('created_at', { ascending: false }).limit(30)
+    if (!cols?.length) { c.innerHTML = `<div class="empty-state"><div class="empty-glyph">◉</div><div class="empty-title">Пока тихо</div><div class="empty-sub">У твоих друзей пока нет коллекций этой стихии.</div><button class="btn-ghost" style="margin-top:1rem" onclick="window.location.href='profile.html'">Пригласить друга →</button></div>`; return }
+    const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]))
+    const AVATAR_COLORS = { water:'linear-gradient(135deg,#0b2448,#1a6090)', air:'linear-gradient(135deg,#06040e,#c8a860)', fire:'linear-gradient(135deg,#3a0a02,#c04020)', earth:'linear-gradient(135deg,#0a1804,#3a7820)' }
+    c.innerHTML = ''
+    const header = document.createElement('div'); header.className = 'feed-section-header'
+    header.innerHTML = `<div class="section-title">Коллекции друзей</div><div class="section-count">${cols.length} коллекций</div>`
+    c.appendChild(header)
+    for (const col of cols) {
+        const profile = profileMap[col.user_id] || {}
+        const nick = profile.nickname || '?'
+        const el = profile.element || 'water'
+        const matCount = col.materials?.[0]?.count || 0
+        const item = document.createElement('div'); item.className = 'feed-item'
+        item.innerHTML = `<div class="feed-item-header"><div class="feed-avatar" style="background:${AVATAR_COLORS[el] || AVATAR_COLORS.water}">${nick.charAt(0).toUpperCase()}</div><div class="feed-author"><div class="feed-author-name">${nick}</div><div class="feed-author-time">${formatDate(col.created_at)}</div></div></div><div class="feed-col-element"><div class="feed-col-dot"></div>${ELEMENT_NAMES[col.element] || col.element}</div><div class="feed-col-title">${col.title}</div>${col.description ? `<div class="feed-col-desc">${col.description}</div>` : ''}<div id="feed-mats-${col.id}" class="feed-mats-preview">${matCount > 0 ? `<div class="feed-more" style="cursor:pointer" onclick="loadFeedMaterials(${col.id})">↓ Показать ${matCount} материалов</div>` : '<div class="feed-more">Материалов пока нет</div>'}</div>`
+        c.appendChild(item)
+    }
+    const inviteRow = document.createElement('div'); inviteRow.className = 'feed-invite-row'
+    inviteRow.innerHTML = `<div class="feed-invite-text">Хочешь видеть больше? <strong>Пригласи ещё друзей</strong></div><button class="btn-ghost" onclick="window.location.href='profile.html'">Пригласить →</button>`
+    c.appendChild(inviteRow)
+}
+
+window.loadFeedMaterials = async function(colId) {
+    const container = document.getElementById(`feed-mats-${colId}`); if (!container) return
+    container.innerHTML = '<div class="loading"><div class="loading-dot"></div><span>загружаем</span></div>'
+    const { data: mats } = await supabase.from('materials').select('*').eq('collection_id', colId).order('created_at').limit(10)
+    if (!mats?.length) { container.innerHTML = '<div class="feed-more">Нет материалов</div>'; return }
+    container.innerHTML = mats.map((m,i) => `<div class="feed-mat"><span class="feed-mat-num">${i+1}</span><span class="feed-mat-title" ${m.url ? `onclick="window.open('${m.url}','_blank')"` : ''}>${m.title}</span>${m.url ? `<span class="feed-mat-domain">${getDomain(m.url)}</span>` : ''}</div>`).join('')
+}
     c.innerHTML='<div class="empty-state"><div class="empty-glyph">◉</div><div class="empty-title">Пока тихо</div><div class="empty-sub">Пригласи друзей.</div></div>'
 }
 
