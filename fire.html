@@ -496,13 +496,7 @@ async function loadFriends() {
     c.appendChild(inviteRow)
 }
 
-window.loadFeedMaterials = async function(colId) {
-    const container = document.getElementById(`feed-mats-${colId}`); if (!container) return
-    container.innerHTML = '<div class="loading"><div class="loading-dot"></div><span>загружаем</span></div>'
-    const { data: mats } = await supabase.from('materials').select('*').eq('collection_id', colId).order('created_at').limit(10)
-    if (!mats?.length) { container.innerHTML = '<div class="feed-more">Нет материалов</div>'; return }
-    container.innerHTML = mats.map((m,i) => `<div class="feed-mat"><span class="feed-mat-num">${i+1}</span><span class="feed-mat-title" ${m.url ? `onclick="window.open('${m.url}','_blank')"` : ''}>${m.title}</span>${m.url ? `<span class="feed-mat-domain">${getDomain(m.url)}</span>` : ''}</div>`).join('')
-}
+
     c.innerHTML='<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Пока тихо</div><div class="empty-sub">Пригласи друзей.</div></div>'
 }
 
