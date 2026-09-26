@@ -468,10 +468,6 @@ async function loadFriends() {
 }
 
 
-    c.innerHTML='<div class="empty-state"><div class="empty-glyph">◉</div><div class="empty-title">Пока тихо</div><div class="empty-sub">Пригласи друзей.</div></div>'
-}
-
-
 window.loadFeedMaterials = async function(colId) {
     const container = document.getElementById(`feed-mats-${colId}`)
     if (!container) return
