@@ -9,175 +9,190 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body { width:100%; min-height:100%; background:#05050a; font-family:'Cormorant Garamond',serif; color:#f0ece4; overflow-x:hidden; }
 
-/* ── STARS ── */
+.bg-layer { position:fixed; inset:0; z-index:0; pointer-events:none; transition:opacity 1.2s; }
+.bg-water { background:linear-gradient(160deg,#020810 0%,#041020 20%,#071828 50%,#0a2040 80%,#0d2a55 100%); }
+.bg-air   { background:linear-gradient(160deg,#06040e 0%,#0a0820 20%,#0e0c2a 50%,#120e2e 80%,#241a18 100%); }
+.bg-fire  { background:linear-gradient(160deg,#050100 0%,#0a0200 20%,#100300 50%,#180500 80%,#260a07 100%); }
+.bg-earth { background:linear-gradient(160deg,#020601 0%,#040a02 20%,#060e03 50%,#081204 80%,#0c1a06 100%); }
+.bg-glow { position:absolute; bottom:-10%; left:50%; transform:translateX(-50%); width:100%; height:60%; pointer-events:none; filter:blur(40px); transition:background 1.2s; }
+.glow-water { background:radial-gradient(ellipse,rgba(30,100,220,0.2) 0%,transparent 70%); }
+.glow-air   { background:radial-gradient(ellipse,rgba(200,155,50,0.15) 0%,transparent 70%); }
+.glow-fire  { background:radial-gradient(ellipse,rgba(220,70,10,0.25) 0%,transparent 70%); }
+.glow-earth { background:radial-gradient(ellipse,rgba(60,160,30,0.18) 0%,transparent 70%); }
+
 .stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
 .star { position:absolute; border-radius:50%; background:white; animation:twinkle ease-in-out infinite; }
-@keyframes twinkle { 0%,100%{opacity:0.06} 50%{opacity:0.45} }
+@keyframes twinkle { 0%,100%{opacity:0.05} 50%{opacity:0.4} }
 .grain { position:fixed; inset:0; z-index:1; pointer-events:none;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     opacity:0.4; mix-blend-mode:screen; }
 
-/* ── HEADER ── */
 .header { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between;
     padding:1.2rem 2.5rem; background:rgba(5,5,10,0.72); backdrop-filter:blur(24px);
-    border-bottom:1px solid rgba(255,255,255,0.05); animation:fadeDown 1.2s cubic-bezier(0.16,1,0.3,1) both; }
-@keyframes fadeDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+    border-bottom:1px solid rgba(255,255,255,0.05); }
 .logo-btn { font-family:'Unbounded',sans-serif; font-weight:200; font-size:0.72rem; letter-spacing:0.45em;
     text-transform:uppercase; color:rgba(255,255,255,0.4); text-decoration:none; transition:color 0.3s; }
 .logo-btn:hover { color:rgba(255,255,255,0.8); }
-.header-right { display:flex; align-items:center; gap:1rem; }
+.header-right { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
 .btn-ghost { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
     padding:0.5rem 1.1rem; background:transparent; color:rgba(255,255,255,0.4);
-    border:1px solid rgba(255,255,255,0.1); border-radius:9999px; cursor:pointer; transition:all 0.3s; text-decoration:none; }
-.btn-ghost:hover { color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.22); }
+    border:1px solid rgba(255,255,255,0.1); border-radius:9999px; cursor:pointer; transition:all 0.3s; text-decoration:none; display:inline-block; }
+.btn-ghost:hover { color:#fff; border-color:rgba(255,255,255,0.25); }
 .btn-primary { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
     padding:0.5rem 1.1rem; background:rgba(255,255,255,0.9); color:#05050a;
     border:none; border-radius:9999px; cursor:pointer; transition:all 0.3s; }
 .btn-primary:hover { background:#fff; transform:translateY(-1px); }
 
-/* ── MAIN ── */
 .main { position:relative; z-index:10; max-width:1100px; margin:0 auto; padding:3rem 2.5rem 6rem; }
 
-/* ── IDENTITY ── */
-.identity { display:flex; align-items:flex-end; gap:2.5rem; margin-bottom:4rem;
+/* IDENTITY */
+.identity { display:flex; align-items:flex-start; gap:2.5rem; margin-bottom:4rem;
     animation:fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
 .avatar-wrap { position:relative; flex-shrink:0; width:100px; height:100px; }
-.avatar-orb { width:100px; height:100px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-family:'Unbounded',sans-serif; font-weight:200; font-size:2rem; color:#050508;
+.avatar-orb { width:100px; height:100px; border-radius:50%; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Unbounded',sans-serif; font-weight:200; font-size:2rem; color:#fff;
     position:relative; z-index:2; cursor:pointer;
     transition:transform 0.4s cubic-bezier(0.16,1,0.3,1); }
 .avatar-orb:hover { transform:scale(1.05); }
-.avatar-glow { position:absolute; inset:-8px; border-radius:50%; animation:avatarPulse 4s ease-in-out infinite; z-index:1; }
-@keyframes avatarPulse { 0%,100%{transform:scale(1);opacity:0.4} 50%{transform:scale(1.12);opacity:0.7} }
-.identity-info { flex:1; }
-.profile-name { font-size:clamp(2rem,4vw,3.2rem); font-weight:300; line-height:1.1; color:#fff; margin-bottom:0.4rem; }
-.profile-handle { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.15em;
-    color:rgba(255,255,255,0.25); text-transform:uppercase; margin-bottom:1rem; }
-.profile-bio { font-size:0.95rem; color:rgba(255,255,255,0.45); line-height:1.7; max-width:420px; font-style:italic; }
-.profile-stats { display:flex; gap:2rem; margin-top:1.25rem; }
-.stat-val { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; color:#fff; display:block; line-height:1; }
-.stat-label { font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase;
-    color:rgba(255,255,255,0.2); margin-top:0.2rem; display:block; }
-.identity-actions { display:flex; flex-direction:column; gap:0.6rem; align-items:flex-end; padding-bottom:0.5rem; }
+.avatar-orb img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.avatar-glow { position:absolute; inset:-8px; border-radius:50%; animation:avatarPulse 4s ease-in-out infinite; z-index:1; filter:blur(12px); opacity:0.45; }
+@keyframes avatarPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+.avatar-upload-btn { position:absolute; bottom:0; right:0; z-index:3;
+    width:28px; height:28px; border-radius:50%; border:2px solid rgba(5,5,10,0.8);
+    background:rgba(255,255,255,0.9); display:none; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.2s; font-size:0.75rem; color:#05050a; }
+.avatar-upload-btn:hover { background:#fff; transform:scale(1.1); }
 
-/* ── SECTION LABEL ── */
+.identity-info { flex:1; padding-top:0.5rem; }
+.profile-name { font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:300; line-height:1.1; color:#fff; margin-bottom:0.3rem; }
+.profile-handle { font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.15em;
+    color:rgba(255,255,255,0.22); text-transform:uppercase; margin-bottom:0.75rem; }
+.dominant-pill { display:none; align-items:center; gap:0.5rem; padding:0.28rem 0.85rem;
+    border-radius:9999px; font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.12em;
+    text-transform:uppercase; margin-bottom:0.85rem; border:1px solid; width:fit-content; }
+.dominant-dot { width:5px; height:5px; border-radius:50%; animation:dotPulse 2.5s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{opacity:1} 50%{opacity:0.4;transform:scale(1.3)} }
+.profile-bio { font-size:0.95rem; color:rgba(255,255,255,0.42); line-height:1.7; max-width:420px; font-style:italic; margin-bottom:1rem; }
+.profile-bio-empty { font-size:0.85rem; color:rgba(255,255,255,0.18); font-style:italic; margin-bottom:1rem; cursor:pointer; transition:color 0.2s; }
+.profile-bio-empty:hover { color:rgba(255,255,255,0.38); }
+.bio-edit-wrap { display:none; margin-bottom:1rem; }
+.bio-edit-wrap.open { display:block; }
+.bio-input { width:100%; max-width:420px; padding:0.7rem 1rem; background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.12); border-radius:0.75rem; color:#fff;
+    font-family:'Cormorant Garamond',serif; font-size:0.95rem; font-style:italic;
+    outline:none; resize:none; line-height:1.7; transition:border-color 0.3s; }
+.bio-input:focus { border-color:rgba(255,255,255,0.28); }
+.bio-input::placeholder { color:rgba(255,255,255,0.2); }
+.bio-save-row { display:flex; gap:0.5rem; margin-top:0.5rem; }
+.profile-stats { display:flex; gap:2rem; }
+.stat-val { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; color:#fff; display:block; line-height:1; }
+.stat-label { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.2); margin-top:0.2rem; display:block; }
+.identity-actions { display:flex; flex-direction:column; gap:0.6rem; align-items:flex-end; padding-top:0.5rem; flex-shrink:0; }
+
+/* SECTION LABEL */
 .section-label { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase;
-    color:rgba(255,255,255,0.2); margin-bottom:2rem; display:flex; align-items:center; gap:1rem; }
+    color:rgba(255,255,255,0.18); margin-bottom:1.75rem; display:flex; align-items:center; gap:1rem; }
 .section-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
 
-/* ── ELEMENTS GRID ── */
-.elements-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;
-    animation:fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s both; }
+/* ORBS */
+.elements-orbs { display:flex; gap:2.5rem; justify-content:flex-start; flex-wrap:wrap;
+    margin-bottom:4rem; animation:fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.5s both; }
+.orb-item { display:flex; flex-direction:column; align-items:center; gap:0.75rem;
+    cursor:pointer; transition:transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+.orb-item:hover { transform:translateY(-8px); }
+.orb { width:110px; height:110px; border-radius:50%; position:relative; overflow:hidden;
+    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1); flex-shrink:0; }
+.orb-item:hover .orb { transform:scale(1.06); }
+.orb-item.dominant .orb { width:130px; height:130px; }
 
-/* ── ELEMENT SECTION ── */
-.el-section { border-radius:1.75rem; overflow:hidden; position:relative; min-height:320px;
-    display:flex; flex-direction:column; cursor:pointer;
-    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1); }
-.el-section:hover { transform:translateY(-4px); }
+.o-water { background:radial-gradient(ellipse 65% 45% at 35% 28%,rgba(150,220,255,0.4) 0%,transparent 55%),radial-gradient(at 50% 50%,#0b2448 0%,#071630 50%,#03080f 100%); animation:wMorph 9s ease-in-out infinite; box-shadow:inset 0 14px 28px rgba(120,215,255,0.13),inset 0 -8px 20px rgba(8,45,140,0.38); }
+@keyframes wMorph { 0%,100%{border-radius:62% 38% 55% 45%/48% 52% 48% 52%} 50%{border-radius:40% 60% 60% 40%/44% 56% 44% 56%} }
+.o-air { background:radial-gradient(ellipse 100% 45% at 50% 100%,rgba(200,155,50,0.45) 0%,transparent 70%),radial-gradient(at 50% 50%,#0e0c2a 0%,#06040e 60%,#100e18 100%); animation:aMorph 10s ease-in-out infinite; box-shadow:inset 0 -20px 40px rgba(200,155,50,0.18); }
+@keyframes aMorph { 0%,100%{border-radius:50%} 50%{border-radius:48% 52% 55% 45%/52% 48% 46% 54%} }
+.o-fire { background:radial-gradient(ellipse 60% 80% at 50% 80%,rgba(220,70,5,0.9) 0%,transparent 70%),radial-gradient(at 50% 50%,#100402 0%,#0d0503 100%); animation:fMorph 3.2s ease-in-out infinite; box-shadow:inset 0 -16px 32px rgba(255,95,10,0.18); }
+@keyframes fMorph { 0%,100%{border-radius:44% 56% 34% 66%/62% 38% 66% 34%} 50%{border-radius:48% 52% 42% 58%/62% 38% 58% 42%} }
+.o-earth { background:radial-gradient(ellipse 68% 48% at 34% 32%,rgba(78,175,38,0.22) 0%,transparent 56%),radial-gradient(at 50% 50%,#0d1b07 0%,#081303 52%,#050a02 100%); animation:eMorph 13s ease-in-out infinite; box-shadow:inset 0 12px 26px rgba(98,195,48,0.09); }
+@keyframes eMorph { 0%,100%{border-radius:50% 50% 56% 44%/44% 56% 50% 50%} 50%{border-radius:54% 46% 48% 52%/48% 52% 46% 54%} }
 
-.el-section::before { content:''; position:absolute; inset:0; z-index:0; }
-.es-water::before { background: radial-gradient(ellipse 80% 50% at 30% 20%, rgba(60,150,255,0.2) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 70% 70%, rgba(20,80,180,0.3) 0%, transparent 65%), linear-gradient(160deg, #040e1e 0%, #071828 30%, #0a2040 65%, #0d2a55 100%); animation:wBgPulse 7s ease-in-out infinite; }
-@keyframes wBgPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.12)} }
-.es-air::before { background: radial-gradient(ellipse 100% 45% at 50% 100%, rgba(200,155,50,0.45) 0%, transparent 70%), radial-gradient(at 50% 50%, #0e0c2a 0%, #06040e 60%, #100e18 100%); animation:aBgPulse 9s ease-in-out infinite; }
-@keyframes aBgPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.08)} }
-.es-fire::before { background: radial-gradient(ellipse 60% 70% at 50% 90%, rgba(220,70,10,0.45) 0%, transparent 60%), radial-gradient(ellipse 80% 50% at 50% 50%, rgba(100,15,5,0.7) 0%, #0d0503 100%); animation:fBgPulse 2.5s ease-in-out infinite alternate; }
-@keyframes fBgPulse { 0%{filter:brightness(0.9)} 100%{filter:brightness(1.15)} }
-.es-earth::before { background: radial-gradient(ellipse 70% 50% at 35% 30%, rgba(70,170,35,0.18) 0%, transparent 55%), radial-gradient(ellipse 60% 70% at 65% 70%, rgba(40,130,20,0.22) 0%, transparent 60%), linear-gradient(160deg, #060e04 0%, #0a1608 30%, #111f0c 65%, #182810 100%); animation:eBgPulse 6s ease-in-out infinite; }
-@keyframes eBgPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.1)} }
+.orb-count { position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+    font-family:'DM Mono',monospace; font-size:0.48rem; letter-spacing:0.08em;
+    color:rgba(255,255,255,0.7); background:rgba(0,0,0,0.45); padding:0.15rem 0.5rem;
+    border-radius:9999px; white-space:nowrap; }
+.orb-name { font-family:'Unbounded',sans-serif; font-weight:200; font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; }
+.orb-item.ow .orb-name { color:#78c8e8; }
+.orb-item.oa .orb-name { color:#c8a860; }
+.orb-item.of .orb-name { color:#e87840; }
+.orb-item.oe .orb-name { color:#78b048; }
 
-.el-section::after { content:''; position:absolute; inset:0; border-radius:1.75rem; border:1px solid rgba(255,255,255,0.08); pointer-events:none; z-index:10; transition:border-color 0.4s; }
-.el-section:hover::after { border-color:rgba(255,255,255,0.18); }
+/* FRIENDS */
+.friends-section { animation:fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.7s both; }
+.friends-grid { display:flex; flex-wrap:wrap; gap:0.75rem; }
+.friend-chip { display:flex; align-items:center; gap:0.6rem; padding:0.5rem 1rem 0.5rem 0.5rem;
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+    border-radius:9999px; cursor:pointer; transition:all 0.3s; text-decoration:none; }
+.friend-chip:hover { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.16); }
+.friend-chip-avatar { width:1.6rem; height:1.6rem; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-family:'DM Mono',monospace; font-size:0.6rem; font-weight:600; color:#05050a; flex-shrink:0; }
+.friend-chip-name { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:rgba(255,255,255,0.5); }
+.friends-hidden { font-size:0.88rem; color:rgba(255,255,255,0.2); font-style:italic; padding:0.5rem 0; }
+.visibility-row { display:flex; align-items:center; gap:0.75rem; margin-top:1rem; }
+.visibility-label { font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:rgba(255,255,255,0.25); }
+.toggle { position:relative; width:2.2rem; height:1.2rem; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.15); border-radius:9999px; cursor:pointer; transition:0.25s; }
+.toggle-slider::before { content:''; position:absolute; width:0.75rem; height:0.75rem;
+    left:0.2rem; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.35); border-radius:50%; transition:0.25s; }
+.toggle input:checked + .toggle-slider { background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.3); }
+.toggle input:checked + .toggle-slider::before { transform:translateX(1rem) translateY(-50%); background:#fff; }
 
-.es-inner { position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; border-radius:1.75rem; }
-.es-water .es-wave { position:absolute; bottom:0; left:-50%; width:200%; opacity:0.1; animation:esWave linear infinite; }
-.es-water .es-wave:nth-child(1){animation-duration:6s}
-.es-water .es-wave:nth-child(2){animation-duration:8s;animation-delay:-3s;opacity:0.06}
-@keyframes esWave{0%{transform:translateX(0)}100%{transform:translateX(50%)}}
-.es-air .es-sheen { position:absolute; inset:0; background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,0.08) 50%,transparent 100%); animation:esSheen 5s ease-in-out infinite; }
-@keyframes esSheen{0%{transform:translateX(-120%) rotate(20deg);opacity:0}20%,40%{opacity:1}60%{transform:translateX(200%) rotate(20deg);opacity:0}100%{transform:translateX(200%) rotate(20deg);opacity:0}}
-.es-fire .es-flicker { position:absolute; bottom:0; left:0; right:0; height:55%; background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,80,10,0.3) 0%, transparent 70%); animation:esFlicker 1.8s ease-in-out infinite alternate; }
-@keyframes esFlicker{0%{opacity:0.7;transform:scaleX(0.97)}50%{opacity:1;transform:scaleX(1.02)}100%{opacity:0.8;transform:scaleX(0.99)}}
-.es-earth .es-biospot { position:absolute; border-radius:50%; animation:esBio ease-in-out infinite; }
-@keyframes esBio{0%,100%{opacity:0.2;transform:scale(1)}50%{opacity:0.55;transform:scale(1.2)}}
-
-.es-particles { position:absolute; inset:0; overflow:hidden; border-radius:1.75rem; z-index:2; pointer-events:none; }
-
-.es-overlay { position:absolute; inset:0; z-index:3; pointer-events:none; border-radius:1.75rem;
-    background:linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 50%, transparent 100%); }
-
-.es-content { position:relative; z-index:5; padding:2rem; height:100%; display:flex; flex-direction:column; justify-content:space-between; }
-.es-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:auto; }
-.es-element-name { font-family:'Unbounded',sans-serif; font-weight:200; font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; display:flex; align-items:center; gap:0.5rem; }
-.es-dot { width:5px; height:5px; border-radius:50%; animation:esDot 2.5s ease-in-out infinite; }
-@keyframes esDot{0%,100%{transform:scale(1)}50%{transform:scale(1.5);opacity:0.6}}
-.es-meaning { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.25rem 0.6rem; border:1px solid currentColor; border-radius:9999px; opacity:0.35; }
-.es-collections { margin-top:1.5rem; }
-.es-col-title { font-size:1.2rem; font-weight:300; line-height:1.3; margin-bottom:0.35rem; }
-.es-col-desc { font-size:0.8rem; color:rgba(255,255,255,0.35); line-height:1.6; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.es-more { display:inline-block; margin-top:0.6rem; font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase; opacity:0.35; transition:opacity 0.3s; }
-.el-section:hover .es-more { opacity:0.7; }
-.es-empty { font-size:0.85rem; color:rgba(255,255,255,0.2); font-style:italic; margin-top:1rem; }
-
-/* Цвета стихий */
-.es-water { color:#f0ece4; }
-.es-water .es-element-name { color:#78c8e8; }
-.es-water .es-dot { background:#78c8e8; box-shadow:0 0 8px #78c8e8; }
-.es-water .es-meaning { color:#78c8e8; }
-.es-air .es-element-name { color:#c8a860; }
-.es-air .es-dot { background:#c8a860; box-shadow:0 0 8px #c8a860; }
-.es-air .es-meaning { color:#c8a860; }
-.es-fire { color:#f0ece4; }
-.es-fire .es-element-name { color:#e87840; }
-.es-fire .es-dot { background:#e87840; box-shadow:0 0 8px #e87840; }
-.es-fire .es-meaning { color:#e87840; }
-.es-earth { color:#f0ece4; }
-.es-earth .es-element-name { color:#78b048; }
-.es-earth .es-dot { background:#78b048; box-shadow:0 0 8px #78b048; }
-.es-earth .es-meaning { color:#78b048; }
-
-/* ── INVITE MODAL ── */
+/* MODAL */
 .modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.78); backdrop-filter:blur(20px);
     display:flex; align-items:center; justify-content:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity 0.3s; }
 .modal-overlay.open { opacity:1; pointer-events:all; }
-.modal { background:#0e0e16; border:1px solid rgba(255,255,255,0.1); border-radius:1.75rem; padding:2.5rem; width:100%; max-width:480px; animation:slideUp 0.4s cubic-bezier(0.16,1,0.3,1); }
+.modal { background:#0e0e16; border:1px solid rgba(255,255,255,0.1); border-radius:1.75rem; padding:2.5rem;
+    width:100%; max-width:480px; animation:slideUp 0.4s cubic-bezier(0.16,1,0.3,1); }
 .modal-title { font-size:1.6rem; font-weight:300; font-style:italic; color:#fff; margin-bottom:0.75rem; }
 .modal-sub { font-size:0.85rem; color:rgba(255,255,255,0.35); margin-bottom:1.5rem; line-height:1.6; }
 .invite-link-row { display:flex; gap:0.5rem; }
-.invite-link-input { flex:1; padding:0.75rem 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-    border-radius:0.75rem; color:#fff; font-family:'DM Mono',monospace; font-size:0.6rem; outline:none; }
+.invite-link-input { flex:1; padding:0.75rem 1rem; background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1); border-radius:0.75rem; color:#fff;
+    font-family:'DM Mono',monospace; font-size:0.58rem; outline:none; }
 .modal-footer { display:flex; justify-content:flex-end; margin-top:1.5rem; }
 
-/* ── KEEPER LOCKED ── */
-.keeper-locked { text-align:center; padding:3rem 2rem; border:1px dashed rgba(255,255,255,0.08); border-radius:1.5rem; grid-column:1/-1; }
-.keeper-locked-title { font-size:1.3rem; font-weight:300; font-style:italic; color:rgba(255,255,255,0.6); margin-bottom:0.5rem; }
-.keeper-locked-sub { font-size:0.85rem; color:rgba(255,255,255,0.25); margin-bottom:1.5rem; line-height:1.7; }
-
-/* ── LOADING / TOAST ── */
-.loading { display:flex; align-items:center; gap:0.5rem; color:rgba(255,255,255,0.2); font-family:'DM Mono',monospace; font-size:0.65rem; padding:2rem 0; }
+.loading { display:flex; align-items:center; gap:0.5rem; color:rgba(255,255,255,0.2);
+    font-family:'DM Mono',monospace; font-size:0.65rem; padding:2rem 0; }
 .loading-dot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,0.3); animation:ldot 1.2s ease-in-out infinite; }
 .loading-dot:nth-child(2){animation-delay:0.2s} .loading-dot:nth-child(3){animation-delay:0.4s}
 @keyframes ldot{0%,100%{opacity:0.2}50%{opacity:1}}
 .toast-area { position:fixed; bottom:2rem; right:2rem; z-index:999; display:flex; flex-direction:column; gap:0.5rem; }
-.toast { padding:0.75rem 1.25rem; background:rgba(14,14,22,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:0.75rem; font-size:0.82rem; color:#fff; animation:toastIn 0.3s cubic-bezier(0.16,1,0.3,1); max-width:280px; }
+.toast { padding:0.75rem 1.25rem; background:rgba(14,14,22,0.95); border:1px solid rgba(255,255,255,0.1);
+    border-radius:0.75rem; font-size:0.82rem; color:#fff; animation:toastIn 0.3s cubic-bezier(0.16,1,0.3,1); max-width:280px; }
 .toast.success { border-color:#78c8e8; color:#78c8e8; }
 .toast.error { border-color:#e05a3a; color:#e05a3a; }
 
-/* ── KEYFRAMES ── */
-@keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-@keyframes slideUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-@keyframes toastIn  { from{opacity:0;transform:translateX(1rem)} to{opacity:1;transform:translateX(0)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes toastIn { from{opacity:0;transform:translateX(1rem)} to{opacity:1;transform:translateX(0)} }
 
-/* ── RESPONSIVE ── */
-@media (max-width:768px) {
-    .header{padding:1rem 1.25rem} .main{padding:2rem 1.25rem 5rem}
-    .elements-grid{grid-template-columns:1fr}
-    .identity{flex-direction:column;align-items:flex-start;gap:1.5rem}
-    .identity-actions{flex-direction:row;align-items:center}
+@media(max-width:768px){
+    .header{padding:1rem 1.25rem}
+    .main{padding:2rem 1.25rem 5rem}
+    .identity{flex-direction:column;gap:1.5rem}
+    .identity-actions{flex-direction:row;flex-wrap:wrap}
+    .elements-orbs{gap:1.5rem}
+    .orb{width:80px !important;height:80px !important}
+    .orb-item.dominant .orb{width:95px !important;height:95px !important}
 }
 </style>
 </head>
 <body>
 
+<div class="bg-layer bg-water" id="bg-layer"></div>
+<div class="bg-glow glow-water" id="bg-glow"></div>
 <div class="stars" id="stars"></div>
 <div class="grain"></div>
 <div class="toast-area" id="toast-area"></div>
@@ -188,16 +203,26 @@ html, body { width:100%; min-height:100%; background:#05050a; font-family:'Cormo
 </header>
 
 <main class="main">
-    <!-- IDENTITY -->
-    <div class="identity" id="identity-block">
+    <div class="identity">
         <div class="avatar-wrap">
             <div class="avatar-glow" id="avatar-glow"></div>
             <div class="avatar-orb" id="avatar-orb">?</div>
+            <div class="avatar-upload-btn" id="avatar-upload-btn" title="Загрузить фото" onclick="document.getElementById('avatar-file-input').click()">✎</div>
+            <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
         </div>
         <div class="identity-info">
-            <div class="profile-name"><span id="name-text">Загружаем...</span></div>
+            <div class="profile-name" id="name-text">...</div>
             <div class="profile-handle" id="profile-handle"></div>
-            <div class="profile-bio" id="profile-bio"></div>
+            <div class="dominant-pill" id="dominant-pill"></div>
+            <div class="profile-bio" id="profile-bio" style="display:none"></div>
+            <div class="profile-bio-empty" id="bio-empty" style="display:none" onclick="openBioEdit()">+ Добавить bio</div>
+            <div class="bio-edit-wrap" id="bio-edit-wrap">
+                <textarea class="bio-input" id="bio-input" rows="2" placeholder="Несколько слов о себе..."></textarea>
+                <div class="bio-save-row">
+                    <button class="btn-primary" onclick="saveBio()">Сохранить</button>
+                    <button class="btn-ghost" onclick="closeBioEdit()">Отмена</button>
+                </div>
+            </div>
             <div class="profile-stats">
                 <div><span class="stat-val" id="stat-collections">—</span><span class="stat-label">коллекций</span></div>
                 <div><span class="stat-val" id="stat-materials">—</span><span class="stat-label">материалов</span></div>
@@ -206,14 +231,17 @@ html, body { width:100%; min-height:100%; background:#05050a; font-family:'Cormo
         <div class="identity-actions" id="identity-actions"></div>
     </div>
 
-    <!-- ELEMENTS -->
     <div class="section-label">Стихии</div>
-    <div class="elements-grid" id="elements-grid">
-        <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем стихии</span></div>
+    <div class="elements-orbs" id="elements-orbs">
+        <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+    </div>
+
+    <div id="friends-section" style="display:none">
+        <div class="section-label">Друзья</div>
+        <div id="friends-list"></div>
     </div>
 </main>
 
-<!-- INVITE MODAL -->
 <div class="modal-overlay" id="invite-modal" onclick="if(event.target===this)closeInviteModal()">
     <div class="modal">
         <div class="modal-title">Пригласить друга</div>
@@ -222,21 +250,19 @@ html, body { width:100%; min-height:100%; background:#05050a; font-family:'Cormo
             <input class="invite-link-input" id="invite-link-input" readonly>
             <button class="btn-primary" onclick="copyInviteLink()">Копировать</button>
         </div>
-        <div class="modal-footer">
-            <button class="btn-ghost" onclick="closeInviteModal()">Закрыть</button>
-        </div>
+        <div class="modal-footer"><button class="btn-ghost" onclick="closeInviteModal()">Закрыть</button></div>
     </div>
 </div>
 
 <script type="module">
 import { supabase, getCurrentUser } from './js/supabase-client.js'
 
-const ELEMENTS = [
-    { key:'water', name:'Вода',   meaning:'покой',    url:'water.html',  emptyText:'Пока нет коллекций воды' },
-    { key:'air',   name:'Воздух', meaning:'мысль',    url:'air.html',    emptyText:'Пока нет коллекций воздуха' },
-    { key:'fire',  name:'Огонь',  meaning:'действие', url:'fire.html',   emptyText:'Пока нет коллекций огня' },
-    { key:'earth', name:'Земля',  meaning:'корни',    url:'earth.html',  emptyText:'Пока нет коллекций земли' },
-]
+const ELEMENT_CONFIG = {
+    water: { name:'Вода',   url:'water.html',  cls:'ow', orbCls:'o-water', accent:'#78c8e8', glowCls:'glow-water', bgCls:'bg-water', pillBg:'rgba(120,200,232,0.1)',  pillBorder:'rgba(120,200,232,0.28)' },
+    air:   { name:'Воздух', url:'air.html',    cls:'oa', orbCls:'o-air',   accent:'#c8a860', glowCls:'glow-air',   bgCls:'bg-air',   pillBg:'rgba(200,168,96,0.1)',   pillBorder:'rgba(200,168,96,0.28)' },
+    fire:  { name:'Огонь',  url:'fire.html',   cls:'of', orbCls:'o-fire',  accent:'#e87840', glowCls:'glow-fire',  bgCls:'bg-fire',  pillBg:'rgba(232,120,64,0.1)',   pillBorder:'rgba(232,120,64,0.28)' },
+    earth: { name:'Земля',  url:'earth.html',  cls:'oe', orbCls:'o-earth', accent:'#78b048', glowCls:'glow-earth', bgCls:'bg-earth', pillBg:'rgba(120,176,72,0.1)',   pillBorder:'rgba(120,176,72,0.28)' },
+}
 const AVATAR_BG = {
     water:'linear-gradient(135deg,#0b2448,#1a6090)',
     air:  'linear-gradient(135deg,#06040e,#c8a860)',
@@ -245,231 +271,314 @@ const AVATAR_BG = {
 }
 
 let currentUser = null
+let profileUser = null
+let isOwnProfile = true
 let userTier = 'seeker'
 
-// ── ЗВЁЗДЫ ──
-function spawnStars() {
-    const c = document.getElementById('stars')
-    for (let i = 0; i < 110; i++) {
-        const s = document.createElement('div'); s.className = 'star'
-        const sz = 0.6 + Math.random() * 1.7
-        s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2.5+Math.random()*5}s;animation-delay:-${Math.random()*7}s;`
-        c.appendChild(s)
-    }
+// Stars
+const sc = document.getElementById('stars')
+for (let i = 0; i < 110; i++) {
+    const s = document.createElement('div'); s.className = 'star'
+    const sz = 0.6 + Math.random() * 1.7
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2.5+Math.random()*5}s;animation-delay:-${Math.random()*7}s;`
+    sc.appendChild(s)
 }
 
-// ── TOAST ──
 function toast(msg, type='') {
     const a = document.getElementById('toast-area')
     const d = document.createElement('div'); d.className = 'toast '+type; d.textContent = msg
     a.appendChild(d); setTimeout(() => d.remove(), 3500)
 }
 
-// ── INIT ──
-spawnStars()
+// INIT
 ;(async () => {
     const user = await getCurrentUser()
     if (!user) { window.location.href = 'login.html'; return }
     currentUser = user
     userTier = user.profile?.tier || 'seeker'
 
-    // Хедер
-    const ha = document.getElementById('header-actions')
-    ha.innerHTML = `
-        <a href="stihii.html" class="btn-ghost">Сменить стихию</a>
-        <button class="btn-ghost" onclick="doLogout()">Выйти</button>
-    `
+    const params = new URLSearchParams(window.location.search)
+    const inviteToken = params.get('invite')
+    const viewNick = params.get('user')
 
-    // Аватар
-    const el = user.profile?.element || 'water'
-    const orb = document.getElementById('avatar-orb')
-    const glow = document.getElementById('avatar-glow')
-    orb.textContent = (user.profile?.nickname || '?').charAt(0).toUpperCase()
-    orb.style.background = AVATAR_BG[el]
-    glow.style.background = AVATAR_BG[el]
-    glow.style.filter = 'blur(16px)'
-    glow.style.opacity = '0.5'
+    if (inviteToken) { await handleInvite(inviteToken); return }
 
-    // Имя
-    document.getElementById('name-text').textContent = user.profile?.nickname || 'Профиль'
-    document.getElementById('profile-handle').textContent = `@${user.profile?.nickname || '?'}`
-    if (user.profile?.bio) document.getElementById('profile-bio').textContent = user.profile.bio
-
-    // Кнопки
-    const actions = document.getElementById('identity-actions')
-    if (userTier === 'keeper') {
-        actions.innerHTML = `<button class="btn-ghost" onclick="openInviteModal()">Пригласить друга</button>`
+    if (viewNick && viewNick.toLowerCase() !== user.profile?.nickname?.toLowerCase()) {
+        isOwnProfile = false
+        const { data: fp } = await supabase.from('profiles').select('*').eq('nickname', viewNick).single()
+        if (!fp) { toast('Пользователь не найден', 'error'); return }
+        profileUser = fp
     } else {
-        actions.innerHTML = `
-            <button class="btn-ghost" style="opacity:0.4;cursor:default" title="Доступно для Хранителей">Пригласить друга 🔒</button>
-            <button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>
-        `
+        profileUser = user.profile
     }
 
-    // Коллекции
-    const { data: cols } = await supabase.from('collections').select('*, materials(count)').eq('user_id', currentUser.id)
-    const totalCols = cols?.length || 0
-    const totalMats = cols?.reduce((s, c) => s + (c.materials?.[0]?.count || 0), 0) || 0
-    document.getElementById('stat-collections').textContent = totalCols
-    document.getElementById('stat-materials').textContent = totalMats
-
-    renderElementsGrid(cols || [])
+    await loadProfile()
 })()
 
-// ── RENDER GRID ──
-function renderElementsGrid(collections) {
-    const grid = document.getElementById('elements-grid')
-    grid.innerHTML = ''
+async function loadProfile() {
+    const uid = profileUser.id
+    document.getElementById('name-text').textContent = profileUser.nickname || '?'
+    document.getElementById('profile-handle').textContent = `@${profileUser.nickname || '?'}`
+    document.title = `БУДУМ — ${profileUser.nickname}`
 
-    ELEMENTS.forEach((el, idx) => {
-        const elCols = collections.filter(c => c.element === el.key)
-        const top = elCols.slice(0, 2)
+    // Bio
+    if (profileUser.bio) {
+        document.getElementById('profile-bio').textContent = profileUser.bio
+        document.getElementById('profile-bio').style.display = ''
+    } else if (isOwnProfile) {
+        document.getElementById('bio-empty').style.display = ''
+    }
 
-        const section = document.createElement('div')
-        section.className = `el-section es-${el.key}`
-        section.style.cssText = `animation:fadeUp 1.2s cubic-bezier(0.16,1,0.3,1) ${0.7+idx*0.12}s both;`
-        section.onclick = () => window.location.href = el.url
+    // Avatar
+    const orb = document.getElementById('avatar-orb')
+    if (profileUser.avatar_url) {
+        orb.innerHTML = `<img src="${profileUser.avatar_url}" alt="avatar">`
+        orb.style.background = 'transparent'
+    } else {
+        const el = profileUser.element || 'water'
+        orb.textContent = (profileUser.nickname || '?').charAt(0).toUpperCase()
+        orb.style.background = AVATAR_BG[el]
+        document.getElementById('avatar-glow').style.background = AVATAR_BG[el]
+    }
+    if (isOwnProfile) {
+        const btn = document.getElementById('avatar-upload-btn')
+        btn.style.display = 'flex'
+        document.getElementById('avatar-file-input').addEventListener('change', uploadAvatar)
+    }
 
-        const collectionsHTML = top.length
-            ? top.map(c => `
-                <div class="es-col-title">${c.title}</div>
-                ${c.description ? `<div class="es-col-desc">${c.description}</div>` : ''}
-            `).join('')
-            : `<div class="es-empty">${el.emptyText}</div>`
+    // Collections
+    const { data: cols } = await supabase.from('collections').select('*, materials(count)').eq('user_id', uid)
+    const allCols = cols || []
+    const counts = { water:0, air:0, fire:0, earth:0 }
+    let totalMats = 0
+    allCols.forEach(c => {
+        if (counts[c.element] !== undefined) counts[c.element]++
+        totalMats += c.materials?.[0]?.count || 0
+    })
+    const visibleCols = isOwnProfile ? allCols : allCols.filter(c => c.is_public)
+    document.getElementById('stat-collections').textContent = visibleCols.length
+    document.getElementById('stat-materials').textContent = totalMats
 
-        const moreText = elCols.length > 2
-            ? `↗ ещё ${elCols.length - 2}`
-            : elCols.length > 0 ? `↗ ${elCols.length} коллекций` : '+ Добавить'
+    // Dominant element
+    const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1])
+    const dominant = sorted[0]
+    if (dominant && dominant[1] > 0) applyDominantTheme(dominant[0])
 
-        // Внутренние эффекты
-        let innerHTML = ''
-        if (el.key === 'water') {
-            innerHTML = `<div class="es-wave"><svg viewBox="0 0 800 50" preserveAspectRatio="none" width="100%" height="50px"><path d="M0,25 C100,5 200,45 300,25 C400,5 500,45 600,25 C700,5 800,45 900,25 L900,50 L0,50Z" fill="rgba(60,140,230,0.8)"/></svg></div><div class="es-wave"><svg viewBox="0 0 800 50" preserveAspectRatio="none" width="100%" height="50px"><path d="M0,30 C120,10 240,50 360,30 C480,10 600,50 720,30 L720,50 L0,50Z" fill="rgba(40,110,200,0.6)"/></svg></div>`
-        } else if (el.key === 'air') {
-            innerHTML = `<div class="es-sheen"></div>`
-        } else if (el.key === 'fire') {
-            innerHTML = `<div class="es-flicker"></div>`
-        } else if (el.key === 'earth') {
-            innerHTML = generateBioSpots()
+    // Orbs
+    renderOrbs(counts)
+
+    // Header
+    renderHeader()
+
+    // Friends
+    await loadFriends(uid)
+}
+
+function applyDominantTheme(el) {
+    const cfg = ELEMENT_CONFIG[el]; if (!cfg) return
+    document.getElementById('bg-layer').className = `bg-layer ${cfg.bgCls}`
+    document.getElementById('bg-glow').className = `bg-glow ${cfg.glowCls}`
+    const pill = document.getElementById('dominant-pill')
+    pill.style.display = 'flex'
+    pill.style.background = cfg.pillBg
+    pill.style.borderColor = cfg.pillBorder
+    pill.style.color = cfg.accent
+    pill.innerHTML = `<div class="dominant-dot" style="background:${cfg.accent}"></div>Доминирует ${cfg.name}`
+    if (!profileUser.avatar_url) {
+        document.getElementById('avatar-glow').style.background = AVATAR_BG[el]
+    }
+}
+
+function renderOrbs(counts) {
+    const wrap = document.getElementById('elements-orbs')
+    wrap.innerHTML = ''
+    const maxCount = Math.max(...Object.values(counts))
+    Object.entries(ELEMENT_CONFIG).forEach(([key, cfg]) => {
+        const count = counts[key] || 0
+        const isDominant = count > 0 && count === maxCount
+        const item = document.createElement('div')
+        item.className = `orb-item ${cfg.cls}${isDominant ? ' dominant' : ''}`
+        item.onclick = () => {
+            if (isOwnProfile) window.location.href = cfg.url
+            else window.location.href = `${cfg.url}?view=${profileUser.nickname}`
         }
-
-        section.innerHTML = `
-            <div class="es-inner">${innerHTML}</div>
-            <div class="es-particles" id="esp-${el.key}"></div>
-            <div class="es-overlay"></div>
-            <div class="es-content">
-                <div class="es-head">
-                    <div class="es-element-name"><div class="es-dot"></div>${el.name}</div>
-                    <div class="es-meaning">${el.meaning}</div>
-                </div>
-                <div class="es-collections">
-                    ${collectionsHTML}
-                    <span class="es-more">${moreText}</span>
-                </div>
+        item.innerHTML = `
+            <div class="orb ${cfg.orbCls}">
+                ${count > 0 ? `<div class="orb-count">${count}</div>` : ''}
             </div>
+            <div class="orb-name">${cfg.name}</div>
         `
-        grid.appendChild(section)
-        spawnSectionParticles(el.key)
+        wrap.appendChild(item)
     })
 }
 
-function generateBioSpots() {
-    return [[20,55],[55,68],[78,45],[38,75],[65,38]].map(([x,y]) => {
-        const sz = 40 + Math.random() * 50
-        return `<div class="es-biospot" style="width:${sz}px;height:${sz}px;left:${x}%;top:${y}%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(80,200,40,0.22),transparent 70%);animation-duration:${3+Math.random()*3}s;animation-delay:-${Math.random()*5}s"></div>`
-    }).join('')
+function renderHeader() {
+    const ha = document.getElementById('header-actions')
+    if (isOwnProfile) {
+        ha.innerHTML = `
+            ${userTier === 'keeper' ? '<button class="btn-ghost" onclick="openInviteModal()">Пригласить друга</button>' : '<button class="btn-primary" onclick="window.location.href=\'subscribe.html\'">Стать Хранителем</button>'}
+            <a href="stihii.html" class="btn-ghost">Стихии</a>
+            <button class="btn-ghost" onclick="doLogout()">Выйти</button>
+        `
+    } else {
+        ha.innerHTML = `<a href="stihii.html" class="btn-ghost">← Стихии</a>`
+        if (userTier === 'keeper') {
+            const btn = document.createElement('button')
+            btn.className = 'btn-ghost'
+            btn.id = 'friend-btn'
+            btn.textContent = '...'
+            ha.prepend(btn)
+            checkFriendship()
+        }
+    }
 }
 
-function spawnSectionParticles(elKey) {
-    const configs = {
-        water: { n:8,  color:'rgba(120,200,255,0.75)', min:1.5, max:5 },
-        air:   { n:10, color:'rgba(200,168,96,0.75)',  min:1,   max:3.5 },
-        fire:  { n:12, color:'rgba(255,150,50,0.85)',  min:1.5, max:4 },
-        earth: { n:7,  color:'rgba(110,210,60,0.75)',  min:2,   max:5 },
+async function loadFriends(uid) {
+    const section = document.getElementById('friends-section')
+    const list = document.getElementById('friends-list')
+
+    const { data: fs } = await supabase.from('friendships').select('user_from,user_to')
+        .eq('status','accepted').or(`user_from.eq.${uid},user_to.eq.${uid}`)
+
+    if (!fs?.length) {
+        if (isOwnProfile) {
+            section.style.display = ''
+            list.innerHTML = `<div class="friends-hidden">Пока нет друзей — <span style="cursor:pointer;color:rgba(255,255,255,0.45)" onclick="openInviteModal()">пригласи первого →</span></div>`
+        }
+        return
     }
-    const cfg = configs[elKey]
-    const c = document.getElementById(`esp-${elKey}`)
-    if (!c || !cfg) return
-    const styleEl = document.createElement('style')
-    let css = ''
-    for (let i = 0; i < cfg.n; i++) {
-        const sz = cfg.min + Math.random() * (cfg.max - cfg.min)
-        const left = 10 + Math.random() * 80
-        const bottom = Math.random() * 30
-        const tx = (Math.random() - 0.5) * 40
-        const ty = -(50 + Math.random() * 120)
-        const dur = 4 + Math.random() * 6
-        const delay = -(Math.random() * 8)
-        const name = `esp_${elKey}_${i}`
-        css += `@keyframes ${name}{0%{transform:translateY(0) translateX(0) scale(0.3);opacity:0}7%{opacity:0.9}88%{opacity:0.3}100%{transform:translateY(${ty}px) translateX(${tx}px) scale(1);opacity:0}}`
-        const p = document.createElement('div')
-        p.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;left:${left}%;bottom:${bottom}%;border-radius:50%;background:radial-gradient(circle,${cfg.color},transparent 70%);animation:${name} ${dur}s linear ${delay}s infinite;`
-        c.appendChild(p)
+
+    section.style.display = ''
+
+    if (!isOwnProfile && profileUser.show_friends === false) {
+        list.innerHTML = `<div class="friends-hidden">Список друзей скрыт</div>`
+        return
     }
-    styleEl.textContent = css
-    document.head.appendChild(styleEl)
+
+    const friendIds = fs.map(f => f.user_from === uid ? f.user_to : f.user_from).filter(Boolean)
+    const { data: profiles } = await supabase.from('profiles').select('id,nickname,element,avatar_url').in('id', friendIds)
+
+    const grid = document.createElement('div'); grid.className = 'friends-grid'
+    ;(profiles || []).forEach(p => {
+        const chip = document.createElement('a')
+        chip.className = 'friend-chip'
+        chip.href = `profile.html?user=${p.nickname}`
+        const el = p.element || 'water'
+        chip.innerHTML = p.avatar_url
+            ? `<img src="${p.avatar_url}" style="width:1.6rem;height:1.6rem;border-radius:50%;object-fit:cover;flex-shrink:0"><div class="friend-chip-name">${p.nickname}</div>`
+            : `<div class="friend-chip-avatar" style="background:${AVATAR_BG[el]}">${p.nickname.charAt(0).toUpperCase()}</div><div class="friend-chip-name">${p.nickname}</div>`
+        grid.appendChild(chip)
+    })
+    list.appendChild(grid)
+
+    // Переключатель видимости — только для своего
+    if (isOwnProfile) {
+        const row = document.createElement('div'); row.className = 'visibility-row'
+        const checked = profileUser.show_friends !== false
+        row.innerHTML = `
+            <span class="visibility-label" id="vis-label">${checked ? 'Список виден друзьям' : 'Список скрыт'}</span>
+            <label class="toggle">
+                <input type="checkbox" id="show-friends-toggle" ${checked ? 'checked' : ''}>
+                <span class="toggle-slider"></span>
+            </label>
+        `
+        list.appendChild(row)
+        document.getElementById('show-friends-toggle').addEventListener('change', toggleFriendsVisibility)
+    }
 }
 
-// ── LOGOUT ──
+async function checkFriendship() {
+    const btn = document.getElementById('friend-btn'); if (!btn) return
+    const { data: fs } = await supabase.from('friendships').select('id')
+        .eq('status','accepted')
+        .or(`and(user_from.eq.${currentUser.id},user_to.eq.${profileUser.id}),and(user_from.eq.${profileUser.id},user_to.eq.${currentUser.id})`)
+    if (fs?.length) {
+        btn.textContent = '◎ Вы друзья'; btn.style.opacity = '0.6'
+    } else {
+        btn.textContent = 'Добавить в друзья →'
+        btn.onclick = openInviteModal
+    }
+}
+
+window.toggleFriendsVisibility = async function() {
+    const show = document.getElementById('show-friends-toggle').checked
+    document.getElementById('vis-label').textContent = show ? 'Список виден друзьям' : 'Список скрыт'
+    await supabase.from('profiles').update({ show_friends: show }).eq('id', currentUser.id)
+    profileUser.show_friends = show
+    toast(show ? 'Список друзей открыт' : 'Список друзей скрыт', 'success')
+}
+
+window.openBioEdit = function() {
+    document.getElementById('bio-edit-wrap').classList.add('open')
+    document.getElementById('bio-input').value = profileUser.bio || ''
+    document.getElementById('bio-empty').style.display = 'none'
+    document.getElementById('profile-bio').style.display = 'none'
+}
+window.closeBioEdit = function() {
+    document.getElementById('bio-edit-wrap').classList.remove('open')
+    if (profileUser.bio) document.getElementById('profile-bio').style.display = ''
+    else document.getElementById('bio-empty').style.display = ''
+}
+window.saveBio = async function() {
+    const bio = document.getElementById('bio-input').value.trim()
+    const { error } = await supabase.from('profiles').update({ bio }).eq('id', currentUser.id)
+    if (error) { toast('Ошибка сохранения', 'error'); return }
+    profileUser.bio = bio
+    if (bio) { document.getElementById('profile-bio').textContent = bio; document.getElementById('profile-bio').style.display = ''; document.getElementById('bio-empty').style.display = 'none'; }
+    else { document.getElementById('profile-bio').style.display = 'none'; document.getElementById('bio-empty').style.display = ''; }
+    closeBioEdit(); toast('Bio сохранено ◎', 'success')
+}
+
+async function uploadAvatar(e) {
+    const file = e.target.files?.[0]; if (!file) return
+    if (file.size > 2 * 1024 * 1024) { toast('Макс 2MB', 'error'); return }
+    toast('Загружаем...')
+    const ext = file.name.split('.').pop()
+    const path = `${currentUser.id}/avatar.${ext}`
+    const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert:true })
+    if (upErr) { toast('Ошибка: ' + upErr.message, 'error'); return }
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
+    const url = urlData.publicUrl + '?t=' + Date.now()
+    await supabase.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id)
+    profileUser.avatar_url = url
+    const orb = document.getElementById('avatar-orb')
+    orb.innerHTML = `<img src="${url}" alt="avatar">`
+    orb.style.background = 'transparent'
+    toast('Аватарка обновлена ◎', 'success')
+}
+
+window.openInviteModal = async function() {
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b=>b.toString(16).padStart(2,'0')).join('')
+    await supabase.from('friendships').insert({ user_from: currentUser.id, user_to: null, token, status: 'pending' })
+    const base = window.location.href.split('?')[0].split('#')[0]
+    document.getElementById('invite-link-input').value = `${base}?invite=${token}`
+    document.getElementById('invite-modal').classList.add('open')
+}
+window.closeInviteModal = () => document.getElementById('invite-modal').classList.remove('open')
+window.copyInviteLink = function() {
+    navigator.clipboard.writeText(document.getElementById('invite-link-input').value)
+    toast('Ссылка скопирована ◎', 'success')
+}
+
+async function handleInvite(token) {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { window.location.href = `login.html?next=${encodeURIComponent(window.location.href)}`; return }
+    const { data: invite } = await supabase.from('friendships').select('*').eq('token', token).eq('status','pending').single()
+    if (!invite) { toast('Ссылка недействительна', 'error'); profileUser = currentUser.profile; await loadProfile(); return }
+    if (invite.user_from === session.user.id) { toast('Это твоя ссылка', 'error'); profileUser = currentUser.profile; await loadProfile(); return }
+    await supabase.from('friendships').update({ user_to: session.user.id, status: 'accepted' }).eq('id', invite.id)
+    const mt = Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,'0')).join('')
+    await supabase.from('friendships').insert({ user_from: session.user.id, user_to: invite.user_from, token: mt, status: 'accepted' })
+    toast('Вы теперь друзья! ◎', 'success')
+    const { data: fp } = await supabase.from('profiles').select('*').eq('id', invite.user_from).single()
+    profileUser = fp || currentUser.profile; isOwnProfile = !fp
+    await loadProfile()
+}
+
 window.doLogout = async function() {
     await supabase.auth.signOut()
     window.location.href = 'login.html'
 }
-
-// ── INVITE ──
-window.openInviteModal = async function() {
-    if (userTier !== 'keeper') { window.location.href = 'subscribe.html'; return }
-
-    // Генерируем токен
-    const token = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b=>b.toString(16).padStart(2,'0')).join('')
-
-    // Сохраняем в friendships
-    await supabase.from('friendships').insert({
-        user_from: currentUser.id,
-        user_to: null,
-        token,
-        status: 'pending'
-    })
-
-    const base = window.location.href.split('?')[0].split('#')[0]
-    const link = `${base}?invite=${token}`
-    document.getElementById('invite-link-input').value = link
-    document.getElementById('invite-modal').classList.add('open')
-}
-
-window.closeInviteModal = () => document.getElementById('invite-modal').classList.remove('open')
-
-window.copyInviteLink = function() {
-    const input = document.getElementById('invite-link-input')
-    navigator.clipboard.writeText(input.value).then(() => toast('Ссылка скопирована ◎', 'success'))
-}
-
-// ── ОБРАБОТКА ИНВАЙТА ──
-;(async () => {
-    const params = new URLSearchParams(window.location.search)
-    const inviteToken = params.get('invite')
-    if (!inviteToken) return
-
-    // Проверяем что есть текущий пользователь и он не сам себя приглашает
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) { window.location.href = `login.html?next=${encodeURIComponent(window.location.href)}`; return }
-
-    const { data: invite } = await supabase
-        .from('friendships')
-        .select('*')
-        .eq('token', inviteToken)
-        .eq('status', 'pending')
-        .single()
-
-    if (!invite) { toast('Ссылка недействительна', 'error'); return }
-    if (invite.user_from === session.user.id) { toast('Это твоя собственная ссылка', 'error'); return }
-
-    // Принимаем
-    await supabase.from('friendships').update({ user_to: session.user.id, status: 'accepted' }).eq('id', invite.id)
-    await supabase.from('friendships').insert({ user_from: session.user.id, user_to: invite.user_from, token: Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,'0')).join(''), status: 'accepted' })
-    toast('Вы теперь друзья! ◎', 'success')
-})()
 </script>
-
 </body>
 </html>
