@@ -157,10 +157,10 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 .mat-thumb:hover .mat-thumb-upload { display:flex; }
 .mat-row-body { flex:1; min-width:0; }
 .mat-row-title { font-size:1.35rem; color:rgba(255,255,255,0.85); line-height:1.2; margin-bottom:0.35rem; }
-.mat-row-title.clickable { cursor:pointer; }
-.mat-row-title.clickable:hover { color:#fff; }
+.mat-row-title { cursor:default; }
 .mat-row-thought { font-size:1.05rem; font-style:italic; color:rgba(255,255,255,0.38); line-height:1.45; margin-bottom:0.4rem; }
-.mat-row-domain { font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--accent); opacity:0.7; }
+.mat-row-domain { font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--accent); opacity:0.85; cursor:pointer; letter-spacing:0.04em; transition:opacity 0.2s; display:inline-block; margin-top:0.15rem; }
+.mat-row-domain:hover { opacity:1; text-decoration:underline; }
 .mat-del-btn { background:none; border:none; color:rgba(224,90,58,0.35); cursor:pointer; font-size:0.85rem; padding:0.1rem 0.3rem; flex-shrink:0; transition:color 0.2s; }
 .mat-del-btn:hover { color:rgba(224,90,58,0.9); }
 .col-card-controls { display:flex; gap:0.5rem; margin-top:1rem; }
@@ -188,10 +188,12 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 
 /* ── MODAL ── */
 .modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.82); backdrop-filter:blur(20px);
-    overflow-y:auto; -webkit-overflow-scrolling:touch; padding:2rem; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+    display:flex; align-items:center; justify-content:center; padding:1.5rem;
+    opacity:0; pointer-events:none; transition:opacity 0.3s; }
 .modal-overlay.open { opacity:1; pointer-events:all; }
 .modal { background:rgba(12,3,0,0.97); border:1px solid rgba(232,120,64,0.12); border-radius:1.75rem; padding:2.5rem;
-    width:100%; max-width:540px; margin:2rem auto; }
+    width:100%; max-width:540px;
+    max-height:calc(100vh - 3rem); overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .modal-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; }
 .modal-title { font-size:1.6rem; font-weight:300; font-style:italic; color:#fff; }
 .modal-close { background:none; border:none; color:rgba(255,255,255,0.28); font-size:1.4rem; cursor:pointer; transition:color 0.2s; }
@@ -534,9 +536,9 @@ function renderMaterialItem(m, i) {
         ? `<div class="mat-thumb" style="flex-shrink:0"><img src="${m.thumbnail_url}" alt=""></div>`
         : ''
     return `<div class="mat-row">${thumb}<div class="mat-row-body" style="flex:1;min-width:0">
-        <div class="mat-row-title ${m.url ? 'clickable' : ''}" ${m.url ? `onclick="window.open('${m.url}','_blank')"` : ''}>${m.title}</div>
+        <div class="mat-row-title">${m.title}</div>
         ${m.comment ? `<div class="mat-row-thought">${m.comment}</div>` : ''}
-        ${m.url ? `<div class="mat-row-domain">${getDomain(m.url)}</div>` : ''}
+        ${m.url ? `<div class="mat-row-domain" onclick="window.open('${m.url}','_blank')">↗ ${getDomain(m.url)}</div>` : ''}
     </div></div>`
 }
 
@@ -618,7 +620,7 @@ async function loadMaterials(colId) {
         const thumb = m.thumbnail_url
             ? `<div class="mat-thumb" style="flex-shrink:0"><img src="${m.thumbnail_url}" alt=""></div>`
             : ''
-        return `<div class="mat-row">${thumb}<div class="mat-row-body" style="flex:1;min-width:0"><div class="mat-row-title ${m.url?'clickable':''}" ${m.url?`onclick="window.open('${m.url}','_blank')"`:''} >${m.title}</div>${m.comment?`<div class="mat-row-thought">${m.comment}</div>`:''}${m.url?`<div class="mat-row-domain">${getDomain(m.url)}</div>`:''}</div><button class="mat-edit-btn" data-mat-id="${m.id}" data-col-id="${colId}" title="Редактировать" style="flex-shrink:0;background:none;border:none;color:rgba(255,255,255,0.25);cursor:pointer;font-size:0.9rem;padding:0.2rem 0.4rem;transition:color 0.2s" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.25)'">✎</button></div>`
+        return `<div class="mat-row">${thumb}<div class="mat-row-body" style="flex:1;min-width:0"><div class="mat-row-title">${m.title}</div>${m.comment?`<div class="mat-row-thought">${m.comment}</div>`:''}${m.url?`<div class="mat-row-domain" onclick="window.open('${m.url}','_blank')">↗ ${getDomain(m.url)}</div>`:''}</div><button class="mat-edit-btn" data-mat-id="${m.id}" data-col-id="${colId}" title="Редактировать" style="flex-shrink:0;background:none;border:none;color:rgba(255,255,255,0.25);cursor:pointer;font-size:0.9rem;padding:0.2rem 0.4rem;transition:color 0.2s" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.25)'">✎</button></div>`
     }).join('')
 }
 
@@ -668,9 +670,9 @@ window.loadFeedMaterials = async function(colId) {
         return `<div class="feed-mat" style="display:flex;gap:0.75rem;align-items:flex-start;padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
             ${thumb}
             <div style="flex:1;min-width:0">
-                <div class="feed-mat-title" style="font-size:1.1rem;color:rgba(255,255,255,0.8);margin-bottom:0.2rem;${m.url?'cursor:pointer':''}" ${m.url ? `onclick="window.open('${m.url}','_blank')"` : ''}>${m.title}</div>
+                <div class="feed-mat-title" style="font-size:1.1rem;color:rgba(255,255,255,0.8);margin-bottom:0.2rem">${m.title}</div>
                 ${m.comment ? `<div style="font-size:0.9rem;font-style:italic;color:rgba(255,255,255,0.35);margin-bottom:0.2rem">${m.comment}</div>` : ''}
-                ${m.url ? `<div style="font-family:'DM Mono',monospace;font-size:0.55rem;color:var(--accent);opacity:0.7">${getDomain(m.url)}</div>` : ''}
+                ${m.url ? `<div class="mat-row-domain" onclick="window.open('${m.url}','_blank')">↗ ${getDomain(m.url)}</div>` : ''}
             </div>
         </div>`
     }).join('')
