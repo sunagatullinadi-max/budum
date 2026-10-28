@@ -241,10 +241,11 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 
 /* ── ЛЕНТА ДРУЗЕЙ ── */
 .feed-section-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.25rem; }
-.feed-list { max-width:620px; }
+.feed-list { max-width:780px; }
 .feed-item { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:1.25rem;
-    padding:1.25rem 1.5rem; margin-bottom:0.75rem; transition:border-color 0.3s; overflow:hidden; }
+    padding:0; margin-bottom:0.75rem; transition:border-color 0.3s; overflow:hidden; }
 .feed-item:hover { border-color:rgba(255,255,255,0.14); }
+.feed-item-body { padding:1.25rem 1.5rem; }
 .feed-item-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.85rem; }
 .feed-avatar { width:1.8rem; height:1.8rem; border-radius:50%; display:flex; align-items:center; justify-content:center;
     font-family:'DM Mono',monospace; font-size:0.65rem; font-weight:600; color:#05050a; flex-shrink:0; }
@@ -652,8 +653,8 @@ async function loadFriends() {
         const el = profile.element || 'water'
         const matCount = col.materials?.[0]?.count || 0
         const item = document.createElement('div'); item.className = 'feed-item'
-        const coverBlock = col.cover_url ? `<img src="${col.cover_url}" alt="" style="width:calc(100% + 3rem);margin:-1.25rem -1.5rem 0;height:220px;object-fit:cover;display:block;border-radius:1.2rem 1.2rem 0 0;margin-bottom:1rem;" loading="lazy">` : ''
-        item.innerHTML = `<div class="feed-item-header"><div class="feed-avatar" style="background:${AVATAR_COLORS[el] || AVATAR_COLORS.water}">${nick.charAt(0).toUpperCase()}</div><div class="feed-author"><div class="feed-author-name">${nick}</div><div class="feed-author-time">${formatDate(col.created_at)}</div></div></div>${coverBlock}<div class="feed-col-element"><div class="feed-col-dot"></div>${ELEMENT_NAMES[col.element] || col.element}</div><div class="feed-col-title">${col.title}</div>${col.description ? `<div class="feed-col-desc">${col.description}</div>` : ''}<div id="feed-mats-${col.id}" class="feed-mats-preview">${matCount > 0 ? `<div class="feed-more" style="cursor:pointer" onclick="loadFeedMaterials(${col.id})">↓ Показать ${matCount} материалов</div>` : '<div class="feed-more">Материалов пока нет</div>'}</div>`
+        const coverBlock = col.cover_url ? `<img src="${col.cover_url}" alt="" style="width:100%;height:260px;object-fit:cover;display:block;border-radius:1.2rem 1.2rem 0 0;" loading="lazy">` : ''
+        item.innerHTML = `${coverBlock}<div class="feed-item-body"><div class="feed-item-header"><div class="feed-avatar" style="background:${AVATAR_COLORS[el] || AVATAR_COLORS.water}">${nick.charAt(0).toUpperCase()}</div><div class="feed-author"><div class="feed-author-name">${nick}</div><div class="feed-author-time">${formatDate(col.created_at)}</div></div></div><div class="feed-col-element"><div class="feed-col-dot"></div>${ELEMENT_NAMES[col.element] || col.element}</div><div class="feed-col-title">${col.title}</div>${col.description ? `<div class="feed-col-desc">${col.description}</div>` : ''}<div id="feed-mats-${col.id}" class="feed-mats-preview">${matCount > 0 ? `<div class="feed-more" style="cursor:pointer" onclick="loadFeedMaterials(${col.id})">↓ Показать ${matCount} материалов</div>` : '<div class="feed-more">Материалов пока нет</div>'}</div></div>`
         list.appendChild(item)
     }
     const inviteRow = document.createElement('div'); inviteRow.className = 'feed-invite-row'
