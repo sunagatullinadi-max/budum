@@ -55,7 +55,10 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 }
 .fire-heat {
     position:absolute; inset:0;
-    background:radial-gradient(ellipse 120% 80% at 50% 100%, rgba(255,60,5,0.18) 0%, rgba(180,20,2,0.08) 45%, transparent 75%);
+    background:
+        radial-gradient(ellipse 120% 80% at 50% 100%, rgba(255,60,5,0.18) 0%, rgba(180,20,2,0.08) 45%, transparent 75%),
+        radial-gradient(ellipse 60% 50% at 0% 100%, rgba(200,40,5,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(200,40,5,0.1) 0%, transparent 60%);
     animation:heatWave 1.5s ease-in-out infinite alternate;
 }
 @keyframes heatWave { 0%{opacity:0.6;transform:scaleX(0.98)} 100%{opacity:1;transform:scaleX(1.02)} }
@@ -102,6 +105,11 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 .hero-sub { font-size:1rem; font-weight:300; color:rgba(255,255,255,0.4); max-width:400px; line-height:1.7; }
 
 /* ── TABS ── */
+.view-banner { display:flex; align-items:center; gap:1rem; padding:0.75rem 0; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,120,50,0.15); animation:fadeUp 0.8s var(--ease) both; }
+.view-back { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); text-decoration:none; opacity:0.8; transition:opacity 0.2s; }
+.view-back:hover { opacity:1; }
+.view-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.2); }
+.mat-empty { font-size:0.82rem; color:rgba(255,255,255,0.2); padding:0.5rem 0; font-family:'DM Mono',monospace; }
 .tabs { display:flex; border-bottom:1px solid rgba(255,255,255,0.07); margin-bottom:2.5rem; animation:fadeUp 1.4s var(--ease) 0.6s both; }
 .tab { font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase;
     padding:0.85rem 1.5rem; color:rgba(255,255,255,0.28); background:none; border:none; cursor:pointer; position:relative; transition:color 0.3s; }
@@ -116,27 +124,42 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 .collections-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.5rem; }
 .section-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:300; font-style:italic; color:rgba(255,255,255,0.65); }
 .section-count { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; color:rgba(255,255,255,0.22); text-transform:uppercase; }
-.collections-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; }
-.col-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:1.25rem; padding:1.5rem; transition:border-color 0.3s,background 0.3s; }
+.collections-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
+@media(max-width:700px){.collections-grid{grid-template-columns:1fr}}
+.col-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:1.25rem; overflow:hidden; transition:border-color 0.3s,background 0.3s; }
 .col-card:hover { border-color:var(--accent-2); background:rgba(232,120,64,0.04); }
+/* cover */
+.col-cover { width:100%; height:260px; object-fit:cover; display:block; }
+.col-cover-placeholder { width:100%; height:260px; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; }
+.col-cover-placeholder span { font-family:'DM Mono',monospace; font-size:0.5rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.2); }
+.col-cover-label { display:flex; align-items:center; justify-content:center; gap:0.4rem; }
+.col-cover-upload { position:absolute; bottom:0.75rem; right:0.75rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; padding:0.3rem 0.65rem; font-family:'DM Mono',monospace; font-size:0.48rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.5); cursor:pointer; transition:all 0.2s; }
+.col-cover-upload:hover { background:rgba(0,0,0,0.75); color:#fff; }
+/* card body */
+.col-card-body { padding:1.4rem; }
 .col-card-header { cursor:pointer; user-select:none; }
 .col-card-element { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); opacity:0.7; margin-bottom:0.6rem; display:flex; align-items:center; gap:0.4rem; }
 .col-card-element-dot { width:4px; height:4px; border-radius:50%; background:var(--accent); }
-.col-card-title { font-size:1.2rem; font-weight:300; color:#fff; margin-bottom:0.4rem; line-height:1.3; }
+.col-card-title { font-size:1.35rem; font-weight:300; color:#fff; margin-bottom:0.4rem; line-height:1.25; }
 .col-card-desc { font-size:0.85rem; color:rgba(255,255,255,0.32); line-height:1.6; margin-bottom:0.75rem; }
-.col-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.05); }
+.col-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.85rem; border-top:1px solid rgba(255,255,255,0.05); }
 .col-card-meta { font-family:'DM Mono',monospace; font-size:0.58rem; color:rgba(255,255,255,0.22); }
 .card-arrow { font-size:0.8rem; color:var(--accent); transition:transform 0.3s; display:inline-block; }
-.col-card-expand { display:none; margin-top:1rem; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.05); }
+.col-card-expand { display:none; padding:0 1.4rem 1.2rem; }
 .col-card-expand.open { display:block; }
-.mat-row { display:flex; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); align-items:flex-start; }
+/* material rows — new style */
+.mat-row { display:flex; gap:1.25rem; padding:1.1rem 0; border-bottom:1px solid rgba(255,255,255,0.05); align-items:flex-start; }
 .mat-row:last-of-type { border-bottom:none; }
-.mat-row-num { font-family:'DM Mono',monospace; font-size:0.55rem; color:rgba(255,255,255,0.18); min-width:1.2rem; padding-top:0.2rem; }
+.mat-thumb { width:130px; align-self:stretch; border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.07); flex-shrink:0; display:flex; align-items:center; justify-content:center; min-height:110px; cursor:pointer; position:relative; }
+.mat-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.mat-thumb-empty::after { content:"+"; font-family:'DM Mono',monospace; font-size:1.1rem; color:rgba(255,255,255,0.18); }
+.mat-thumb-upload { display:none; position:absolute; inset:0; background:rgba(0,0,0,0.55); align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:0.45rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.7); }
+.mat-thumb:hover .mat-thumb-upload { display:flex; }
 .mat-row-body { flex:1; min-width:0; }
-.mat-row-title { font-size:0.88rem; color:rgba(255,255,255,0.78); line-height:1.4; }
+.mat-row-title { font-size:1.35rem; color:rgba(255,255,255,0.85); line-height:1.2; margin-bottom:0.35rem; }
 .mat-row-title.clickable { cursor:pointer; }
 .mat-row-title.clickable:hover { color:#fff; }
-.mat-row-thought { font-size:0.78rem; font-style:italic; color:rgba(255,255,255,0.32); }
+.mat-row-thought { font-size:1.05rem; font-style:italic; color:rgba(255,255,255,0.38); line-height:1.45; margin-bottom:0.4rem; }
 .mat-row-domain { font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--accent); opacity:0.7; }
 .mat-del-btn { background:none; border:none; color:rgba(224,90,58,0.35); cursor:pointer; font-size:0.85rem; padding:0.1rem 0.3rem; flex-shrink:0; transition:color 0.2s; }
 .mat-del-btn:hover { color:rgba(224,90,58,0.9); }
@@ -185,11 +208,6 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 .el-sel-btn:hover { border-color:rgba(255,255,255,0.15); color:rgba(255,255,255,0.6); }
 .el-sel-btn.selected { border-color:var(--accent); color:var(--accent); background:var(--accent-3); }
 .el-sel-btn .el-icon { font-size:1.2rem; display:block; margin-bottom:0.3rem; }
-.mat-type-tabs { display:flex; gap:0.5rem; margin-bottom:1rem; }
-.mat-type-btn { padding:0.35rem 0.85rem; border-radius:9999px; border:1px solid rgba(255,255,255,0.09); background:transparent;
-    font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.3); cursor:pointer; transition:all 0.25s; }
-.mat-type-btn:hover { border-color:rgba(255,255,255,0.18); color:rgba(255,255,255,0.55); }
-.mat-type-btn.active { border-color:var(--accent); color:var(--accent); background:var(--accent-3); }
 .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:0.6rem 0; }
 .toggle-label { font-size:0.88rem; color:rgba(255,255,255,0.45); }
 .toggle { position:relative; width:2.4rem; height:1.3rem; }
@@ -352,20 +370,9 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 <div class="modal-overlay" id="material-modal" onclick="if(event.target===this)closeMaterialModal()">
     <div class="modal">
         <div class="modal-head"><div class="modal-title">Добавить материал</div><button class="modal-close" onclick="closeMaterialModal()">×</button></div>
-        <div class="mat-type-tabs">
-            <button class="mat-type-btn active" data-type="link" onclick="setMatType('link',this)">↗ Ссылка</button>
-            <button class="mat-type-btn" data-type="note" onclick="setMatType('note',this)">✎ Заметка</button>
-            <button class="mat-type-btn" data-type="image" onclick="setMatType('image',this)">◻ Образ</button>
-        </div>
         <div id="mat-link-fields">
             <div class="form-group"><label class="form-label">URL <span class="req">*</span></label><input class="form-input" id="mat-url" type="url" placeholder="https://..."></div>
             <div class="form-group"><label class="form-label">Заголовок <span class="req">*</span></label><input class="form-input" id="mat-title" placeholder="Название"></div>
-            <div class="form-group"><label class="form-label">Источник</label><input class="form-input" id="mat-source" placeholder="YouTube, Spotify..."></div>
-        </div>
-        <div id="mat-note-fields" style="display:none"><div class="form-group"><label class="form-label">Заголовок</label><input class="form-input" id="mat-note-title" placeholder="Название заметки"></div></div>
-        <div id="mat-image-fields" style="display:none">
-            <div class="form-group"><label class="form-label">URL изображения <span class="req">*</span></label><input class="form-input" id="mat-image-url" type="url" placeholder="https://..."></div>
-            <div class="form-group"><label class="form-label">Подпись</label><input class="form-input" id="mat-image-caption" placeholder="Что это для тебя..."></div>
         </div>
         <div class="thought-box"><label class="form-label">Твоя мысль <span class="req">*</span></label><textarea class="form-textarea" id="mat-thought" style="background:transparent;border:none;padding:0.4rem 0" placeholder="Почему это важно?"></textarea></div>
         <div class="form-group"><label class="form-label">Коллекция <span class="req">*</span></label><select class="form-select" id="mat-collection"></select></div>
@@ -413,8 +420,98 @@ spawnSparks()
     currentUser = user; userTier = user.profile?.tier || 'seeker'
     const av = document.getElementById('user-avatar')
     if (av) av.textContent = (user.profile?.nickname || '?').charAt(0).toUpperCase()
+
+    const params = new URLSearchParams(window.location.search)
+    const viewNick = params.get('view')
+    if (viewNick && viewNick.toLowerCase() !== user.profile?.nickname?.toLowerCase()) {
+        const { data: fp } = await supabase.from('profiles').select('*').eq('nickname', viewNick).single()
+        if (!fp) { toast('Пользователь не найден', 'error'); await loadMyCollections(); return }
+        enterViewMode(fp)
+        return
+    }
+
     await loadMyCollections()
 })()
+
+function enterViewMode(fp) {
+    const hero = document.querySelector('.hero')
+    if (hero) {
+        const banner = document.createElement('div')
+        banner.className = 'view-banner'
+        banner.innerHTML = `<a href="profile.html?user=${encodeURIComponent(fp.nickname)}" class="view-back">← ${fp.nickname}</a><span class="view-label">публичные коллекции</span>`
+        hero.before(banner)
+        const eyebrow = document.getElementById('hero-eyebrow')
+        if (eyebrow) eyebrow.textContent = 'Стихия друга'
+    }
+    const createBtn = document.querySelector('.btn-primary[onclick*="openCreateModal"]')
+    if (createBtn) createBtn.style.display = 'none'
+    const tabs = document.querySelector('.tabs')
+    if (tabs) tabs.style.display = 'none'
+    document.getElementById('panel-mine').classList.add('active')
+    loadFriendCollections(fp)
+}
+
+async function loadFriendCollections(fp) {
+    const grid = document.getElementById('mine-grid')
+    const countEl = document.getElementById('mine-count')
+    grid.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем</span></div>'
+    const { data: cols } = await supabase.from('collections').select('*, materials(count)').eq('user_id', fp.id).eq('element', ELEMENT).eq('is_public', true).order('created_at', { ascending: false })
+    if (countEl) countEl.textContent = cols?.length ? `${cols.length} коллекций` : ''
+    if (!cols?.length) {
+        grid.innerHTML = `<div class="empty-state"><div class="empty-glyph">◎</div><div class="empty-title">Пока тихо</div><div class="empty-sub">У ${fp.nickname} нет публичных коллекций в этой стихии.</div></div>`
+        return
+    }
+    grid.innerHTML = ''
+    const gridDiv = document.createElement('div')
+    gridDiv.className = 'collections-grid'
+    for (const col of cols) gridDiv.appendChild(renderFriendCard(col, fp))
+    grid.appendChild(gridDiv)
+}
+
+function renderFriendCard(col, fp) {
+    const matCount = col.materials?.[0]?.count || 0
+    const card = document.createElement('div')
+    card.className = 'col-card'
+    card.innerHTML = `
+        <div class="col-card-header" style="cursor:default">
+            <div class="col-card-title">${col.title}</div>
+            ${col.description ? `<div class="col-card-desc">${col.description}</div>` : ''}
+            <div class="col-card-footer">
+                <div class="col-card-meta">${matCount} материалов · ${formatDate(col.created_at)}</div>
+                <span class="card-arrow" onclick="toggleFriendExpand(${col.id})" style="cursor:pointer">↓</span>
+            </div>
+        </div>
+        <div class="col-card-expand" id="exp-${col.id}">
+            <div id="fmats-${col.id}"></div>
+        </div>`
+    card.querySelector('.col-card-header').addEventListener('click', () => toggleFriendExpand(col.id))
+    return card
+}
+
+function renderMaterialItem(m, i) {
+    return `<div class="mat-row">
+        <div class="mat-row-num">${i+1}</div>
+        <div class="mat-row-body">
+            <div class="mat-row-title ${m.url ? 'clickable' : ''}" ${m.url ? `onclick="window.open('${m.url}','_blank')"` : ''}>${m.title}</div>
+            ${m.comment ? `<div class="mat-row-thought">${m.comment}</div>` : ''}
+            ${m.url ? `<div class="mat-row-domain">${getDomain(m.url)}</div>` : ''}
+        </div>
+    </div>`
+}
+
+window.toggleFriendExpand = async function(colId) {
+    const exp = document.getElementById(`exp-${colId}`)
+    const mats = document.getElementById(`fmats-${colId}`)
+    if (!exp) return
+    const open = exp.classList.toggle('open')
+    if (open && mats && !mats.dataset.loaded) {
+        mats.dataset.loaded = '1'
+        mats.innerHTML = '<div class="loading"><div class="loading-dot"></div><span>загружаем</span></div>'
+        const { data: ms } = await supabase.from('materials').select('*').eq('collection_id', colId).order('created_at').limit(20)
+        if (!ms?.length) { mats.innerHTML = '<div class="mat-empty">Нет материалов</div>'; return }
+        mats.innerHTML = ms.map((m, i) => renderMaterialItem(m, i)).join('')
+    }
+}
 
 window.switchTab = (tab, btn) => { document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); document.getElementById('panel-'+tab).classList.add('active'); if(tab==='friends') loadFriends() }
 function toast(msg, type='') { const a=document.getElementById('toast-area'); const d=document.createElement('div'); d.className='toast '+type; d.textContent=msg; a.appendChild(d); setTimeout(()=>d.remove(),3500) }
@@ -445,7 +542,23 @@ async function loadMyCollections() {
 function renderCard(col) {
     const matCount = col.materials?.[0]?.count||0; const elName=ELEMENT_NAMES[col.element]||col.element
     const card=document.createElement('div'); card.className='col-card'
-    card.innerHTML=`<div class="col-card-header" data-col-id="${col.id}"><div class="col-card-element"><div class="col-card-element-dot"></div>${elName}</div><div class="col-card-title">${col.title}</div>${col.description?`<div class="col-card-desc">${col.description}</div>`:''}<div class="col-card-footer"><div class="col-card-meta">${matCount} материалов · ${formatDate(col.created_at)}</div><span class="card-arrow">↓</span></div></div><div class="col-card-expand" id="exp-${col.id}"><div id="mats-${col.id}"><div class="loading"><div class="loading-dot"></div><span>загружаем</span></div></div><div class="col-card-controls"><button class="btn-add-mat" data-col-id="${col.id}">+ Материал</button><button class="btn-del-col" data-col-id="${col.id}">Удалить</button></div></div>`
+    const coverHtml = col.cover_url
+        ? `<img class="col-cover" src="${col.cover_url}" alt="" loading="lazy"><button class="col-cover-upload" data-col-id="${col.id}" onclick="triggerCoverUpload('${col.id}',event)">Заменить фото</button>`
+        : `<div class="col-cover-placeholder"><div class="col-cover-label"><span>+ Обложка</span></div><button class="col-cover-upload" data-col-id="${col.id}" onclick="triggerCoverUpload('${col.id}',event)">Загрузить фото</button></div>`
+    card.innerHTML=`
+        <div style="position:relative">${coverHtml}</div>
+        <div class="col-card-body">
+          <div class="col-card-header" data-col-id="${col.id}">
+            <div class="col-card-element"><div class="col-card-element-dot"></div>${elName}</div>
+            <div class="col-card-title">${col.title}</div>
+            ${col.description?`<div class="col-card-desc">${col.description}</div>`:''}
+            <div class="col-card-footer"><div class="col-card-meta">${matCount} материалов · ${formatDate(col.created_at)}</div><span class="card-arrow">↓</span></div>
+          </div>
+        </div>
+        <div class="col-card-expand" id="exp-${col.id}">
+          <div id="mats-${col.id}"><div class="loading"><div class="loading-dot"></div><span>загружаем</span></div></div>
+          <div class="col-card-controls" style="padding:0 1.4rem 1.2rem"><button class="btn-add-mat" data-col-id="${col.id}">+ Материал</button><button class="btn-del-col" data-col-id="${col.id}">Удалить</button></div>
+        </div>`
     return card
 }
 
@@ -460,7 +573,12 @@ async function loadMaterials(colId) {
     const c=document.getElementById('mats-'+colId);if(!c)return
     const{data:mats}=await supabase.from('materials').select('*').eq('collection_id',colId).order('created_at')
     if(!mats?.length){c.innerHTML='<div style="font-size:0.85rem;color:rgba(255,255,255,0.18);padding:0.5rem 0">Пока нет материалов</div>';return}
-    c.innerHTML=mats.map((m,i)=>`<div class="mat-row"><div class="mat-row-num">${i+1}</div><div class="mat-row-body"><div class="mat-row-title ${m.url?'clickable':''}" ${m.url?`onclick="window.open('${m.url}','_blank')"`:''} >${m.title}</div>${m.comment?`<div class="mat-row-thought">${m.comment}</div>`:''} ${m.url?`<div class="mat-row-domain">${getDomain(m.url)}</div>`:''}</div><button class="mat-del-btn" data-mat-id="${m.id}" data-col-id="${colId}">×</button></div>`).join('')
+    c.innerHTML=mats.map(m=>{
+        const thumb = m.thumbnail_url
+            ? `<div class="mat-thumb" onclick="triggerThumbUpload('${m.id}','${colId}',event)"><img src="${m.thumbnail_url}" alt=""><div class="mat-thumb-upload">Заменить</div></div>`
+            : `<div class="mat-thumb mat-thumb-empty" onclick="triggerThumbUpload('${m.id}','${colId}',event)"><div class="mat-thumb-upload">+ фото</div></div>`
+        return `<div class="mat-row">${thumb}<div class="mat-row-body"><div class="mat-row-title ${m.url?'clickable':''}" ${m.url?`onclick="window.open('${m.url}','_blank')"`:''} >${m.title}</div>${m.comment?`<div class="mat-row-thought">${m.comment}</div>`:''}${m.url?`<div class="mat-row-domain">${getDomain(m.url)}</div>`:''}</div><button class="mat-del-btn" data-mat-id="${m.id}" data-col-id="${colId}" style="flex-shrink:0">×</button></div>`
+    }).join('')
 }
 
 async function loadFriends() {
@@ -516,11 +634,42 @@ window.openCreateModal=async()=>{const can=await checkCollectionLimit(currentUse
 window.closeCreateModal=()=>document.getElementById('create-modal').classList.remove('open')
 window.selectElement=(el,btn)=>{selectedElement=el;document.querySelectorAll('.el-sel-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected')}
 window.saveCollection=async()=>{const title=document.getElementById('col-title').value.trim();if(!title){toast('Введи название','error');return};const btn=document.querySelector('#create-modal .btn-primary');btn.textContent='Создаём...';btn.disabled=true;const can=await checkCollectionLimit(currentUser.id,selectedElement,userTier);if(!can){toast('Лимит достигнут','error');btn.textContent='Создать →';btn.disabled=false;return};const{error}=await supabase.from('collections').insert({user_id:currentUser.id,title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked});btn.textContent='Создать →';btn.disabled=false;if(error){toast('Ошибка: '+error.message,'error');return};toast('Коллекция создана!','success');closeCreateModal();await loadMyCollections()}
-window.openAddMaterial=async colId=>{const can=await checkMaterialLimit(colId,userTier);if(!can){toast(userTier==='seeker'?'Лимит 5 материалов. Стань Хранителем!':'Лимит 50','error');return};['mat-url','mat-title','mat-source','mat-thought','mat-note-title','mat-image-url','mat-image-caption'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadCollectionsForSelect(colId);setMatType('link',document.querySelector('.mat-type-btn[data-type="link"]'));document.getElementById('material-modal').classList.add('open')}
+window.openAddMaterial=async colId=>{const can=await checkMaterialLimit(colId,userTier);if(!can){toast(userTier==='seeker'?'Лимит 5 материалов. Стань Хранителем!':'Лимит 50','error');return};['mat-url','mat-title','mat-thought'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadCollectionsForSelect(colId);document.getElementById('material-modal').classList.add('open')}
 window.closeMaterialModal=()=>document.getElementById('material-modal').classList.remove('open')
-window.setMatType=(type,btn)=>{currentMatType=type;document.querySelectorAll('.mat-type-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');document.getElementById('mat-link-fields').style.display=type==='link'?'':'none';document.getElementById('mat-note-fields').style.display=type==='note'?'':'none';document.getElementById('mat-image-fields').style.display=type==='image'?'':'none'}
 async function loadCollectionsForSelect(selectedId){const sel=document.getElementById('mat-collection');sel.innerHTML='<option>Загружаем...</option>';const{data:cols}=await supabase.from('collections').select('id,title').eq('user_id',currentUser.id).order('created_at');sel.innerHTML=cols?.length?cols.map(c=>`<option value="${c.id}"${c.id==selectedId?' selected':''}>${c.title}</option>`).join(''):'<option value="">Сначала создай коллекцию</option>'}
-window.saveMaterial=async()=>{const thought=document.getElementById('mat-thought').value.trim();const colId=document.getElementById('mat-collection').value;if(!thought){toast('Добавь мысль','error');return};if(!colId){toast('Выбери коллекцию','error');return};let title='',url='',source='';if(currentMatType==='link'){url=document.getElementById('mat-url').value.trim();title=document.getElementById('mat-title').value.trim();source=document.getElementById('mat-source').value.trim();if(!url){toast('Введи ссылку','error');return};if(!title){toast('Введи заголовок','error');return}}else if(currentMatType==='note'){title=document.getElementById('mat-note-title').value.trim()||'Заметка'}else{url=document.getElementById('mat-image-url').value.trim();title=document.getElementById('mat-image-caption').value.trim()||'Образ';if(!url){toast('Введи URL','error');return}};const can=await checkMaterialLimit(colId,userTier);if(!can){toast('Лимит материалов','error');return};const btn=document.querySelector('#material-modal .btn-primary');btn.textContent='Сохраняем...';btn.disabled=true;const{error}=await supabase.from('materials').insert({collection_id:parseInt(colId),user_id:currentUser.id,title,url,source,comment:thought});btn.textContent='Сохранить →';btn.disabled=false;if(error){toast('Ошибка: '+error.message,'error');return};toast('Материал добавлен!','success');closeMaterialModal();await loadMaterials(colId)}
+window.saveMaterial=async()=>{const thought=document.getElementById('mat-thought').value.trim();const colId=document.getElementById('mat-collection').value;if(!thought){toast('Добавь мысль','error');return};if(!colId){toast('Выбери коллекцию','error');return};const url=document.getElementById('mat-url').value.trim();const title=document.getElementById('mat-title').value.trim();if(!url){toast('Введи ссылку','error');return};if(!title){toast('Введи заголовок','error');return};const can=await checkMaterialLimit(colId,userTier);if(!can){toast('Лимит материалов','error');return};const btn=document.querySelector('#material-modal .btn-primary');btn.textContent='Сохраняем...';btn.disabled=true;const{error}=await supabase.from('materials').insert({collection_id:parseInt(colId),user_id:currentUser.id,title,url,comment:thought});btn.textContent='Сохранить →';btn.disabled=false;if(error){toast('Ошибка: '+error.message,'error');return};toast('Материал добавлен!','success');closeMaterialModal();await loadMaterials(colId)}
+
+// ── ЗАГРУЗКА ОБЛОЖКИ КОЛЛЕКЦИИ ──
+window.triggerCoverUpload=(colId,event)=>{event.stopPropagation();const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>uploadCollectionCover(colId,e);inp.click()}
+async function uploadCollectionCover(colId, e) {
+    const file=e.target.files?.[0]; if(!file) return
+    if(file.size>5*1024*1024){toast('Макс 5MB','error');return}
+    const ext=file.name.split('.').pop()
+    const path=`${currentUser.id}/cover-${colId}.${ext}`
+    const{error:upErr}=await supabase.storage.from('covers').upload(path,file,{upsert:true})
+    if(upErr){toast('Ошибка загрузки: '+upErr.message,'error');return}
+    const{data:urlData}=supabase.storage.from('covers').getPublicUrl(path)
+    const url=urlData.publicUrl+'?t='+Date.now()
+    const{error}=await supabase.from('collections').update({cover_url:url}).eq('id',colId).eq('user_id',currentUser.id)
+    if(error){toast('Ошибка сохранения','error');return}
+    toast('Обложка обновлена!','success'); await loadMyCollections()
+}
+
+// ── ЗАГРУЗКА МИНИАТЮРЫ МАТЕРИАЛА ──
+window.triggerThumbUpload=(matId,colId,event)=>{event.stopPropagation();const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>uploadMaterialThumb(matId,colId,e);inp.click()}
+async function uploadMaterialThumb(matId, colId, e) {
+    const file=e.target.files?.[0]; if(!file) return
+    if(file.size>5*1024*1024){toast('Макс 5MB','error');return}
+    const ext=file.name.split('.').pop()
+    const path=`${currentUser.id}/thumb-${matId}.${ext}`
+    const{error:upErr}=await supabase.storage.from('material-thumbs').upload(path,file,{upsert:true})
+    if(upErr){toast('Ошибка загрузки: '+upErr.message,'error');return}
+    const{data:urlData}=supabase.storage.from('material-thumbs').getPublicUrl(path)
+    const url=urlData.publicUrl+'?t='+Date.now()
+    const{error}=await supabase.from('materials').update({thumbnail_url:url}).eq('id',matId).eq('user_id',currentUser.id)
+    if(error){toast('Ошибка сохранения','error');return}
+    toast('Фото добавлено!','success'); await loadMaterials(colId)
+}
 async function deleteCollection(id){const{error}=await supabase.from('collections').delete().eq('id',id).eq('user_id',currentUser.id);if(error){toast('Ошибка','error');return};toast('Коллекция удалена','success');await loadMyCollections()}
 async function deleteMaterial(matId,colId){const{error}=await supabase.from('materials').delete().eq('id',matId).eq('user_id',currentUser.id);if(error){toast('Ошибка','error');return};toast('Материал удалён','success');await loadMaterials(colId)}
 </script>
