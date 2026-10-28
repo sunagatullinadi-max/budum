@@ -221,9 +221,9 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 .toggle-slider::before { content:''; position:absolute; width:0.85rem; height:0.85rem; left:0.2rem; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.35); border-radius:50%; transition:0.25s; }
 .toggle input:checked + .toggle-slider { background:var(--accent-2); border-color:var(--accent); }
 .toggle input:checked + .toggle-slider::before { transform:translateX(1.1rem) translateY(-50%); background:var(--accent); }
-.modal-actions { display:flex; gap:0.75rem; margin-top:1.5rem; }
-.modal-actions .btn-ghost { flex:1; text-align:center; }
-.modal-actions .btn-primary { flex:2; text-align:center; }
+.modal-actions { display:flex; gap:0.75rem; margin-top:1.5rem; align-items:center; }
+.modal-actions .btn-ghost { flex:none; text-align:center; }
+.modal-actions .btn-primary { flex:none; text-align:center; }
 .thought-box { background:var(--accent-3); border:1px solid var(--accent-2); border-radius:0.75rem; padding:1rem; margin-bottom:1.25rem; }
 .thought-box .form-label { color:var(--accent); }
 .loading { display:flex; align-items:center; gap:0.5rem; padding:3rem 0; justify-content:center;
@@ -378,12 +378,12 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
             </div>
         </div>
         <div class="toggle-row"><span class="toggle-label">Публичная</span><label class="toggle"><input type="checkbox" id="col-public" checked><span class="toggle-slider"></span></label></div>
-        <div class="modal-actions" style="justify-content:space-between">
-            <div style="display:flex;gap:0.75rem">
+        <div class="modal-actions" style="justify-content:space-between;align-items:center">
+            <div style="display:flex;gap:0.75rem;align-items:center">
                 <button class="btn-ghost" onclick="closeCreateModal()">Отмена</button>
                 <button id="col-delete-btn" class="btn-ghost" style="color:rgba(255,100,80,0.6);border-color:rgba(255,100,80,0.2);display:none" onclick="deleteCollectionFromModal()">Удалить</button>
             </div>
-            <button class="btn-primary" id="col-save-btn" onclick="saveCollection()">Создать →</button>
+            <button class="btn-primary" id="col-save-btn" onclick="saveCollection()" style="flex:none">Создать →</button>
         </div>
     </div>
 </div>
@@ -395,7 +395,7 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
         <!-- миниатюра в модале -->
         <div class="form-group">
             <label class="form-label">Фото</label>
-            <div id="mat-thumb-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;height:120px;">
+            <div id="mat-thumb-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;aspect-ratio:4/3;max-height:260px;">
                 <img id="mat-thumb-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
             </div>
             <button type="button" class="btn-ghost" style="width:100%;justify-content:center" onclick="triggerModalThumbUpload()">
@@ -408,12 +408,12 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
         </div>
         <div class="thought-box"><label class="form-label">Твоя мысль <span class="req">*</span></label><textarea class="form-textarea" id="mat-thought" style="background:transparent;border:none;padding:0.4rem 0" placeholder="Почему это важно?"></textarea></div>
         <div class="form-group"><label class="form-label">Коллекция <span class="req">*</span></label><select class="form-select" id="mat-collection"></select></div>
-        <div class="modal-actions" style="justify-content:space-between">
-            <div style="display:flex;gap:0.75rem">
+        <div class="modal-actions" style="justify-content:space-between;align-items:center">
+            <div style="display:flex;gap:0.75rem;align-items:center">
                 <button class="btn-ghost" onclick="closeMaterialModal()">Отмена</button>
                 <button id="mat-delete-btn" class="btn-ghost" style="color:rgba(255,100,80,0.6);border-color:rgba(255,100,80,0.2);display:none" onclick="deleteMaterialFromModal()">Удалить</button>
             </div>
-            <button class="btn-primary" id="mat-save-btn" onclick="saveMaterial()">Сохранить →</button>
+            <button class="btn-primary" id="mat-save-btn" onclick="saveMaterial()" style="flex:none">Сохранить →</button>
         </div>
     </div>
 </div>
@@ -652,7 +652,7 @@ async function loadFriends() {
         const el = profile.element || 'water'
         const matCount = col.materials?.[0]?.count || 0
         const item = document.createElement('div'); item.className = 'feed-item'
-        const coverBlock = col.cover_url ? `<img src="${col.cover_url}" alt="" style="width:calc(100% + 3rem);margin:-1.25rem -1.5rem 1rem;height:220px;object-fit:cover;display:block;" loading="lazy">` : ''
+        const coverBlock = col.cover_url ? `<img src="${col.cover_url}" alt="" style="width:calc(100% + 3rem);margin:-1.25rem -1.5rem 0;height:220px;object-fit:cover;display:block;border-radius:1.2rem 1.2rem 0 0;margin-bottom:1rem;" loading="lazy">` : ''
         item.innerHTML = `<div class="feed-item-header"><div class="feed-avatar" style="background:${AVATAR_COLORS[el] || AVATAR_COLORS.water}">${nick.charAt(0).toUpperCase()}</div><div class="feed-author"><div class="feed-author-name">${nick}</div><div class="feed-author-time">${formatDate(col.created_at)}</div></div></div>${coverBlock}<div class="feed-col-element"><div class="feed-col-dot"></div>${ELEMENT_NAMES[col.element] || col.element}</div><div class="feed-col-title">${col.title}</div>${col.description ? `<div class="feed-col-desc">${col.description}</div>` : ''}<div id="feed-mats-${col.id}" class="feed-mats-preview">${matCount > 0 ? `<div class="feed-more" style="cursor:pointer" onclick="loadFeedMaterials(${col.id})">↓ Показать ${matCount} материалов</div>` : '<div class="feed-more">Материалов пока нет</div>'}</div>`
         list.appendChild(item)
     }
