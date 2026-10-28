@@ -507,14 +507,20 @@ function renderFriendCard(col, fp) {
     const matCount = col.materials?.[0]?.count || 0
     const card = document.createElement('div')
     card.className = 'col-card'
+    const coverHtml = col.cover_url
+        ? `<img class="col-cover" src="${col.cover_url}" alt="" loading="lazy">`
+        : ''
     card.innerHTML = `
-        <div class="col-card-header" style="cursor:default">
+        ${coverHtml ? `<div>${coverHtml}</div>` : ''}
+        <div class="col-card-body">
+          <div class="col-card-header" style="cursor:default">
             <div class="col-card-title">${col.title}</div>
             ${col.description ? `<div class="col-card-desc">${col.description}</div>` : ''}
             <div class="col-card-footer">
                 <div class="col-card-meta">${matCount} материалов · ${formatDate(col.created_at)}</div>
-                <span class="card-arrow" onclick="toggleFriendExpand(${col.id})" style="cursor:pointer">↓</span>
+                <span class="card-arrow" style="cursor:pointer">↓</span>
             </div>
+          </div>
         </div>
         <div class="col-card-expand" id="exp-${col.id}">
             <div id="fmats-${col.id}"></div>
@@ -524,14 +530,14 @@ function renderFriendCard(col, fp) {
 }
 
 function renderMaterialItem(m, i) {
-    return `<div class="mat-row">
-        <div class="mat-row-num">${i+1}</div>
-        <div class="mat-row-body">
-            <div class="mat-row-title ${m.url ? 'clickable' : ''}" ${m.url ? `onclick="window.open('${m.url}','_blank')"` : ''}>${m.title}</div>
-            ${m.comment ? `<div class="mat-row-thought">${m.comment}</div>` : ''}
-            ${m.url ? `<div class="mat-row-domain">${getDomain(m.url)}</div>` : ''}
-        </div>
-    </div>`
+    const thumb = m.thumbnail_url
+        ? `<div class="mat-thumb" style="flex-shrink:0"><img src="${m.thumbnail_url}" alt=""></div>`
+        : ''
+    return `<div class="mat-row">${thumb}<div class="mat-row-body" style="flex:1;min-width:0">
+        <div class="mat-row-title ${m.url ? 'clickable' : ''}" ${m.url ? `onclick="window.open('${m.url}','_blank')"` : ''}>${m.title}</div>
+        ${m.comment ? `<div class="mat-row-thought">${m.comment}</div>` : ''}
+        ${m.url ? `<div class="mat-row-domain">${getDomain(m.url)}</div>` : ''}
+    </div></div>`
 }
 
 window.toggleFriendExpand = async function(colId) {
