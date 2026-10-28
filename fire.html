@@ -383,9 +383,12 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
             <div id="col-cover-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;height:140px;">
                 <img id="col-cover-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
             </div>
-            <button type="button" class="btn-ghost" style="width:100%;justify-content:center" onclick="triggerModalCoverUpload()">
-                <span id="col-cover-btn-label">+ Загрузить обложку</span>
-            </button>
+            <div style="display:flex;gap:0.5rem">
+                <button type="button" class="btn-ghost" style="flex:1;justify-content:center" onclick="triggerModalCoverUpload()">
+                    <span id="col-cover-btn-label">+ Загрузить обложку</span>
+                </button>
+                <button type="button" id="col-cover-crop-btn" class="btn-ghost" style="display:none;padding:0.5rem 0.9rem;flex-shrink:0" onclick="triggerCoverRecrop()" title="Кадрировать">⊡ Кадрировать</button>
+            </div>
         </div>
         <div class="form-group"><label class="form-label">Название <span class="req">*</span></label><input class="form-input" id="col-title" placeholder="Треки для бега..."></div>
         <div class="form-group"><label class="form-label">Описание</label><textarea class="form-textarea" id="col-desc" placeholder="О чём эта коллекция..."></textarea></div>
@@ -419,9 +422,12 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
             <div id="mat-thumb-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;aspect-ratio:4/3;max-height:260px;">
                 <img id="mat-thumb-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
             </div>
-            <button type="button" class="btn-ghost" style="width:100%;justify-content:center" onclick="triggerModalThumbUpload()">
-                <span id="mat-thumb-btn-label">+ Загрузить фото</span>
-            </button>
+            <div style="display:flex;gap:0.5rem">
+                <button type="button" class="btn-ghost" style="flex:1;justify-content:center" onclick="triggerModalThumbUpload()">
+                    <span id="mat-thumb-btn-label">+ Загрузить фото</span>
+                </button>
+                <button type="button" id="mat-thumb-crop-btn" class="btn-ghost" style="display:none;padding:0.5rem 0.9rem;flex-shrink:0" onclick="triggerThumbRecrop()" title="Кадрировать">⊡ Кадрировать</button>
+            </div>
         </div>
         <div id="mat-link-fields">
             <div class="form-group"><label class="form-label">URL <span class="req">*</span></label><input class="form-input" id="mat-url" type="url" placeholder="https://..."></div>
@@ -717,6 +723,7 @@ window.openCreateModal=async()=>{
     document.getElementById('col-desc').value=''
     document.getElementById('col-cover-preview').style.display='none'
     document.getElementById('col-cover-btn-label').textContent='+ Загрузить обложку'
+    document.getElementById('col-cover-crop-btn').style.display='none'
     selectElement(ELEMENT,document.querySelector(`.el-sel-btn[data-el="${ELEMENT}"]`))
     document.getElementById('create-modal').classList.add('open')
     document.body.style.overflow='hidden'
@@ -736,9 +743,11 @@ async function openEditCollection(colId) {
         document.getElementById('col-cover-preview-img').src=col.cover_url
         document.getElementById('col-cover-preview').style.display='block'
         document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
+        document.getElementById('col-cover-crop-btn').style.display='inline-flex'
     } else {
         document.getElementById('col-cover-preview').style.display='none'
         document.getElementById('col-cover-btn-label').textContent='+ Загрузить обложку'
+        document.getElementById('col-cover-crop-btn').style.display='none'
     }
     selectElement(col.element||ELEMENT,document.querySelector(`.el-sel-btn[data-el="${col.element||ELEMENT}"]`))
     document.getElementById('col-delete-btn').style.display='inline-flex'
@@ -762,6 +771,7 @@ window.triggerModalCoverUpload=()=>{
             document.getElementById('col-cover-preview-img').src=url
             document.getElementById('col-cover-preview').style.display='block'
             document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
+            document.getElementById('col-cover-crop-btn').style.display='inline-flex'
         })
     }
     inp.click()
@@ -812,6 +822,7 @@ window.openAddMaterial=async colId=>{
     ;['mat-url','mat-title','mat-thought'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
     document.getElementById('mat-thumb-preview').style.display='none'
     document.getElementById('mat-thumb-btn-label').textContent='+ Загрузить фото'
+    document.getElementById('mat-thumb-crop-btn').style.display='none'
     document.getElementById('mat-delete-btn').style.display='none'
     await loadCollectionsForSelect(colId)
     document.getElementById('material-modal').classList.add('open')
@@ -832,9 +843,11 @@ async function openEditMaterial(matId, colId) {
         document.getElementById('mat-thumb-preview-img').src=m.thumbnail_url
         document.getElementById('mat-thumb-preview').style.display='block'
         document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
+        document.getElementById('mat-thumb-crop-btn').style.display='inline-flex'
     } else {
         document.getElementById('mat-thumb-preview').style.display='none'
         document.getElementById('mat-thumb-btn-label').textContent='+ Загрузить фото'
+        document.getElementById('mat-thumb-crop-btn').style.display='none'
     }
     await loadCollectionsForSelect(colId)
     document.getElementById('mat-delete-btn').style.display='inline-flex'
@@ -857,6 +870,7 @@ window.triggerModalThumbUpload=()=>{
             document.getElementById('mat-thumb-preview-img').src=url
             document.getElementById('mat-thumb-preview').style.display='block'
             document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
+            document.getElementById('mat-thumb-crop-btn').style.display='inline-flex'
         })
     }
     inp.click()
@@ -958,6 +972,50 @@ async function deleteMaterial(matId,colId){const{error}=await supabase.from('mat
         ;[offsetX,offsetY]=clampOffset(offsetX,offsetY)
         ZR().value=scale
         draw()
+    }
+
+    window.cropperOpenFromUrl=function(url, aspect, onDone){
+        // загружаем через canvas чтобы обойти CORS-ограничения на blob/objectURL
+        const proxyImg=new Image()
+        proxyImg.crossOrigin='anonymous'
+        proxyImg.onload=()=>{
+            // рисуем в canvas и берём blob
+            const tmp=document.createElement('canvas')
+            tmp.width=proxyImg.naturalWidth; tmp.height=proxyImg.naturalHeight
+            tmp.getContext('2d').drawImage(proxyImg,0,0)
+            tmp.toBlob(blob=>{ if(blob) cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone) else {toast('Не удалось загрузить фото','error')} },'image/jpeg',0.95)
+        }
+        proxyImg.onerror=()=>{
+            // если CORS не пропустил — грузим напрямую через fetch
+            fetch(url).then(r=>r.blob()).then(blob=>cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone)).catch(()=>toast('Не удалось загрузить фото для кадрирования','error'))
+        }
+        proxyImg.src=url
+    }
+
+    window.triggerCoverRecrop=function(){
+        const src=document.getElementById('col-cover-preview-img').src
+        if(!src) return
+        cropperOpenFromUrl(src, 16/9, blob=>{
+            pendingCoverFile=new File([blob],'cover.jpg',{type:'image/jpeg'})
+            const url=URL.createObjectURL(blob)
+            document.getElementById('col-cover-preview-img').src=url
+            document.getElementById('col-cover-preview').style.display='block'
+            document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
+            document.getElementById('col-cover-crop-btn').style.display='inline-flex'
+        })
+    }
+
+    window.triggerThumbRecrop=function(){
+        const src=document.getElementById('mat-thumb-preview-img').src
+        if(!src) return
+        cropperOpenFromUrl(src, 1, blob=>{
+            pendingThumbFile=new File([blob],'thumb.jpg',{type:'image/jpeg'})
+            const url=URL.createObjectURL(blob)
+            document.getElementById('mat-thumb-preview-img').src=url
+            document.getElementById('mat-thumb-preview').style.display='block'
+            document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
+            document.getElementById('mat-thumb-crop-btn').style.display='inline-flex'
+        })
     }
 
     window.cropperOpen=function(file, aspect, onDone){
