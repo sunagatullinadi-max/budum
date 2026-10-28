@@ -346,10 +346,20 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
     <div class="panel" id="panel-friends"><div id="friends-content"></div></div>
 </main>
 
-<!-- MODAL: CREATE -->
+<!-- MODAL: CREATE / EDIT COLLECTION -->
 <div class="modal-overlay" id="create-modal" onclick="if(event.target===this)closeCreateModal()">
     <div class="modal">
-        <div class="modal-head"><div class="modal-title">Новая коллекция</div><button class="modal-close" onclick="closeCreateModal()">×</button></div>
+        <div class="modal-head"><div class="modal-title" id="col-modal-title">Новая коллекция</div><button class="modal-close" onclick="closeCreateModal()">×</button></div>
+        <!-- обложка в модале -->
+        <div class="form-group">
+            <label class="form-label">Обложка</label>
+            <div id="col-cover-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;height:140px;">
+                <img id="col-cover-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+            </div>
+            <button type="button" class="btn-ghost" style="width:100%;justify-content:center" onclick="triggerModalCoverUpload()">
+                <span id="col-cover-btn-label">+ Загрузить обложку</span>
+            </button>
+        </div>
         <div class="form-group"><label class="form-label">Название <span class="req">*</span></label><input class="form-input" id="col-title" placeholder="Треки для бега..."></div>
         <div class="form-group"><label class="form-label">Описание</label><textarea class="form-textarea" id="col-desc" placeholder="О чём эта коллекция..."></textarea></div>
         <div class="form-group">
@@ -362,21 +372,43 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
             </div>
         </div>
         <div class="toggle-row"><span class="toggle-label">Публичная</span><label class="toggle"><input type="checkbox" id="col-public" checked><span class="toggle-slider"></span></label></div>
-        <div class="modal-actions"><button class="btn-ghost" onclick="closeCreateModal()">Отмена</button><button class="btn-primary" onclick="saveCollection()">Создать →</button></div>
+        <div class="modal-actions" style="justify-content:space-between">
+            <div style="display:flex;gap:0.75rem">
+                <button class="btn-ghost" onclick="closeCreateModal()">Отмена</button>
+                <button id="col-delete-btn" class="btn-ghost" style="color:rgba(255,100,80,0.6);border-color:rgba(255,100,80,0.2);display:none" onclick="deleteCollectionFromModal()">Удалить</button>
+            </div>
+            <button class="btn-primary" id="col-save-btn" onclick="saveCollection()">Создать →</button>
+        </div>
     </div>
 </div>
 
-<!-- MODAL: MATERIAL -->
+<!-- MODAL: CREATE / EDIT MATERIAL -->
 <div class="modal-overlay" id="material-modal" onclick="if(event.target===this)closeMaterialModal()">
     <div class="modal">
-        <div class="modal-head"><div class="modal-title">Добавить материал</div><button class="modal-close" onclick="closeMaterialModal()">×</button></div>
+        <div class="modal-head"><div class="modal-title" id="mat-modal-title">Добавить материал</div><button class="modal-close" onclick="closeMaterialModal()">×</button></div>
+        <!-- миниатюра в модале -->
+        <div class="form-group">
+            <label class="form-label">Фото</label>
+            <div id="mat-thumb-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;height:120px;">
+                <img id="mat-thumb-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+            </div>
+            <button type="button" class="btn-ghost" style="width:100%;justify-content:center" onclick="triggerModalThumbUpload()">
+                <span id="mat-thumb-btn-label">+ Загрузить фото</span>
+            </button>
+        </div>
         <div id="mat-link-fields">
             <div class="form-group"><label class="form-label">URL <span class="req">*</span></label><input class="form-input" id="mat-url" type="url" placeholder="https://..."></div>
             <div class="form-group"><label class="form-label">Заголовок <span class="req">*</span></label><input class="form-input" id="mat-title" placeholder="Название"></div>
         </div>
         <div class="thought-box"><label class="form-label">Твоя мысль <span class="req">*</span></label><textarea class="form-textarea" id="mat-thought" style="background:transparent;border:none;padding:0.4rem 0" placeholder="Почему это важно?"></textarea></div>
         <div class="form-group"><label class="form-label">Коллекция <span class="req">*</span></label><select class="form-select" id="mat-collection"></select></div>
-        <div class="modal-actions"><button class="btn-ghost" onclick="closeMaterialModal()">Отмена</button><button class="btn-primary" onclick="saveMaterial()">Сохранить →</button></div>
+        <div class="modal-actions" style="justify-content:space-between">
+            <div style="display:flex;gap:0.75rem">
+                <button class="btn-ghost" onclick="closeMaterialModal()">Отмена</button>
+                <button id="mat-delete-btn" class="btn-ghost" style="color:rgba(255,100,80,0.6);border-color:rgba(255,100,80,0.2);display:none" onclick="deleteMaterialFromModal()">Удалить</button>
+            </div>
+            <button class="btn-primary" id="mat-save-btn" onclick="saveMaterial()">Сохранить →</button>
+        </div>
     </div>
 </div>
 
@@ -543,10 +575,10 @@ function renderCard(col) {
     const matCount = col.materials?.[0]?.count||0; const elName=ELEMENT_NAMES[col.element]||col.element
     const card=document.createElement('div'); card.className='col-card'
     const coverHtml = col.cover_url
-        ? `<img class="col-cover" src="${col.cover_url}" alt="" loading="lazy"><button class="col-cover-upload" data-col-id="${col.id}" onclick="triggerCoverUpload('${col.id}',event)">Заменить фото</button>`
-        : `<div class="col-cover-placeholder"><div class="col-cover-label"><span>+ Обложка</span></div><button class="col-cover-upload" data-col-id="${col.id}" onclick="triggerCoverUpload('${col.id}',event)">Загрузить фото</button></div>`
+        ? `<img class="col-cover" src="${col.cover_url}" alt="" loading="lazy">`
+        : ''
     card.innerHTML=`
-        <div style="position:relative">${coverHtml}</div>
+        ${coverHtml ? `<div>${coverHtml}</div>` : ''}
         <div class="col-card-body">
           <div class="col-card-header" data-col-id="${col.id}">
             <div class="col-card-element"><div class="col-card-element-dot"></div>${elName}</div>
@@ -557,7 +589,7 @@ function renderCard(col) {
         </div>
         <div class="col-card-expand" id="exp-${col.id}">
           <div id="mats-${col.id}"><div class="loading"><div class="loading-dot"></div><span>загружаем</span></div></div>
-          <div class="col-card-controls" style="padding:0 1.4rem 1.2rem"><button class="btn-add-mat" data-col-id="${col.id}">+ Материал</button><button class="btn-del-col" data-col-id="${col.id}">Удалить</button></div>
+          <div class="col-card-controls" style="padding:0 1.4rem 1.2rem"><button class="btn-add-mat" data-col-id="${col.id}">+ Материал</button><button class="btn-edit-col" data-col-id="${col.id}">Редактировать</button></div>
         </div>`
     return card
 }
@@ -565,8 +597,8 @@ function renderCard(col) {
 document.addEventListener('click', async e => {
     const h=e.target.closest('.col-card-header'); if(h){const id=h.dataset.colId;const exp=document.getElementById('exp-'+id);const arrow=h.querySelector('.card-arrow');if(!exp)return;const open=exp.classList.toggle('open');if(arrow)arrow.style.transform=open?'rotate(180deg)':'';if(open)await loadMaterials(id);return}
     const add=e.target.closest('.btn-add-mat');if(add){e.stopPropagation();openAddMaterial(add.dataset.colId);return}
-    const del=e.target.closest('.btn-del-col');if(del){e.stopPropagation();if(confirm('Удалить коллекцию?'))deleteCollection(del.dataset.colId);return}
-    const dm=e.target.closest('.mat-del-btn');if(dm){e.stopPropagation();if(confirm('Удалить материал?'))deleteMaterial(dm.dataset.matId,dm.dataset.colId);return}
+    const editCol=e.target.closest('.btn-edit-col');if(editCol){e.stopPropagation();openEditCollection(editCol.dataset.colId);return}
+    const editMat=e.target.closest('.mat-edit-btn');if(editMat){e.stopPropagation();openEditMaterial(editMat.dataset.matId,editMat.dataset.colId);return}
 })
 
 async function loadMaterials(colId) {
@@ -575,9 +607,9 @@ async function loadMaterials(colId) {
     if(!mats?.length){c.innerHTML='<div style="font-size:0.85rem;color:rgba(255,255,255,0.18);padding:0.5rem 0">Пока нет материалов</div>';return}
     c.innerHTML=mats.map(m=>{
         const thumb = m.thumbnail_url
-            ? `<div class="mat-thumb" onclick="triggerThumbUpload('${m.id}','${colId}',event)"><img src="${m.thumbnail_url}" alt=""><div class="mat-thumb-upload">Заменить</div></div>`
-            : `<div class="mat-thumb mat-thumb-empty" onclick="triggerThumbUpload('${m.id}','${colId}',event)"><div class="mat-thumb-upload">+ фото</div></div>`
-        return `<div class="mat-row">${thumb}<div class="mat-row-body"><div class="mat-row-title ${m.url?'clickable':''}" ${m.url?`onclick="window.open('${m.url}','_blank')"`:''} >${m.title}</div>${m.comment?`<div class="mat-row-thought">${m.comment}</div>`:''}${m.url?`<div class="mat-row-domain">${getDomain(m.url)}</div>`:''}</div><button class="mat-del-btn" data-mat-id="${m.id}" data-col-id="${colId}" style="flex-shrink:0">×</button></div>`
+            ? `<div class="mat-thumb" style="flex-shrink:0"><img src="${m.thumbnail_url}" alt=""></div>`
+            : ''
+        return `<div class="mat-row">${thumb}<div class="mat-row-body" style="flex:1;min-width:0"><div class="mat-row-title ${m.url?'clickable':''}" ${m.url?`onclick="window.open('${m.url}','_blank')"`:''} >${m.title}</div>${m.comment?`<div class="mat-row-thought">${m.comment}</div>`:''}${m.url?`<div class="mat-row-domain">${getDomain(m.url)}</div>`:''}</div><button class="mat-edit-btn" data-mat-id="${m.id}" data-col-id="${colId}" title="Редактировать" style="flex-shrink:0;background:none;border:none;color:rgba(255,255,255,0.25);cursor:pointer;font-size:0.9rem;padding:0.2rem 0.4rem;transition:color 0.2s" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.25)'">✎</button></div>`
     }).join('')
 }
 
@@ -630,47 +662,208 @@ window.loadFeedMaterials = async function(colId) {
     `).join('')
 }
 
-window.openCreateModal=async()=>{const can=await checkCollectionLimit(currentUser.id,ELEMENT,userTier);if(!can){toast(userTier==='seeker'?'Лимит 3 коллекции. Стань Хранителем!':'Лимит 20 коллекций','error');return};document.getElementById('col-title').value='';document.getElementById('col-desc').value='';selectElement(ELEMENT,document.querySelector(`.el-sel-btn[data-el="${ELEMENT}"]`));document.getElementById('create-modal').classList.add('open')}
-window.closeCreateModal=()=>document.getElementById('create-modal').classList.remove('open')
+// ── состояние модалей ──
+let editingColId = null, editingMatId = null, editingMatColId = null
+let pendingCoverFile = null, pendingThumbFile = null
+
+// ── КОЛЛЕКЦИЯ: открыть создание ──
+window.openCreateModal=async()=>{
+    const can=await checkCollectionLimit(currentUser.id,ELEMENT,userTier)
+    if(!can){toast(userTier==='seeker'?'Лимит 3 коллекции. Стань Хранителем!':'Лимит 20 коллекций','error');return}
+    editingColId=null; pendingCoverFile=null
+    document.getElementById('col-modal-title').textContent='Новая коллекция'
+    document.getElementById('col-save-btn').textContent='Создать →'
+    document.getElementById('col-title').value=''
+    document.getElementById('col-desc').value=''
+    document.getElementById('col-cover-preview').style.display='none'
+    document.getElementById('col-cover-btn-label').textContent='+ Загрузить обложку'
+    selectElement(ELEMENT,document.querySelector(`.el-sel-btn[data-el="${ELEMENT}"]`))
+    document.getElementById('create-modal').classList.add('open')
+}
+
+// ── КОЛЛЕКЦИЯ: открыть редактирование ──
+async function openEditCollection(colId) {
+    const{data:col}=await supabase.from('collections').select('*').eq('id',colId).single()
+    if(!col) return
+    editingColId=colId; pendingCoverFile=null
+    document.getElementById('col-modal-title').textContent='Редактировать коллекцию'
+    document.getElementById('col-save-btn').textContent='Сохранить →'
+    document.getElementById('col-title').value=col.title||''
+    document.getElementById('col-desc').value=col.description||''
+    document.getElementById('col-public').checked=col.is_public!==false
+    if(col.cover_url){
+        document.getElementById('col-cover-preview-img').src=col.cover_url
+        document.getElementById('col-cover-preview').style.display='block'
+        document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
+    } else {
+        document.getElementById('col-cover-preview').style.display='none'
+        document.getElementById('col-cover-btn-label').textContent='+ Загрузить обложку'
+    }
+    selectElement(col.element||ELEMENT,document.querySelector(`.el-sel-btn[data-el="${col.element||ELEMENT}"]`))
+    document.getElementById('col-delete-btn').style.display='inline-flex'
+    document.getElementById('create-modal').classList.add('open')
+}
+
+window.closeCreateModal=()=>{ document.getElementById('create-modal').classList.remove('open'); document.getElementById('col-delete-btn').style.display='none'; pendingCoverFile=null }
+window.deleteCollectionFromModal=async()=>{ if(!editingColId)return; await deleteCollection(editingColId); closeCreateModal() }
 window.selectElement=(el,btn)=>{selectedElement=el;document.querySelectorAll('.el-sel-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected')}
-window.saveCollection=async()=>{const title=document.getElementById('col-title').value.trim();if(!title){toast('Введи название','error');return};const btn=document.querySelector('#create-modal .btn-primary');btn.textContent='Создаём...';btn.disabled=true;const can=await checkCollectionLimit(currentUser.id,selectedElement,userTier);if(!can){toast('Лимит достигнут','error');btn.textContent='Создать →';btn.disabled=false;return};const{error}=await supabase.from('collections').insert({user_id:currentUser.id,title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked});btn.textContent='Создать →';btn.disabled=false;if(error){toast('Ошибка: '+error.message,'error');return};toast('Коллекция создана!','success');closeCreateModal();await loadMyCollections()}
-window.openAddMaterial=async colId=>{const can=await checkMaterialLimit(colId,userTier);if(!can){toast(userTier==='seeker'?'Лимит 5 материалов. Стань Хранителем!':'Лимит 50','error');return};['mat-url','mat-title','mat-thought'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});await loadCollectionsForSelect(colId);document.getElementById('material-modal').classList.add('open')}
-window.closeMaterialModal=()=>document.getElementById('material-modal').classList.remove('open')
+
+// ── выбор обложки в модале ──
+window.triggerModalCoverUpload=()=>{
+    const inp=document.createElement('input');inp.type='file';inp.accept='image/*'
+    inp.onchange=e=>{
+        const f=e.target.files?.[0]; if(!f) return
+        if(f.size>5*1024*1024){toast('Макс 5MB','error');return}
+        pendingCoverFile=f
+        const reader=new FileReader()
+        reader.onload=ev=>{
+            document.getElementById('col-cover-preview-img').src=ev.target.result
+            document.getElementById('col-cover-preview').style.display='block'
+            document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
+        }
+        reader.readAsDataURL(f)
+    }
+    inp.click()
+}
+
+// ── КОЛЛЕКЦИЯ: сохранить ──
+window.saveCollection=async()=>{
+    const title=document.getElementById('col-title').value.trim()
+    if(!title){toast('Введи название','error');return}
+    const btn=document.getElementById('col-save-btn'); btn.textContent='Сохраняем...'; btn.disabled=true
+    let cover_url=undefined
+    if(pendingCoverFile){
+        const ext=pendingCoverFile.name.split('.').pop()
+        const colIdForPath=editingColId||('new_'+Date.now())
+        const path=`${currentUser.id}/cover-${colIdForPath}.${ext}`
+        const{error:upErr}=await supabase.storage.from('covers').upload(path,pendingCoverFile,{upsert:true})
+        if(upErr){toast('Ошибка загрузки фото: '+upErr.message,'error');btn.textContent=editingColId?'Сохранить →':'Создать →';btn.disabled=false;return}
+        const{data:ud}=supabase.storage.from('covers').getPublicUrl(path)
+        cover_url=ud.publicUrl+'?t='+Date.now()
+    }
+    if(editingColId){
+        const upd={title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked}
+        if(cover_url!==undefined) upd.cover_url=cover_url
+        const{error}=await supabase.from('collections').update(upd).eq('id',editingColId).eq('user_id',currentUser.id)
+        btn.textContent='Сохранить →'; btn.disabled=false
+        if(error){toast('Ошибка: '+error.message,'error');return}
+        toast('Коллекция обновлена!','success')
+    } else {
+        const can=await checkCollectionLimit(currentUser.id,selectedElement,userTier)
+        if(!can){toast('Лимит достигнут','error');btn.textContent='Создать →';btn.disabled=false;return}
+        const ins={user_id:currentUser.id,title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked}
+        if(cover_url!==undefined) ins.cover_url=cover_url
+        const{error}=await supabase.from('collections').insert(ins)
+        btn.textContent='Создать →'; btn.disabled=false
+        if(error){toast('Ошибка: '+error.message,'error');return}
+        toast('Коллекция создана!','success')
+    }
+    closeCreateModal(); await loadMyCollections()
+}
+
+// ── МАТЕРИАЛ: открыть создание ──
+window.openAddMaterial=async colId=>{
+    const can=await checkMaterialLimit(colId,userTier)
+    if(!can){toast(userTier==='seeker'?'Лимит 5 материалов. Стань Хранителем!':'Лимит 50','error');return}
+    editingMatId=null; editingMatColId=colId; pendingThumbFile=null
+    document.getElementById('mat-modal-title').textContent='Добавить материал'
+    document.getElementById('mat-save-btn').textContent='Сохранить →'
+    ;['mat-url','mat-title','mat-thought'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
+    document.getElementById('mat-thumb-preview').style.display='none'
+    document.getElementById('mat-thumb-btn-label').textContent='+ Загрузить фото'
+    document.getElementById('mat-delete-btn').style.display='none'
+    await loadCollectionsForSelect(colId)
+    document.getElementById('material-modal').classList.add('open')
+}
+
+// ── МАТЕРИАЛ: открыть редактирование ──
+async function openEditMaterial(matId, colId) {
+    const{data:m}=await supabase.from('materials').select('*').eq('id',matId).single()
+    if(!m) return
+    editingMatId=matId; editingMatColId=colId; pendingThumbFile=null
+    document.getElementById('mat-modal-title').textContent='Редактировать материал'
+    document.getElementById('mat-save-btn').textContent='Сохранить →'
+    document.getElementById('mat-url').value=m.url||''
+    document.getElementById('mat-title').value=m.title||''
+    document.getElementById('mat-thought').value=m.comment||''
+    if(m.thumbnail_url){
+        document.getElementById('mat-thumb-preview-img').src=m.thumbnail_url
+        document.getElementById('mat-thumb-preview').style.display='block'
+        document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
+    } else {
+        document.getElementById('mat-thumb-preview').style.display='none'
+        document.getElementById('mat-thumb-btn-label').textContent='+ Загрузить фото'
+    }
+    await loadCollectionsForSelect(colId)
+    document.getElementById('mat-delete-btn').style.display='inline-flex'
+    document.getElementById('material-modal').classList.add('open')
+}
+
+window.closeMaterialModal=()=>{ document.getElementById('material-modal').classList.remove('open'); document.getElementById('mat-delete-btn').style.display='none'; pendingThumbFile=null }
+window.deleteMaterialFromModal=async()=>{ if(!editingMatId)return; await deleteMaterial(editingMatId,editingMatColId); closeMaterialModal() }
+
+// ── выбор фото материала в модале ──
+window.triggerModalThumbUpload=()=>{
+    const inp=document.createElement('input');inp.type='file';inp.accept='image/*'
+    inp.onchange=e=>{
+        const f=e.target.files?.[0]; if(!f) return
+        if(f.size>5*1024*1024){toast('Макс 5MB','error');return}
+        pendingThumbFile=f
+        const reader=new FileReader()
+        reader.onload=ev=>{
+            document.getElementById('mat-thumb-preview-img').src=ev.target.result
+            document.getElementById('mat-thumb-preview').style.display='block'
+            document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
+        }
+        reader.readAsDataURL(f)
+    }
+    inp.click()
+}
+
 async function loadCollectionsForSelect(selectedId){const sel=document.getElementById('mat-collection');sel.innerHTML='<option>Загружаем...</option>';const{data:cols}=await supabase.from('collections').select('id,title').eq('user_id',currentUser.id).order('created_at');sel.innerHTML=cols?.length?cols.map(c=>`<option value="${c.id}"${c.id==selectedId?' selected':''}>${c.title}</option>`).join(''):'<option value="">Сначала создай коллекцию</option>'}
-window.saveMaterial=async()=>{const thought=document.getElementById('mat-thought').value.trim();const colId=document.getElementById('mat-collection').value;if(!thought){toast('Добавь мысль','error');return};if(!colId){toast('Выбери коллекцию','error');return};const url=document.getElementById('mat-url').value.trim();const title=document.getElementById('mat-title').value.trim();if(!url){toast('Введи ссылку','error');return};if(!title){toast('Введи заголовок','error');return};const can=await checkMaterialLimit(colId,userTier);if(!can){toast('Лимит материалов','error');return};const btn=document.querySelector('#material-modal .btn-primary');btn.textContent='Сохраняем...';btn.disabled=true;const{error}=await supabase.from('materials').insert({collection_id:parseInt(colId),user_id:currentUser.id,title,url,comment:thought});btn.textContent='Сохранить →';btn.disabled=false;if(error){toast('Ошибка: '+error.message,'error');return};toast('Материал добавлен!','success');closeMaterialModal();await loadMaterials(colId)}
 
-// ── ЗАГРУЗКА ОБЛОЖКИ КОЛЛЕКЦИИ ──
-window.triggerCoverUpload=(colId,event)=>{event.stopPropagation();const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>uploadCollectionCover(colId,e);inp.click()}
-async function uploadCollectionCover(colId, e) {
-    const file=e.target.files?.[0]; if(!file) return
-    if(file.size>5*1024*1024){toast('Макс 5MB','error');return}
-    const ext=file.name.split('.').pop()
-    const path=`${currentUser.id}/cover-${colId}.${ext}`
-    const{error:upErr}=await supabase.storage.from('covers').upload(path,file,{upsert:true})
-    if(upErr){toast('Ошибка загрузки: '+upErr.message,'error');return}
-    const{data:urlData}=supabase.storage.from('covers').getPublicUrl(path)
-    const url=urlData.publicUrl+'?t='+Date.now()
-    const{error}=await supabase.from('collections').update({cover_url:url}).eq('id',colId).eq('user_id',currentUser.id)
-    if(error){toast('Ошибка сохранения','error');return}
-    toast('Обложка обновлена!','success'); await loadMyCollections()
+// ── МАТЕРИАЛ: сохранить ──
+window.saveMaterial=async()=>{
+    const thought=document.getElementById('mat-thought').value.trim()
+    const colId=document.getElementById('mat-collection').value
+    const url=document.getElementById('mat-url').value.trim()
+    const title=document.getElementById('mat-title').value.trim()
+    if(!url){toast('Введи ссылку','error');return}
+    if(!title){toast('Введи заголовок','error');return}
+    if(!thought){toast('Добавь мысль','error');return}
+    if(!colId){toast('Выбери коллекцию','error');return}
+    const btn=document.getElementById('mat-save-btn'); btn.textContent='Сохраняем...'; btn.disabled=true
+    let thumbnail_url=undefined
+    if(pendingThumbFile){
+        const ext=pendingThumbFile.name.split('.').pop()
+        const matIdForPath=editingMatId||('new_'+Date.now())
+        const path=`${currentUser.id}/thumb-${matIdForPath}.${ext}`
+        const{error:upErr}=await supabase.storage.from('material-thumbs').upload(path,pendingThumbFile,{upsert:true})
+        if(upErr){toast('Ошибка загрузки фото: '+upErr.message,'error');btn.textContent='Сохранить →';btn.disabled=false;return}
+        const{data:ud}=supabase.storage.from('material-thumbs').getPublicUrl(path)
+        thumbnail_url=ud.publicUrl+'?t='+Date.now()
+    }
+    if(editingMatId){
+        const upd={title,url,comment:thought,collection_id:parseInt(colId)}
+        if(thumbnail_url!==undefined) upd.thumbnail_url=thumbnail_url
+        const{error}=await supabase.from('materials').update(upd).eq('id',editingMatId).eq('user_id',currentUser.id)
+        btn.textContent='Сохранить →'; btn.disabled=false
+        if(error){toast('Ошибка: '+error.message,'error');return}
+        toast('Материал обновлён!','success')
+    } else {
+        const can=await checkMaterialLimit(colId,userTier)
+        if(!can){toast('Лимит материалов','error');btn.textContent='Сохранить →';btn.disabled=false;return}
+        const ins={collection_id:parseInt(colId),user_id:currentUser.id,title,url,comment:thought}
+        if(thumbnail_url!==undefined) ins.thumbnail_url=thumbnail_url
+        const{error}=await supabase.from('materials').insert(ins)
+        btn.textContent='Сохранить →'; btn.disabled=false
+        if(error){toast('Ошибка: '+error.message,'error');return}
+        toast('Материал добавлен!','success')
+    }
+    closeMaterialModal(); await loadMaterials(editingMatColId||colId)
 }
 
-// ── ЗАГРУЗКА МИНИАТЮРЫ МАТЕРИАЛА ──
-window.triggerThumbUpload=(matId,colId,event)=>{event.stopPropagation();const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>uploadMaterialThumb(matId,colId,e);inp.click()}
-async function uploadMaterialThumb(matId, colId, e) {
-    const file=e.target.files?.[0]; if(!file) return
-    if(file.size>5*1024*1024){toast('Макс 5MB','error');return}
-    const ext=file.name.split('.').pop()
-    const path=`${currentUser.id}/thumb-${matId}.${ext}`
-    const{error:upErr}=await supabase.storage.from('material-thumbs').upload(path,file,{upsert:true})
-    if(upErr){toast('Ошибка загрузки: '+upErr.message,'error');return}
-    const{data:urlData}=supabase.storage.from('material-thumbs').getPublicUrl(path)
-    const url=urlData.publicUrl+'?t='+Date.now()
-    const{error}=await supabase.from('materials').update({thumbnail_url:url}).eq('id',matId).eq('user_id',currentUser.id)
-    if(error){toast('Ошибка сохранения','error');return}
-    toast('Фото добавлено!','success'); await loadMaterials(colId)
-}
-async function deleteCollection(id){const{error}=await supabase.from('collections').delete().eq('id',id).eq('user_id',currentUser.id);if(error){toast('Ошибка','error');return};toast('Коллекция удалена','success');await loadMyCollections()}
+async function deleteCollection(id){if(!confirm('Удалить коллекцию и все материалы?'))return;const{error}=await supabase.from('collections').delete().eq('id',id).eq('user_id',currentUser.id);if(error){toast('Ошибка','error');return};toast('Коллекция удалена','success');await loadMyCollections()}
 async function deleteMaterial(matId,colId){const{error}=await supabase.from('materials').delete().eq('id',matId).eq('user_id',currentUser.id);if(error){toast('Ошибка','error');return};toast('Материал удалён','success');await loadMaterials(colId)}
 </script>
 </body>
