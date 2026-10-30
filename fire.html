@@ -983,7 +983,7 @@ async function deleteMaterial(matId,colId){const{error}=await supabase.from('mat
             const tmp=document.createElement('canvas')
             tmp.width=proxyImg.naturalWidth; tmp.height=proxyImg.naturalHeight
             tmp.getContext('2d').drawImage(proxyImg,0,0)
-            tmp.toBlob(blob=>{ if(blob) cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone) else {toast('Не удалось загрузить фото','error')} },'image/jpeg',0.95)
+            tmp.toBlob(blob=>{ if(blob){cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone)}else{toast('Не удалось загрузить фото','error')} },'image/jpeg',0.95)
         }
         proxyImg.onerror=()=>{
             // если CORS не пропустил — грузим напрямую через fetch
