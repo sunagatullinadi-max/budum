@@ -495,32 +495,6 @@ let currentUser = null, userTier = 'seeker', selectedElement = 'water', currentM
     styleEl.textContent = css
     document.head.appendChild(styleEl)
 })()
-
-    const c = document.getElementById('water-pts')
-    if (!c) return
-    const styleEl = document.createElement('style')
-    let css = ''
-    for (let i = 0; i < 40; i++) {
-        const sz = 1.5 + Math.random() * 4
-        const left = 15 + Math.random() * 70
-        const bottom = Math.random() * 25
-        const tx = (Math.random() - 0.5) * 80
-        const ty = -(80 + Math.random() * 180)
-        const dur = 1.5 + Math.random() * 3
-        const delay = -(Math.random() * 8)
-        const name = `spark${i}`
-        const r = Math.floor(200 + Math.random() * 55)
-        const g = Math.floor(60 + Math.random() * 120)
-        css += `@keyframes ${name}{0%{transform:translateY(0) translateX(0) scale(0.3);opacity:0}5%{opacity:0.9}80%{opacity:0.4}100%{transform:translateY(${ty}px) translateX(${tx}px) scale(0.5);opacity:0}}`
-        const p = document.createElement('div')
-        p.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;left:${left}%;bottom:${bottom}%;border-radius:50%;background:radial-gradient(circle,rgba(${r},${g},20,0.95),transparent 70%);animation:${name} ${dur}s linear ${delay}s infinite;`
-        c.appendChild(p)
-    }
-    styleEl.textContent = css
-    document.head.appendChild(styleEl)
-}
-
-spawnSparks()
 ;(async () => {
     const user = await getCurrentUser()
     if (!user) { window.location.href = 'login.html'; return }
