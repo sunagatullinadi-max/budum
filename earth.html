@@ -25,34 +25,6 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
         #061408 35%, #081c0a 55%,
         #0a2410 75%, #0c2c14 100%);
 }
-.earth-layers { position:absolute; inset:0; overflow:hidden; }
-.earth-layer {
-    position:absolute; left:0; right:0; height:3px;
-    background:linear-gradient(90deg, transparent 0%, rgba(80,140,60,0.08) 20%, rgba(100,180,70,0.12) 50%, rgba(80,140,60,0.08) 80%, transparent 100%);
-    animation: earthShift ease-in-out infinite;
-}
-.earth-layer:nth-child(1) { top:30%; animation-duration:12s; animation-delay:0s; opacity:0.6; }
-.earth-layer:nth-child(2) { top:55%; animation-duration:16s; animation-delay:-4s; opacity:0.4; height:2px; }
-.earth-layer:nth-child(3) { top:75%; animation-duration:20s; animation-delay:-8s; opacity:0.3; height:4px; }
-@keyframes earthShift {
-    0%,100% { transform:translateX(-2%) scaleX(1); }
-    33% { transform:translateX(1%) scaleX(1.02); }
-    66% { transform:translateX(-1%) scaleX(0.99); }
-}
-.earth-roots { position:absolute; bottom:0; left:0; right:0; height:60%; overflow:hidden; }
-.earth-root {
-    position:absolute; bottom:0; width:2px;
-    background:linear-gradient(0deg, rgba(60,120,40,0.2) 0%, rgba(80,150,50,0.08) 60%, transparent 100%);
-    animation: rootSway ease-in-out infinite; transform-origin:bottom center;
-}
-.earth-root:nth-child(1) { left:25%; height:55%; animation-duration:9s; animation-delay:0s; width:1px; }
-.earth-root:nth-child(2) { left:50%; height:70%; animation-duration:13s; animation-delay:-3s; width:2px; }
-.earth-root:nth-child(3) { left:72%; height:45%; animation-duration:11s; animation-delay:-6s; width:1px; }
-@keyframes rootSway {
-    0%,100% { transform:skewX(0deg); }
-    33% { transform:skewX(2deg); }
-    66% { transform:skewX(-1.5deg); }
-}
 .earth-glow {
     position:absolute; bottom:-10%; left:50%; transform:translateX(-50%);
     width:100%; height:50%;
@@ -335,16 +307,6 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 
 <div class="bg-layer">
     <div class="earth-deep"></div>
-    <div class="earth-layers">
-        <div class="earth-layer"></div>
-        <div class="earth-layer"></div>
-        <div class="earth-layer"></div>
-    </div>
-    <div class="earth-roots">
-        <div class="earth-root"></div>
-        <div class="earth-root"></div>
-        <div class="earth-root"></div>
-    </div>
     <div class="earth-glow"></div>
     <div class="earth-mist"></div>
     <div class="earth-particles" id="earth-pts"></div>
@@ -1019,7 +981,7 @@ async function deleteMaterial(matId,colId){const{error}=await supabase.from('mat
             const tmp=document.createElement('canvas')
             tmp.width=proxyImg.naturalWidth; tmp.height=proxyImg.naturalHeight
             tmp.getContext('2d').drawImage(proxyImg,0,0)
-            tmp.toBlob(blob=>{ if(blob) cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone) else {toast('Не удалось загрузить фото','error')} },'image/jpeg',0.95)
+            tmp.toBlob(blob=>{ if(blob){cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone)}else{toast('Не удалось загрузить фото','error')} },'image/jpeg',0.95)
         }
         proxyImg.onerror=()=>{
             // если CORS не пропустил — грузим напрямую через fetch
