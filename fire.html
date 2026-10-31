@@ -328,12 +328,16 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
     border:1px solid rgba(232,120,64,0.18); border-radius:0.75rem;
     padding:0.75rem 1rem 0.75rem 1.1rem; margin-bottom:0.75rem;
 }
-.group-banner-left { display:flex; align-items:baseline; gap:0.65rem; min-width:0; }
-.group-banner-name { font-size:0.9rem; font-weight:400; color:#fff; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.group-banner-left { display:flex; align-items:baseline; gap:0.65rem; min-width:0; flex:1; }
+.group-banner-name { font-size:1.35rem; font-weight:300; color:#fff; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.group-banner-name-input { font-size:1.35rem; font-weight:300; color:#fff; line-height:1.25; background:transparent; border:none; border-bottom:1px solid var(--accent); outline:none; font-family:inherit; width:100%; min-width:60px; padding:0; }
 .group-banner-count { font-family:'DM Mono',monospace; font-size:0.52rem; color:rgba(255,255,255,0.22); flex-shrink:0; letter-spacing:0.06em; }
 .group-banner-actions { display:flex; gap:0.4rem; flex-shrink:0; }
-.btn-edit-group { font-family:'DM Mono',monospace; font-size:0.52rem; color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:0.4rem; padding:0.28rem 0.6rem; cursor:pointer; letter-spacing:0.04em; transition:all 0.2s; }
-.btn-edit-group:hover { color:rgba(255,255,255,0.7); border-color:rgba(255,255,255,0.2); }
+.btn-edit-group { font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--accent); background:rgba(232,120,64,0.08); border:1px solid rgba(232,120,64,0.22); border-radius:0.4rem; padding:0.28rem 0.7rem; cursor:pointer; letter-spacing:0.06em; transition:all 0.2s; }
+.btn-edit-group:hover { background:rgba(232,120,64,0.18); border-color:rgba(232,120,64,0.45); color:#fff; }
+.group-block.banner-dragging { opacity:0.35; }
+.group-block.banner-drop-above { border-top:2px solid var(--accent); }
+.group-block.banner-drop-below { border-bottom:2px solid var(--accent); }
 .group-cols-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; margin-bottom:1.5rem; }
 @media(max-width:700px){.group-cols-grid{grid-template-columns:1fr}}
 .ungrouped-label { font-family:'DM Mono',monospace; font-size:0.5rem; color:rgba(255,255,255,0.2); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:0.85rem; margin-top:0.5rem; padding-left:0.15rem; }
@@ -689,7 +693,10 @@ function renderGroupedCollections(container, visibleCols, frozenCols) {
         const banner = document.createElement('div')
         banner.className = 'group-banner'
         banner.innerHTML = `<div class="group-banner-left"><span class="group-banner-name">${groupName}</span><span class="group-banner-count">${countLabel}</span></div><div class="group-banner-actions"><button class="btn-edit-group" data-group="${groupName}">Изменить</button></div>`
+        banner.style.cursor = 'grab'
+        block.dataset.groupName = groupName
         block.appendChild(banner)
+        initBannerDrag(banner, block)
         const gGrid = document.createElement('div')
         gGrid.className = 'group-cols-grid'
         for (const col of cols) gGrid.appendChild(renderCard(col))
@@ -1081,6 +1088,118 @@ function reloadCollections() { loadMyCollections() }
     })
 })()
 
+/* ── DRAG БАННЕРОВ ГРУПП (сортировка групп) ── */
+;(function() {
+    let bannerDrag = null
+    const THRESHOLD = 6
+
+    window.initBannerDrag = function(banner, block) {
+        banner.addEventListener('pointerdown', onDown)
+    }
+
+    function allBlocks() {
+        return [...document.querySelectorAll('.group-block')]
+    }
+
+    function onDown(e) {
+        if (e.target.closest('button, input')) return
+        if (e.button !== undefined && e.button !== 0) return
+        const banner = e.currentTarget
+        const block  = banner.closest('.group-block')
+        bannerDrag = { banner, block, startX: e.clientX, startY: e.clientY, started: false, pointerId: e.pointerId }
+        document.addEventListener('pointermove', onMove)
+        document.addEventListener('pointerup', onUp, { once: true })
+        document.addEventListener('pointercancel', cancel, { once: true })
+    }
+
+    function onMove(e) {
+        if (!bannerDrag) return
+        const dx = e.clientX - bannerDrag.startX
+        const dy = e.clientY - bannerDrag.startY
+        if (!bannerDrag.started && Math.sqrt(dx*dx+dy*dy) < THRESHOLD) return
+
+        if (!bannerDrag.started) {
+            bannerDrag.started = true
+            bannerDrag.block.classList.add('banner-dragging')
+            bannerDrag.banner.style.cursor = 'grabbing'
+        }
+
+        e.preventDefault()
+        clearBannerHighlights()
+
+        // Найти ближайший group-block под курсором
+        bannerDrag.block.style.pointerEvents = 'none'
+        const under = document.elementFromPoint(e.clientX, e.clientY)
+        bannerDrag.block.style.pointerEvents = ''
+
+        const targetBlock = under?.closest('.group-block')
+        if (targetBlock && targetBlock !== bannerDrag.block) {
+            const rect = targetBlock.getBoundingClientRect()
+            const isAbove = e.clientY < rect.top + rect.height / 2
+            targetBlock.classList.add(isAbove ? 'banner-drop-above' : 'banner-drop-below')
+            bannerDrag.dropTarget = { block: targetBlock, above: isAbove }
+        } else {
+            bannerDrag.dropTarget = null
+        }
+    }
+
+    async function onUp(e) {
+        if (!bannerDrag) return
+        const { block, started, dropTarget } = bannerDrag
+        cancel()
+
+        if (!started || !dropTarget) return
+
+        // Меняем порядок групп: собираем все group-block, переставляем в DOM
+        const blocks = allBlocks()
+        const srcIdx = blocks.indexOf(block)
+        const tgtIdx = blocks.indexOf(dropTarget.block)
+        if (srcIdx === -1 || tgtIdx === -1 || srcIdx === tgtIdx) return
+
+        // Переставляем в DOM сразу для скорости
+        const parent = block.parentNode
+        if (dropTarget.above) {
+            parent.insertBefore(block, dropTarget.block)
+        } else {
+            dropTarget.block.after(block)
+        }
+
+        // Сохраняем новый порядок групп через sort_order коллекций
+        // Каждой группе назначаем sort_order = её позиция * 1000
+        const newBlocks = allBlocks()
+        const updates = []
+        newBlocks.forEach((b, i) => {
+            const gName = b.dataset.groupName
+            if (gName) {
+                updates.push(
+                    supabase.from('collections')
+                        .update({ sort_order: i * 1000 })
+                        .eq('user_id', currentUser.id)
+                        .eq('group_name', gName)
+                )
+            }
+        })
+        await Promise.all(updates)
+    }
+
+    function cancel() {
+        if (!bannerDrag) return
+        bannerDrag.block.classList.remove('banner-dragging')
+        bannerDrag.banner.style.cursor = 'grab'
+        clearBannerHighlights()
+        document.removeEventListener('pointermove', onMove)
+        document.removeEventListener('pointerup', onUp)
+        document.removeEventListener('pointercancel', cancel)
+        bannerDrag = null
+    }
+
+    function clearBannerHighlights() {
+        document.querySelectorAll('.banner-drop-above, .banner-drop-below').forEach(el => {
+            el.classList.remove('banner-drop-above', 'banner-drop-below')
+        })
+    }
+})()
+
 document.addEventListener('click', async e => {
     const h=e.target.closest('.col-card-header'); if(h){const id=h.dataset.colId;const exp=document.getElementById('exp-'+id);const arrow=h.querySelector('.card-arrow');if(!exp)return;const open=exp.classList.toggle('open');if(arrow)arrow.style.transform=open?'rotate(180deg)':'';if(open)await loadMaterials(id);return}
     const add=e.target.closest('.btn-add-mat');if(add){e.stopPropagation();openAddMaterial(add.dataset.colId);return}
@@ -1234,16 +1353,39 @@ function openCreateGroupModal() {
 }
 
 // ── переименовать группу: ставим новое имя на все коллекции группы ──
-window.renameGroup = async function(oldName) {
-    const newName = prompt(`Новое название группы "${oldName}":`, oldName)
-    if (!newName || newName.trim() === oldName) return
-    const { error } = await supabase.from('collections')
-        .update({ group_name: newName.trim() || null })
-        .eq('user_id', currentUser.id)
-        .eq('group_name', oldName)
-    if (error) { toast('Ошибка: '+error.message, 'error'); return }
-    toast('Группа переименована', 'success')
-    await loadMyCollections()
+window.renameGroup = function(oldName) {
+    // Находим баннер и делаем inline-редактирование
+    const nameEl = [...document.querySelectorAll('.group-banner-name')]
+        .find(el => el.textContent.trim() === oldName)
+    if (!nameEl) return
+    const currentText = nameEl.textContent.trim()
+    const input = document.createElement('input')
+    input.className = 'group-banner-name-input'
+    input.value = currentText
+    nameEl.replaceWith(input)
+    input.focus()
+    input.select()
+
+    async function commit() {
+        const newName = input.value.trim()
+        if (!newName || newName === oldName) {
+            input.replaceWith(nameEl)
+            return
+        }
+        const { error } = await supabase.from('collections')
+            .update({ group_name: newName })
+            .eq('user_id', currentUser.id)
+            .eq('group_name', oldName)
+        if (error) { toast('Ошибка: '+error.message, 'error'); input.replaceWith(nameEl); return }
+        toast('Группа переименована', 'success')
+        loadMyCollections()
+    }
+
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); commit() }
+        if (e.key === 'Escape') { input.replaceWith(nameEl) }
+    })
+    input.addEventListener('blur', commit)
 }
 window.deleteCollectionFromModal=async()=>{ if(!editingColId)return; await deleteCollection(editingColId); closeCreateModal() }
 window.selectElement=(el,btn)=>{selectedElement=el;document.querySelectorAll('.el-sel-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected')}
