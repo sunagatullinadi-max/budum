@@ -335,6 +335,9 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 .group-banner-actions { display:flex; gap:0.4rem; flex-shrink:0; }
 .btn-edit-group { font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--accent); background:rgba(232,120,64,0.08); border:1px solid rgba(232,120,64,0.22); border-radius:0.4rem; padding:0.28rem 0.7rem; cursor:pointer; letter-spacing:0.06em; transition:all 0.2s; }
 .btn-edit-group:hover { background:rgba(232,120,64,0.18); border-color:rgba(232,120,64,0.45); color:#fff; }
+.btn-move-group { font-size:0.7rem; color:rgba(232,120,64,0.55); background:rgba(232,120,64,0.06); border:1px solid rgba(232,120,64,0.16); border-radius:0.4rem; padding:0.2rem 0.5rem; cursor:pointer; line-height:1; transition:all 0.2s; }
+.btn-move-group:hover { background:rgba(232,120,64,0.18); border-color:rgba(232,120,64,0.4); color:var(--accent); }
+.btn-move-group:disabled { opacity:0.2; cursor:default; pointer-events:none; }
 .group-block.banner-dragging { opacity:0.35; }
 .group-block.banner-drop-above { border-top:2px solid var(--accent); }
 .group-block.banner-drop-below { border-bottom:2px solid var(--accent); }
@@ -692,8 +695,9 @@ function renderGroupedCollections(container, visibleCols, frozenCols) {
         const countLabel = n === 1 ? '1 коллекция' : n < 5 ? `${n} коллекции` : `${n} коллекций`
         const banner = document.createElement('div')
         banner.className = 'group-banner'
-        banner.innerHTML = `<div class="group-banner-left"><span class="group-banner-name">${groupName}</span><span class="group-banner-count">${countLabel}</span></div><div class="group-banner-actions"><button class="btn-edit-group" data-group="${groupName}">Изменить</button></div>`
+        banner.innerHTML = `<div class="group-banner-left"><span class="group-banner-name">${groupName}</span><span class="group-banner-count">${countLabel}</span></div><div class="group-banner-actions"><button class="btn-move-group btn-move-up" data-group="${groupName}" title="Вверх">↑</button><button class="btn-move-group btn-move-down" data-group="${groupName}" title="Вниз">↓</button><button class="btn-edit-group" data-group="${groupName}">Изменить</button></div>`
         banner.style.cursor = 'grab'
+        banner.style.userSelect = 'none'
         block.dataset.groupName = groupName
         block.appendChild(banner)
         initBannerDrag(banner, block)
@@ -727,6 +731,8 @@ function renderGroupedCollections(container, visibleCols, frozenCols) {
     if (userTier === 'keeper') {
         initDragAndDrop(container)
     }
+    // обновляем состояние кнопок стрелок
+    requestAnimationFrame(updateMoveButtons)
 }
 
 function renderCard(col) {
@@ -1206,6 +1212,8 @@ document.addEventListener('click', async e => {
     const editCol=e.target.closest('.btn-edit-col');if(editCol){e.stopPropagation();openEditCollection(editCol.dataset.colId);return}
     const editMat=e.target.closest('.mat-edit-btn');if(editMat){e.stopPropagation();openEditMaterial(editMat.dataset.matId,editMat.dataset.colId);return}
     const editGroup=e.target.closest('.btn-edit-group');if(editGroup){e.stopPropagation();renameGroup(editGroup.dataset.group);return}
+    const moveUp=e.target.closest('.btn-move-up');if(moveUp){e.stopPropagation();moveGroupBy(moveUp.dataset.group,-1);return}
+    const moveDn=e.target.closest('.btn-move-down');if(moveDn){e.stopPropagation();moveGroupBy(moveDn.dataset.group,1);return}
 })
 
 async function loadMaterials(colId) {
@@ -1387,6 +1395,41 @@ window.renameGroup = function(oldName) {
     })
     input.addEventListener('blur', commit)
 }
+// ── переместить группу вверх/вниз ──
+window.moveGroupBy = async function(groupName, dir) {
+    const blocks = [...document.querySelectorAll('.group-block')]
+    const idx = blocks.findIndex(b => b.dataset.groupName === groupName)
+    if (idx === -1) return
+    const newIdx = idx + dir
+    if (newIdx < 0 || newIdx >= blocks.length) return
+    const parent = blocks[0].parentNode
+    const target = blocks[newIdx]
+    if (dir === -1) parent.insertBefore(blocks[idx], target)
+    else target.after(blocks[idx])
+    // сохраняем порядок
+    const newBlocks = [...document.querySelectorAll('.group-block')]
+    const updates = newBlocks.map((b, i) => {
+        const gName = b.dataset.groupName
+        if (!gName) return null
+        return supabase.from('collections').update({ sort_order: i * 1000 })
+            .eq('user_id', currentUser.id).eq('group_name', gName)
+    }).filter(Boolean)
+    await Promise.all(updates)
+    // обновляем состояние кнопок
+    updateMoveButtons()
+}
+
+function updateMoveButtons() {
+    const blocks = [...document.querySelectorAll('.group-block')]
+    blocks.forEach((b, i) => {
+        const up = b.querySelector('.btn-move-up')
+        const dn = b.querySelector('.btn-move-down')
+        if (up) up.disabled = (i === 0)
+        if (dn) dn.disabled = (i === blocks.length - 1)
+    })
+}
+window.updateMoveButtons = updateMoveButtons
+
 window.deleteCollectionFromModal=async()=>{ if(!editingColId)return; await deleteCollection(editingColId); closeCreateModal() }
 window.selectElement=(el,btn)=>{selectedElement=el;document.querySelectorAll('.el-sel-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected')}
 
