@@ -350,6 +350,15 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 .group-block.drop-target-group > .group-banner { box-shadow:0 0 0 2px var(--accent); background:linear-gradient(100deg, rgba(232,120,64,0.25) 0%, rgba(232,120,64,0.1) 60%, transparent 100%); transition:box-shadow 0.15s,background 0.15s; }
 .drag-ghost { opacity:0.85; pointer-events:none; z-index:9999; box-shadow:0 8px 32px rgba(0,0,0,0.5); transform:rotate(2deg); }
 
+/* ── ПОПАП ВЫБОРА ДЕЙСТВИЯ ── */
+.drop-action-popup { position:fixed; z-index:10001; background:#1a1008; border:1px solid rgba(232,120,64,0.25); border-radius:0.85rem; padding:0.35rem; display:flex; flex-direction:column; gap:0.2rem; box-shadow:0 8px 32px rgba(0,0,0,0.6); min-width:160px; }
+.drop-action-popup[hidden] { display:none!important; }
+.drop-action-btn { background:none; border:none; border-radius:0.55rem; padding:0.6rem 0.9rem; font-family:'DM Mono',monospace; font-size:0.55rem; color:rgba(255,255,255,0.7); cursor:pointer; text-align:left; letter-spacing:0.05em; transition:background 0.15s,color 0.15s; white-space:nowrap; }
+.drop-action-btn:hover { background:rgba(232,120,64,0.12); color:#fff; }
+.drop-action-btn.accent { color:var(--accent); }
+.drop-action-btn.accent:hover { background:rgba(232,120,64,0.15); color:var(--accent); }
+.drop-action-sep { height:1px; background:rgba(255,255,255,0.06); margin:0.1rem 0.5rem; }
+
 /* ── ДИАЛОГ ИМЕНОВАНИЯ ГРУППЫ ── */
 .group-dialog-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:10000; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
 .group-dialog-overlay[hidden] { display:none!important; }
@@ -922,10 +931,14 @@ function reloadCollections() { loadMyCollections() }
             const targetCard = finalTarget.el
             const targetGroupName = getGroupName(targetCard)
             if (targetGroupName) {
+                // Цель в группе — добавляем туда
                 if (targetGroupName !== groupName) await updateGroupName(colId, targetGroupName)
             } else {
+                // Обе без группы — показываем выбор
                 const targetColId = getColId(targetCard)
-                if (targetColId && targetColId !== colId) openGroupDialog(colId, targetColId, targetCard)
+                if (targetColId && targetColId !== colId) {
+                    openDropActionPopup(colId, targetColId, targetCard, e)
+                }
             }
         }
     }
@@ -957,6 +970,37 @@ function reloadCollections() { loadMyCollections() }
             supabase.from('collections').update({ sort_order: oA }).eq('id', b.id)
         ])
         reloadCollections()
+    }
+
+    // ── ПОПАП ВЫБОРА: ОБЪЕДИНИТЬ / ПОМЕНЯТЬ МЕСТАМИ ──
+    let dropActionState = null
+
+    function openDropActionPopup(dragColId, targetColId, targetCardEl, e) {
+        dropActionState = { dragColId, targetColId, targetCardEl }
+
+        const popup = document.getElementById('drop-action-popup')
+        popup.hidden = false
+
+        // Позиционируем рядом с местом дропа
+        const vw = window.innerWidth, vh = window.innerHeight
+        let x = e.clientX + 12, y = e.clientY + 12
+        popup.style.left = '0'; popup.style.top = '0'
+        // После отрисовки поправляем если вылезает за экран
+        requestAnimationFrame(() => {
+            const pw = popup.offsetWidth, ph = popup.offsetHeight
+            if (x + pw > vw - 8) x = e.clientX - pw - 12
+            if (y + ph > vh - 8) y = e.clientY - ph - 12
+            popup.style.left = Math.max(8, x) + 'px'
+            popup.style.top  = Math.max(8, y) + 'px'
+        })
+
+        // Закрыть по клику вне
+        setTimeout(() => document.addEventListener('pointerdown', closeDropActionPopup, { once: true }), 0)
+    }
+
+    function closeDropActionPopup() {
+        document.getElementById('drop-action-popup').hidden = true
+        dropActionState = null
     }
 
     // ── ДИАЛОГ ИМЕНОВАНИЯ ──
@@ -1000,6 +1044,23 @@ function reloadCollections() { loadMyCollections() }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Попап выбора действия
+        document.getElementById('dap-group').addEventListener('click', e => {
+            e.stopPropagation()
+            if (!dropActionState) return
+            const { dragColId, targetColId, targetCardEl } = dropActionState
+            closeDropActionPopup()
+            openGroupDialog(dragColId, targetColId, targetCardEl)
+        })
+        document.getElementById('dap-swap').addEventListener('click', e => {
+            e.stopPropagation()
+            if (!dropActionState) return
+            const { dragColId, targetColId } = dropActionState
+            closeDropActionPopup()
+            swapOrder(dragColId, targetColId)
+        })
+
+        // Диалог именования группы
         document.getElementById('group-dialog-confirm').addEventListener('click', confirmGroupCreate)
         document.getElementById('group-dialog-cancel').addEventListener('click', cancelGroupDialog)
         document.getElementById('group-name-input').addEventListener('keydown', e => {
@@ -1588,6 +1649,13 @@ async function deleteMaterial(matId,colId){const{error}=await supabase.from('mat
         <button class="cropper-btn" onclick="cropperClose()">Отмена</button>
         <button class="btn-primary" onclick="cropperApply()">Применить →</button>
     </div>
+</div>
+
+<!-- ── ПОПАП ВЫБОРА ДЕЙСТВИЯ ── -->
+<div class="drop-action-popup" id="drop-action-popup" hidden>
+  <button class="drop-action-btn accent" id="dap-group">◈ Объединить в группу</button>
+  <div class="drop-action-sep"></div>
+  <button class="drop-action-btn" id="dap-swap">⇄ Поменять местами</button>
 </div>
 
 <!-- ── ДИАЛОГ СОЗДАНИЯ ГРУППЫ ── -->
