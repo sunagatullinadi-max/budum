@@ -7,391 +7,316 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Unbounded:wght@200;300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
 :root {
     --ease: cubic-bezier(0.16,1,0.3,1);
-    --accent: #e87840;
-    --accent-2: rgba(232,120,64,0.18);
-    --accent-3: rgba(232,120,64,0.07);
+    --el-bg-1: #100402; --el-bg-2: #180605; --el-bg-3: #200808;
+    --el-accent: #e87840; --el-accent-2: rgba(232,120,64,0.15); --el-accent-3: rgba(232,120,64,0.06);
+    --el-glow: rgba(220,80,20,0.2); --el-particle: rgba(255,160,60,0.55);
+    --text-on-element: #f0ece4;
+    --text-2-on-element: rgba(240,236,228,0.6);
+    --text-3-on-element: rgba(240,236,228,0.35);
 }
-html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormorant Garamond',serif; color:#f0ece4; overflow-x:hidden; }
 
-/* ── BACKGROUND ── */
+html, body { width:100%; min-height:100%; background:var(--el-bg-1); font-family:'Cormorant Garamond',serif; color:var(--text-on-element); overflow-x:hidden; margin:0; padding:0; }
+
+/* ── BG ── */
 .bg-layer { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
-.fire-dark {
-    position:absolute; inset:0;
-    background:linear-gradient(180deg, #060200 0%, #0e0403 20%, #160605 45%, #1e0806 70%, #260a07 100%);
-}
-.fire-core {
-    position:absolute; bottom:-10%; left:50%; transform:translateX(-50%);
-    width:120%; height:85%;
-    background:
-        radial-gradient(ellipse at 50% 100%, rgba(255,80,10,0.3) 0%, rgba(200,40,5,0.15) 40%, transparent 70%),
-        radial-gradient(ellipse at 30% 90%, rgba(255,120,20,0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 90%, rgba(220,60,5,0.18) 0%, transparent 50%);
-    animation:fireCoreAnim 2s ease-in-out infinite alternate;
-}
-@keyframes fireCoreAnim {
-    0%  { transform:translateX(-50%) scaleX(0.97) scaleY(1); opacity:0.8; }
-    33% { transform:translateX(-50%) scaleX(1.02) scaleY(1.06); opacity:1; }
-    66% { transform:translateX(-50%) scaleX(0.99) scaleY(0.97); opacity:0.85; }
-    100%{ transform:translateX(-50%) scaleX(1.01) scaleY(1.03); opacity:0.9; }
-}
+.bg-water,.bg-air,.bg-earth { position:absolute; inset:0; display:none; }
+.bg-fire { position:absolute; inset:0; display:block; }
+
+.fire-dark { position:absolute; inset:0; background:linear-gradient(180deg,#060200 0%,#0e0403 20%,#160605 45%,#1e0806 70%,#260a07 100%); }
+.fire-core { position:absolute; bottom:-10%; left:50%; transform:translateX(-50%); width:120%; height:85%; background:radial-gradient(ellipse at 50% 100%,rgba(255,80,10,0.3) 0%,rgba(200,40,5,0.15) 40%,transparent 70%),radial-gradient(ellipse at 30% 90%,rgba(255,120,20,0.2) 0%,transparent 50%),radial-gradient(ellipse at 70% 90%,rgba(220,60,5,0.18) 0%,transparent 50%); animation:fireCoreAnim 2s ease-in-out infinite alternate; }
+@keyframes fireCoreAnim { 0%{transform:translateX(-50%) scaleX(0.97) scaleY(1);opacity:0.8} 50%{transform:translateX(-50%) scaleX(1.02) scaleY(1.06);opacity:1} 100%{transform:translateX(-50%) scaleX(1.01) scaleY(1.03);opacity:0.9} }
 .fire-flames-bg { position:absolute; bottom:0; left:-5%; right:-5%; width:110%; height:65%; overflow:hidden; }
 .fire-flame-bg { position:absolute; bottom:0; border-radius:50% 50% 25% 25%; mix-blend-mode:screen; transform-origin:bottom center; }
-.fire-flame-bg:nth-child(1){ width:60%; height:90%; left:20%; background:radial-gradient(ellipse at 50% 85%, rgba(255,150,20,0.4), rgba(220,60,5,0.2) 50%, transparent 75%); animation:flameBg1 2.2s ease-in-out infinite alternate; }
-.fire-flame-bg:nth-child(2){ width:40%; height:75%; left:-5%; background:radial-gradient(ellipse at 50% 85%, rgba(255,100,10,0.3), rgba(180,30,5,0.15) 50%, transparent 75%); animation:flameBg2 1.8s ease-in-out infinite alternate; animation-delay:-0.5s; }
-.fire-flame-bg:nth-child(3){ width:40%; height:70%; right:-5%; background:radial-gradient(ellipse at 50% 85%, rgba(255,110,15,0.28), rgba(200,40,5,0.14) 50%, transparent 75%); animation:flameBg1 2.5s ease-in-out infinite alternate; animation-delay:-1s; }
-.fire-flame-bg:nth-child(4){ width:30%; height:55%; left:-2%; background:radial-gradient(ellipse at 50% 85%, rgba(255,80,5,0.22), transparent 70%); animation:flameBg2 1.6s ease-in-out infinite alternate; animation-delay:-0.3s; }
-.fire-flame-bg:nth-child(5){ width:30%; height:50%; right:-2%; background:radial-gradient(ellipse at 50% 85%, rgba(255,70,5,0.2), transparent 70%); animation:flameBg1 2s ease-in-out infinite alternate; animation-delay:-1.2s; }
-@keyframes flameBg1 {
-    0%  { transform:scaleX(1) scaleY(1) translateY(0); }
-    50% { transform:scaleX(0.94) scaleY(1.09) translateY(-4px); }
-    100%{ transform:scaleX(1.05) scaleY(0.94) translateY(2px); }
-}
-@keyframes flameBg2 {
-    0%  { transform:scaleX(1.02) scaleY(0.97) translateY(1px) rotate(-1deg); }
-    50% { transform:scaleX(0.96) scaleY(1.07) translateY(-5px) rotate(1.5deg); }
-    100%{ transform:scaleX(1) scaleY(1) rotate(0deg); }
-}
-.fire-heat {
-    position:absolute; inset:0;
-    background:
-        radial-gradient(ellipse 120% 80% at 50% 100%, rgba(255,60,5,0.18) 0%, rgba(180,20,2,0.08) 45%, transparent 75%),
-        radial-gradient(ellipse 60% 50% at 0% 100%, rgba(200,40,5,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(200,40,5,0.1) 0%, transparent 60%);
-    animation:heatWave 1.5s ease-in-out infinite alternate;
-}
+.fire-flame-bg:nth-child(1) { width:60%; height:90%; left:20%; background:radial-gradient(ellipse at 50% 85%,rgba(255,150,20,0.4),rgba(220,60,5,0.2) 50%,transparent 75%); animation:flameBg1 2.2s ease-in-out infinite alternate; }
+.fire-flame-bg:nth-child(2) { width:40%; height:75%; left:-5%; background:radial-gradient(ellipse at 50% 85%,rgba(255,100,10,0.3),rgba(180,30,5,0.15) 50%,transparent 75%); animation:flameBg2 1.8s ease-in-out infinite alternate; animation-delay:-0.5s; }
+.fire-flame-bg:nth-child(3) { width:40%; height:70%; right:-5%; background:radial-gradient(ellipse at 50% 85%,rgba(255,110,15,0.28),rgba(200,40,5,0.14) 50%,transparent 75%); animation:flameBg1 2.5s ease-in-out infinite alternate; animation-delay:-1s; }
+.fire-flame-bg:nth-child(4) { width:30%; height:55%; left:-2%; background:radial-gradient(ellipse at 50% 85%,rgba(255,80,5,0.22),transparent 70%); animation:flameBg2 1.6s ease-in-out infinite alternate; animation-delay:-0.3s; }
+.fire-flame-bg:nth-child(5) { width:30%; height:50%; right:-2%; background:radial-gradient(ellipse at 50% 85%,rgba(255,70,5,0.2),transparent 70%); animation:flameBg1 2s ease-in-out infinite alternate; animation-delay:-1.2s; }
+@keyframes flameBg1 { 0%{transform:scaleX(1) scaleY(1) translateY(0)} 50%{transform:scaleX(0.94) scaleY(1.09) translateY(-4px)} 100%{transform:scaleX(1.05) scaleY(0.94) translateY(2px)} }
+@keyframes flameBg2 { 0%{transform:scaleX(1.02) scaleY(0.97) translateY(1px) rotate(-1deg)} 50%{transform:scaleX(0.96) scaleY(1.07) translateY(-5px) rotate(1.5deg)} 100%{transform:scaleX(1) scaleY(1) rotate(0deg)} }
+.fire-embers-bg { position:absolute; inset:0; overflow:hidden; }
+.fire-ember-bg { position:absolute; border-radius:50%; background:radial-gradient(circle,rgba(255,200,50,0.9),rgba(255,80,10,0.4) 50%,transparent); animation:emberBg linear infinite; }
+@keyframes emberBg { 0%{transform:translateY(0) translateX(0);opacity:0} 5%{opacity:1} 80%{opacity:0.5} 100%{transform:translateY(var(--t)) translateX(var(--s));opacity:0} }
+.fire-heat { position:absolute; inset:0; background:radial-gradient(ellipse 120% 80% at 50% 100%,rgba(255,60,5,0.18) 0%,rgba(180,20,2,0.08) 45%,transparent 75%); animation:heatWave 1.5s ease-in-out infinite alternate; }
 @keyframes heatWave { 0%{opacity:0.6;transform:scaleX(0.98)} 100%{opacity:1;transform:scaleX(1.02)} }
-.fire-particles { position:absolute; inset:0; overflow:hidden; }
-.grain { position:fixed; inset:0; z-index:1; pointer-events:none;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    opacity:0.45; mix-blend-mode:screen; }
+.bg-vignette { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(0,0,0,0.4) 100%); pointer-events:none; }
+.grain { position:fixed; inset:0; z-index:1; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); opacity:0.4; mix-blend-mode:screen; }
 
 /* ── HEADER ── */
-.header { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between;
-    padding:1.2rem 2.5rem; background:rgba(8,2,0,0.75); backdrop-filter:blur(20px);
-    border-bottom:1px solid rgba(232,120,64,0.08); animation:fadeDown 1.2s var(--ease) 0.2s both; }
+.header { position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1.2rem 2.5rem; background:rgba(5,5,10,0.6); backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,255,255,0.06); width:100%; box-sizing:border-box; }
 .header-left { display:flex; align-items:center; gap:1.5rem; }
-.logo-btn { font-family:'Unbounded',sans-serif; font-weight:200; font-size:0.72rem; letter-spacing:0.45em;
-    text-transform:uppercase; color:rgba(255,255,255,0.4); text-decoration:none; transition:color 0.3s; }
-.logo-btn:hover { color:rgba(255,255,255,0.8); }
-.element-pill { display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0.9rem;
-    border:1px solid var(--accent-2); border-radius:9999px; background:var(--accent-3); cursor:pointer; transition:all 0.3s; }
-.element-pill:hover { background:var(--accent-2); }
-.element-pill-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:dotPulse 1.8s ease-in-out infinite; }
-@keyframes dotPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.5);opacity:0.7} }
-.element-pill-name { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent); }
+.logo-btn { font-family:'Unbounded',sans-serif; font-weight:200; font-size:0.72rem; letter-spacing:0.45em; text-transform:uppercase; color:rgba(240,236,228,0.5); background:none; border:none; cursor:pointer; text-decoration:none; }
+.logo-btn:hover { color:#f0ece4; }
+.element-pill { display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0.9rem; border:1px solid var(--el-accent-2); border-radius:9999px; background:var(--el-accent-3); cursor:pointer; transition:all 0.3s; }
+.element-pill:hover { background:var(--el-accent-2); }
+.element-pill-dot { width:6px; height:6px; border-radius:50%; background:var(--el-accent); box-shadow:0 0 8px var(--el-accent); animation:dotPulse 2s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.7} }
+.element-pill-name { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--el-accent); }
 .header-right { display:flex; align-items:center; gap:1rem; }
-.btn-primary { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase;
-    padding:0.55rem 1.3rem; background:var(--accent); color:#05050a; border:none; border-radius:9999px; cursor:pointer; transition:all 0.3s var(--ease); }
-.btn-primary:hover { transform:translateY(-2px); filter:brightness(1.12); }
-.btn-ghost { font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase;
-    padding:0.5rem 1.1rem; background:transparent; color:rgba(255,255,255,0.4);
-    border:1px solid rgba(255,255,255,0.1); border-radius:9999px; cursor:pointer; transition:all 0.3s; }
-.btn-ghost:hover { color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.22); }
-.user-avatar { width:2rem; height:2rem; border-radius:50%; background:linear-gradient(135deg,#e87840,rgba(232,120,64,0.4));
-    display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; color:#05050a;
-    cursor:pointer; border:1px solid var(--accent-2); font-family:'DM Mono',monospace; }
+.btn-primary { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.55rem 1.3rem; background:var(--el-accent); color:#050508; border:none; border-radius:9999px; cursor:pointer; transition:all 0.3s var(--ease); }
+.btn-primary:hover { transform:translateY(-2px); filter:brightness(1.1); }
+.btn-ghost { font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.5rem 1.1rem; background:transparent; color:rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.12); border-radius:9999px; cursor:pointer; transition:all 0.3s; }
+.btn-ghost:hover { color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.25); }
+.user-avatar { width:2rem; height:2rem; border-radius:50%; background:linear-gradient(135deg,var(--el-accent),rgba(255,255,255,0.3)); display:flex; align-items:center; justify-content:center; font-size:0.75rem; color:#050508; cursor:pointer; border:1px solid var(--el-accent-2); font-family:'DM Mono',monospace; }
 
 /* ── MAIN ── */
 .main { position:relative; z-index:10; max-width:1100px; margin:0 auto; padding:3rem 2.5rem 5rem; width:100%; }
 
 /* ── HERO ── */
 .hero { margin-bottom:4rem; animation:fadeUp 1.4s var(--ease) 0.4s both; }
-.hero-eyebrow { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase;
-    color:var(--accent); opacity:0.7; margin-bottom:1rem; display:flex; align-items:center; gap:0.75rem; }
-.hero-eyebrow::before { content:''; width:1.5rem; height:1px; background:var(--accent); opacity:0.5; }
+.hero-eyebrow { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--el-accent); opacity:0.7; margin-bottom:1rem; display:flex; align-items:center; gap:0.75rem; }
+.hero-eyebrow::before { content:''; width:1.5rem; height:1px; background:var(--el-accent); opacity:0.5; }
 .hero-title { font-size:clamp(2.5rem,5vw,4.5rem); font-weight:300; font-style:italic; line-height:1.1; color:#fff; margin-bottom:0.75rem; }
 .hero-sub { font-size:1rem; font-weight:300; color:rgba(255,255,255,0.4); max-width:400px; line-height:1.7; }
 
 /* ── TABS ── */
-.view-banner { display:flex; align-items:center; gap:1rem; padding:0.75rem 0; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,120,50,0.15); animation:fadeUp 0.8s var(--ease) both; }
-.view-back { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); text-decoration:none; opacity:0.8; transition:opacity 0.2s; }
-.view-back:hover { opacity:1; }
-.view-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.2); }
-.mat-empty { font-size:0.82rem; color:rgba(255,255,255,0.2); padding:0.5rem 0; font-family:'DM Mono',monospace; }
-.tabs { display:flex; border-bottom:1px solid rgba(255,255,255,0.07); margin-bottom:2.5rem; animation:fadeUp 1.4s var(--ease) 0.6s both; }
-.tab { font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase;
-    padding:0.85rem 1.5rem; color:rgba(255,255,255,0.28); background:none; border:none; cursor:pointer; position:relative; transition:color 0.3s; }
-.tab::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px; background:var(--accent); transform:scaleX(0); transition:transform 0.3s var(--ease); }
-.tab:hover { color:rgba(255,255,255,0.55); }
-.tab.active { color:var(--accent); }
+.tabs { display:flex; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:2.5rem; animation:fadeUp 1.4s var(--ease) 0.6s both; }
+.tab { font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.85rem 1.5rem; color:rgba(255,255,255,0.3); background:none; border:none; cursor:pointer; position:relative; transition:color 0.3s; }
+.tab::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px; background:var(--el-accent); transform:scaleX(0); transition:transform 0.3s var(--ease); }
+.tab:hover { color:rgba(255,255,255,0.6); }
+.tab.active { color:var(--el-accent); }
 .tab.active::after { transform:scaleX(1); }
+
+/* ── PANELS ── */
 .panel { display:none; }
 .panel.active { display:block; animation:fadeUp 0.6s var(--ease) both; }
-
-/* ── CARDS ── */
 .collections-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.5rem; }
-.section-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:300; font-style:italic; color:rgba(255,255,255,0.65); }
-.section-count { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; color:rgba(255,255,255,0.22); text-transform:uppercase; }
-.collections-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
-@media(max-width:700px){.collections-grid{grid-template-columns:1fr}}
-.col-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:1.25rem; overflow:hidden; transition:border-color 0.3s,background 0.3s; }
-.col-card:hover { border-color:var(--accent-2); background:rgba(232,120,64,0.04); }
-/* cover */
-.col-cover { width:100%; height:260px; object-fit:cover; display:block; }
-.col-cover-placeholder { width:100%; height:260px; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; }
-.col-cover-placeholder span { font-family:'DM Mono',monospace; font-size:0.5rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.2); }
-.col-cover-label { display:flex; align-items:center; justify-content:center; gap:0.4rem; }
-.col-cover-upload { position:absolute; bottom:0.75rem; right:0.75rem; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.15); border-radius:0.5rem; padding:0.3rem 0.65rem; font-family:'DM Mono',monospace; font-size:0.48rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.5); cursor:pointer; transition:all 0.2s; }
-.col-cover-upload:hover { background:rgba(0,0,0,0.75); color:#fff; }
-/* card body */
-.col-card-body { padding:1.4rem; }
+.section-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:300; font-style:italic; color:rgba(255,255,255,0.7); }
+.section-count { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; color:rgba(255,255,255,0.25); text-transform:uppercase; }
+
+/* ── МОИ КОЛЛЕКЦИИ ── */
+.collections-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; }
+.col-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:1.25rem; padding:1.5rem; transition:border-color 0.3s,background 0.3s; }
+.col-card:hover { border-color:var(--el-accent-2); background:rgba(255,255,255,0.06); }
 .col-card-header { cursor:pointer; user-select:none; }
-.col-card-element { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); opacity:0.7; margin-bottom:0.6rem; display:flex; align-items:center; gap:0.4rem; }
-.col-card-element-dot { width:4px; height:4px; border-radius:50%; background:var(--accent); }
-.col-card-title { font-size:1.35rem; font-weight:300; color:#fff; margin-bottom:0.4rem; line-height:1.25; }
-.col-card-desc { font-size:0.85rem; color:rgba(255,255,255,0.32); line-height:1.6; margin-bottom:0.75rem; }
-.col-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.85rem; border-top:1px solid rgba(255,255,255,0.05); }
-.col-card-meta { font-family:'DM Mono',monospace; font-size:0.58rem; color:rgba(255,255,255,0.22); }
-.card-arrow { font-size:0.8rem; color:var(--accent); transition:transform 0.3s; display:inline-block; }
-.col-card-expand { display:none; padding:0 1.4rem 1.2rem; }
+.col-card-element { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--el-accent); opacity:0.7; margin-bottom:0.6rem; display:flex; align-items:center; gap:0.4rem; }
+.col-card-element-dot { width:4px; height:4px; border-radius:50%; background:var(--el-accent); }
+.col-card-title { font-size:1.2rem; font-weight:300; color:#fff; margin-bottom:0.4rem; line-height:1.3; }
+.col-card-desc { font-size:0.85rem; color:rgba(255,255,255,0.35); line-height:1.6; margin-bottom:0.75rem; }
+.col-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.06); }
+.col-card-meta { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.08em; color:rgba(255,255,255,0.25); }
+.card-arrow { font-size:0.8rem; color:var(--el-accent); transition:transform 0.3s; display:inline-block; }
+.col-card-expand { display:none; margin-top:1rem; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.06); }
 .col-card-expand.open { display:block; }
-/* material rows — new style */
-.mat-row { display:flex; gap:1.25rem; padding:1.1rem 0; border-bottom:1px solid rgba(255,255,255,0.05); align-items:flex-start; }
+.mat-row { display:flex; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.05); align-items:flex-start; }
 .mat-row:last-of-type { border-bottom:none; }
-.mat-thumb { width:130px; align-self:stretch; border-radius:10px; overflow:hidden; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.07); flex-shrink:0; display:flex; align-items:center; justify-content:center; min-height:110px; cursor:pointer; position:relative; }
-.mat-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-.mat-thumb-empty::after { content:"+"; font-family:'DM Mono',monospace; font-size:1.1rem; color:rgba(255,255,255,0.18); }
-.mat-thumb-upload { display:none; position:absolute; inset:0; background:rgba(0,0,0,0.55); align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:0.45rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.7); }
-.mat-thumb:hover .mat-thumb-upload { display:flex; }
+.mat-row-cover { width:40px; height:40px; border-radius:0.4rem; flex-shrink:0; background-size:cover; background-position:center; border:1px solid rgba(255,255,255,0.08); }
+.mat-row-cover--empty { background:rgba(255,255,255,0.04); }
+.mat-row-num { font-family:'DM Mono',monospace; font-size:0.55rem; color:rgba(255,255,255,0.2); min-width:1.2rem; padding-top:0.2rem; }
 .mat-row-body { flex:1; min-width:0; }
-.mat-row-title { font-size:1.35rem; color:rgba(255,255,255,0.85); line-height:1.2; margin-bottom:0.35rem; }
-.mat-row-title { cursor:default; }
-.mat-row-thought { font-size:1.05rem; font-style:italic; color:rgba(255,255,255,0.38); line-height:1.45; margin-bottom:0.4rem; }
-.mat-row-domain { font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--accent); opacity:0.85; cursor:pointer; letter-spacing:0.04em; transition:opacity 0.2s; display:inline-block; margin-top:0.15rem; }
-.mat-row-domain:hover { opacity:1; text-decoration:underline; }
-.mat-del-btn { background:none; border:none; color:rgba(224,90,58,0.35); cursor:pointer; font-size:0.85rem; padding:0.1rem 0.3rem; flex-shrink:0; transition:color 0.2s; }
+.mat-row-title { font-size:0.88rem; color:rgba(255,255,255,0.8); margin-bottom:0.1rem; line-height:1.4; }
+.mat-row-title.clickable { cursor:pointer; }
+.mat-row-title.clickable:hover { color:#fff; }
+.mat-row-thought { font-size:0.78rem; font-style:italic; color:rgba(255,255,255,0.35); margin-bottom:0.1rem; }
+.mat-row-domain { font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--el-accent); opacity:0.7; }
+.mat-del-btn { background:none; border:none; color:rgba(224,90,58,0.4); cursor:pointer; font-size:0.85rem; padding:0.1rem 0.3rem; flex-shrink:0; transition:color 0.2s; line-height:1; }
 .mat-del-btn:hover { color:rgba(224,90,58,0.9); }
 .col-card-controls { display:flex; gap:0.5rem; margin-top:1rem; }
-.btn-add-mat { flex:1; padding:0.6rem; background:rgba(232,120,64,0.07); border:1px solid rgba(232,120,64,0.18); border-radius:0.75rem;
-    color:rgba(255,255,255,0.55); font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
-.btn-add-mat:hover { background:rgba(232,120,64,0.14); color:#fff; }
-.btn-del-col { padding:0.6rem 0.9rem; background:none; border:1px solid rgba(224,90,58,0.2); border-radius:0.75rem;
-    color:rgba(224,90,58,0.45); font-family:'DM Mono',monospace; font-size:0.62rem; cursor:pointer; transition:all 0.2s; }
+.btn-add-mat { flex:1; padding:0.6rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:0.75rem; color:rgba(255,255,255,0.6); font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+.btn-add-mat:hover { background:rgba(255,255,255,0.1); color:#fff; }
+.btn-del-col { padding:0.6rem 0.9rem; background:none; border:1px solid rgba(224,90,58,0.25); border-radius:0.75rem; color:rgba(224,90,58,0.5); font-family:'DM Mono',monospace; font-size:0.62rem; cursor:pointer; transition:all 0.2s; }
 .btn-del-col:hover { border-color:rgba(224,90,58,0.6); color:rgba(224,90,58,0.9); }
-.btn-edit-col { padding:0.6rem 1rem; background:rgba(232,120,64,0.07); border:1px solid rgba(232,120,64,0.18); border-radius:0.75rem;
-    color:rgba(232,120,64,0.6); font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
-.btn-edit-col:hover { background:rgba(232,120,64,0.14); color:rgba(232,120,64,0.9); border-color:rgba(232,120,64,0.35); }
-.limit-banner { padding:2rem; border:1px solid var(--accent-2); border-radius:1.25rem; background:var(--accent-3); text-align:center; margin-top:1rem; }
-.limit-banner-title { font-size:1.3rem; font-weight:300; font-style:italic; color:rgba(255,255,255,0.8); margin-bottom:0.5rem; }
-.limit-banner-sub { font-size:0.85rem; color:rgba(255,255,255,0.32); margin-bottom:1.2rem; line-height:1.7; }
-.empty-state { text-align:center; padding:5rem 2rem; border:1px dashed rgba(232,120,64,0.12); border-radius:1.5rem; }
-.empty-glyph { font-size:3rem; margin-bottom:1rem; animation:emptyPulse 2.5s ease-in-out infinite; }
-@keyframes emptyPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
-.empty-title { font-size:1.4rem; font-weight:300; font-style:italic; margin-bottom:0.5rem; color:rgba(255,255,255,0.65); }
-.empty-sub { font-size:0.85rem; color:rgba(255,255,255,0.28); margin-bottom:1.5rem; line-height:1.7; }
-.friends-locked { text-align:center; padding:4rem 2rem; border:1px dashed rgba(232,120,64,0.1); border-radius:1.5rem; }
-.friends-locked-glyph { font-size:2.5rem; margin-bottom:1rem; opacity:0.4; }
-.friends-locked-title { font-size:1.3rem; font-weight:300; font-style:italic; color:rgba(255,255,255,0.55); margin-bottom:0.5rem; }
-.friends-locked-sub { font-size:0.85rem; color:rgba(255,255,255,0.22); margin-bottom:1.5rem; line-height:1.7; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align:center; padding:5rem 2rem; border:1px dashed rgba(255,255,255,0.08); border-radius:1.5rem; }
+.empty-glyph { font-size:3rem; margin-bottom:1rem; filter:drop-shadow(0 0 20px var(--el-accent)); animation:emptyPulse 3s ease-in-out infinite; }
+@keyframes emptyPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+.empty-title { font-size:1.4rem; font-weight:300; font-style:italic; margin-bottom:0.5rem; color:rgba(255,255,255,0.7); }
+.empty-sub { font-size:0.85rem; color:rgba(255,255,255,0.3); margin-bottom:1.5rem; line-height:1.7; }
+
+/* ── ЛЕНТА: КОЛЛЕКЦИЯ С ШАПКОЙ ── */
+.feed-col-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:1rem; overflow:hidden; margin-bottom:1rem; transition:border-color 0.3s; animation:fadeUp 0.5s var(--ease) both; }
+.feed-col-card:hover { border-color:var(--el-accent-2); }
+.feed-col-cover { width:100%; aspect-ratio:16/5; background-size:cover; background-position:center; border-bottom:1px solid rgba(255,255,255,0.06); }
+.feed-col-cover--empty { background:linear-gradient(135deg,rgba(232,120,64,0.08) 0%,rgba(180,60,10,0.04) 100%); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.feed-col-cover--empty::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(255,255,255,0.012) 10px,rgba(255,255,255,0.012) 11px); }
+.feed-col-cover-label { font-size:0.38rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.15); position:relative; z-index:1; }
+.feed-col-body { padding:1rem 1.25rem 1.25rem; }
+.feed-col-author { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.65rem; }
+.feed-avatar-sm { width:1.5rem; height:1.5rem; border-radius:50%; background:linear-gradient(135deg,var(--el-accent),rgba(255,255,255,0.2)); display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:0.58rem; color:#050508; flex-shrink:0; border:1px solid var(--el-accent-2); }
+.feed-author-name { font-size:0.82rem; font-weight:500; color:rgba(255,255,255,0.8); }
+.feed-author-time { font-family:'DM Mono',monospace; font-size:0.55rem; color:rgba(255,255,255,0.2); margin-left:auto; }
+.feed-col-name { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:300; color:#fff; margin-bottom:0.3rem; line-height:1.3; }
+.feed-col-desc { font-size:0.8rem; color:rgba(255,255,255,0.35); line-height:1.5; margin-bottom:0.5rem; }
+.feed-col-meta { font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.08em; color:rgba(255,255,255,0.2); text-transform:uppercase; margin-bottom:0.75rem; }
+.feed-col-mats { border-top:1px solid rgba(255,255,255,0.05); padding-top:0.65rem; margin-bottom:0.85rem; }
+.feed-mat-row { display:flex; align-items:center; gap:0.6rem; padding:0.35rem 0; border-bottom:1px solid rgba(255,255,255,0.03); }
+.feed-mat-row:last-child { border-bottom:none; }
+.feed-mat-thumb { width:36px; height:36px; border-radius:0.3rem; flex-shrink:0; background-size:cover; background-position:center; border:1px solid rgba(255,255,255,0.07); }
+.feed-mat-thumb--empty { background:rgba(255,255,255,0.04); }
+.feed-mat-text { flex:1; min-width:0; }
+.feed-mat-title { font-size:0.82rem; color:rgba(255,255,255,0.65); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.3; }
+.feed-mat-domain { font-family:'DM Mono',monospace; font-size:0.52rem; color:var(--el-accent); opacity:0.6; }
+.btn-follow { font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.45rem 1rem; background:var(--el-accent-3); border:1px solid var(--el-accent-2); border-radius:9999px; color:var(--el-accent); cursor:pointer; transition:all 0.25s; margin-top:0.25rem; }
+.btn-follow:hover { background:var(--el-accent-2); }
+.btn-follow.following { background:transparent; color:rgba(255,255,255,0.3); border-color:rgba(255,255,255,0.1); }
+
+/* ── ЛЕНТА: ГРУППА ── */
+.feed-group-card { background:rgba(232,120,64,0.035); border:1px solid rgba(232,120,64,0.12); border-radius:1rem; margin-bottom:1rem; overflow:hidden; transition:border-color 0.3s; animation:fadeUp 0.5s var(--ease) both; }
+.feed-group-card:hover { border-color:rgba(232,120,64,0.25); }
+.feed-group-header { padding:1rem 1.25rem 0.75rem; border-bottom:1px solid rgba(255,255,255,0.05); }
+.feed-group-name { font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:300; font-style:italic; color:#fff; margin-bottom:0.2rem; }
+.feed-group-meta { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,255,255,0.2); }
+.feed-group-cols { padding:0.6rem 1.25rem; border-bottom:1px solid rgba(255,255,255,0.05); }
+.feed-group-col-row { display:flex; align-items:center; gap:0.6rem; padding:0.3rem 0; }
+.feed-group-col-dot { font-size:0.6rem; color:var(--el-accent); opacity:0.5; flex-shrink:0; }
+.feed-group-col-name { font-size:0.85rem; color:rgba(255,255,255,0.6); flex:1; }
+.feed-group-col-cnt { font-family:'DM Mono',monospace; font-size:0.55rem; color:rgba(255,255,255,0.2); }
+.feed-group-card > .btn-follow { margin:0.75rem 1.25rem 1rem; }
 
 /* ── MODAL ── */
-.modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.82); backdrop-filter:blur(20px);
-    display:flex; align-items:center; justify-content:center; padding:1.5rem;
-    opacity:0; pointer-events:none; transition:opacity 0.3s; }
+.modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.75); backdrop-filter:blur(20px); display:flex; align-items:center; justify-content:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity 0.3s; }
 .modal-overlay.open { opacity:1; pointer-events:all; }
-.modal { background:rgba(12,3,0,0.97); border:1px solid rgba(232,120,64,0.12); border-radius:1.75rem; padding:2.5rem;
-    width:100%; max-width:540px;
-    max-height:calc(100vh - 3rem); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.modal { background:#0e0e16; border:1px solid rgba(255,255,255,0.1); border-radius:1.75rem; padding:2.5rem; width:100%; max-width:540px; max-height:90vh; overflow-y:auto; animation:slideUp 0.4s var(--ease); }
 .modal-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; }
 .modal-title { font-size:1.6rem; font-weight:300; font-style:italic; color:#fff; }
-.modal-close { background:none; border:none; color:rgba(255,255,255,0.28); font-size:1.4rem; cursor:pointer; transition:color 0.2s; }
+.modal-close { background:none; border:none; color:rgba(255,255,255,0.3); font-size:1.4rem; cursor:pointer; transition:color 0.2s; line-height:1; }
 .modal-close:hover { color:#fff; }
 .form-group { margin-bottom:1.25rem; }
-.form-label { display:block; font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.28); margin-bottom:0.6rem; }
-.form-label .req { color:var(--accent); margin-left:0.2rem; }
-.form-input,.form-textarea,.form-select { width:100%; padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.09);
-    border-radius:0.75rem; color:#fff; font-family:'Cormorant Garamond',serif; font-size:1rem; outline:none; transition:border-color 0.3s; }
-.form-input:focus,.form-textarea:focus,.form-select:focus { border-color:var(--accent); background:rgba(232,120,64,0.05); }
-.form-input::placeholder,.form-textarea::placeholder { color:rgba(255,255,255,0.18); }
+.form-label { display:block; font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:0.6rem; }
+.req { color:var(--el-accent); margin-left:0.2rem; }
+.form-input,.form-textarea,.form-select { width:100%; padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:0.75rem; color:#fff; font-family:'Cormorant Garamond',serif; font-size:1rem; outline:none; transition:border-color 0.3s,background 0.3s; }
+.form-input:focus,.form-textarea:focus,.form-select:focus { border-color:var(--el-accent); background:rgba(255,255,255,0.07); }
+.form-input::placeholder,.form-textarea::placeholder { color:rgba(255,255,255,0.2); }
 .form-textarea { resize:vertical; min-height:90px; }
-.form-select option { background:#0c0300; }
+.form-select { cursor:pointer; }
+.form-select option { background:#0e0e16; }
 .element-selector { display:grid; grid-template-columns:repeat(4,1fr); gap:0.6rem; margin-top:0.5rem; }
-.el-sel-btn { padding:0.6rem 0.4rem; border-radius:0.75rem; border:1px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.03);
-    cursor:pointer; transition:all 0.3s; text-align:center; font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.3); }
-.el-sel-btn:hover { border-color:rgba(255,255,255,0.15); color:rgba(255,255,255,0.6); }
-.el-sel-btn.selected { border-color:var(--accent); color:var(--accent); background:var(--accent-3); }
+.el-sel-btn { padding:0.6rem 0.4rem; border-radius:0.75rem; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.03); cursor:pointer; transition:all 0.3s; text-align:center; font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.35); }
+.el-sel-btn:hover { border-color:rgba(255,255,255,0.18); color:rgba(255,255,255,0.65); }
+.el-sel-btn.selected { border-color:var(--el-accent); color:var(--el-accent); background:var(--el-accent-3); }
 .el-sel-btn .el-icon { font-size:1.2rem; display:block; margin-bottom:0.3rem; }
+.mat-type-tabs { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+.mat-type-btn { padding:0.35rem 0.85rem; border-radius:9999px; border:1px solid rgba(255,255,255,0.1); background:transparent; font-family:'DM Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.35); cursor:pointer; transition:all 0.25s; }
+.mat-type-btn:hover { border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.6); }
+.mat-type-btn.active { border-color:var(--el-accent); color:var(--el-accent); background:var(--el-accent-3); }
 .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:0.6rem 0; }
-.toggle-label { font-size:0.88rem; color:rgba(255,255,255,0.45); }
+.toggle-label { font-size:0.88rem; color:rgba(255,255,255,0.5); }
 .toggle { position:relative; width:2.4rem; height:1.3rem; }
 .toggle input { opacity:0; width:0; height:0; }
-.toggle-slider { position:absolute; inset:0; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:9999px; cursor:pointer; transition:0.25s; }
-.toggle-slider::before { content:''; position:absolute; width:0.85rem; height:0.85rem; left:0.2rem; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.35); border-radius:50%; transition:0.25s; }
-.toggle input:checked + .toggle-slider { background:var(--accent-2); border-color:var(--accent); }
-.toggle input:checked + .toggle-slider::before { transform:translateX(1.1rem) translateY(-50%); background:var(--accent); }
-.modal-actions { display:flex; gap:0.75rem; margin-top:1.5rem; align-items:center; }
-.modal-actions .btn-ghost { flex:none; text-align:center; }
-.modal-actions .btn-primary { flex:none; text-align:center; }
-.thought-box { background:var(--accent-3); border:1px solid var(--accent-2); border-radius:0.75rem; padding:1rem; margin-bottom:1.25rem; }
-.thought-box .form-label { color:var(--accent); }
-.loading { display:flex; align-items:center; gap:0.5rem; padding:3rem 0; justify-content:center;
-    font-family:'DM Mono',monospace; font-size:0.7rem; color:rgba(255,255,255,0.2); }
-.loading-dot { width:5px; height:5px; border-radius:50%; background:var(--accent); animation:ldot 1.2s ease-in-out infinite; }
-.loading-dot:nth-child(2){animation-delay:0.2s} .loading-dot:nth-child(3){animation-delay:0.4s}
-@keyframes ldot { 0%,100%{opacity:0.2;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
-/* ── CROPPER ── */
-.cropper-overlay { position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.92); backdrop-filter:blur(24px);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem;
-    opacity:0; pointer-events:none; transition:opacity 0.25s; padding:1.5rem; }
-.cropper-overlay.open { opacity:1; pointer-events:all; }
-.cropper-canvas-wrap { position:relative; overflow:hidden; border-radius:1rem;
-    border:1px solid rgba(232,120,64,0.2); background:#000;
-    width:100%; max-width:520px; touch-action:none; cursor:grab; }
-.cropper-canvas-wrap:active { cursor:grabbing; }
-.cropper-canvas-wrap canvas { display:block; width:100%; height:100%; }
-.cropper-controls { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; justify-content:center; }
-.cropper-btn { padding:0.55rem 1.1rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-    border-radius:0.75rem; color:rgba(255,255,255,0.6); font-family:'DM Mono',monospace; font-size:0.6rem;
-    letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
-.cropper-btn:hover { background:rgba(255,255,255,0.12); color:#fff; }
-.cropper-zoom { display:flex; align-items:center; gap:0.5rem; }
-.cropper-zoom input[type=range] { width:120px; accent-color:var(--accent); }
-.cropper-actions { display:flex; gap:0.75rem; }
+.toggle-slider { position:absolute; inset:0; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:9999px; cursor:pointer; transition:0.25s; }
+.toggle-slider::before { content:''; position:absolute; width:0.85rem; height:0.85rem; left:0.2rem; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.4); border-radius:50%; transition:0.25s; }
+.toggle input:checked + .toggle-slider { background:var(--el-accent-2); border-color:var(--el-accent); }
+.toggle input:checked + .toggle-slider::before { transform:translateX(1.1rem) translateY(-50%); background:var(--el-accent); }
+.modal-actions { display:flex; gap:0.75rem; margin-top:1.5rem; }
+.modal-actions .btn-ghost { flex:1; text-align:center; }
+.modal-actions .btn-primary { flex:2; text-align:center; }
 
+/* ── LOADING & TOAST ── */
+.loading { display:flex; align-items:center; gap:0.5rem; padding:3rem 0; justify-content:center; font-family:'DM Mono',monospace; font-size:0.7rem; color:rgba(255,255,255,0.2); }
+.loading-dot { width:5px; height:5px; border-radius:50%; background:var(--el-accent); animation:ldot 1.2s ease-in-out infinite; }
+.loading-dot:nth-child(2) { animation-delay:0.2s; }
+.loading-dot:nth-child(3) { animation-delay:0.4s; }
+@keyframes ldot { 0%,100%{opacity:0.2;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
 .toast-area { position:fixed; bottom:2rem; right:2rem; z-index:999; display:flex; flex-direction:column; gap:0.5rem; }
-.toast { padding:0.75rem 1.25rem; background:rgba(12,3,0,0.96); border:1px solid rgba(255,255,255,0.1); border-radius:0.75rem;
-    font-size:0.82rem; color:#fff; animation:toastIn 0.3s var(--ease); max-width:280px; }
-.toast.success { border-color:var(--accent); color:var(--accent); }
+.toast { padding:0.75rem 1.25rem; background:rgba(14,14,22,0.95); border:1px solid rgba(255,255,255,0.1); border-radius:0.75rem; font-size:0.82rem; color:#fff; animation:toastIn 0.3s var(--ease); max-width:280px; backdrop-filter:blur(20px); }
+.toast.success { border-color:var(--el-accent); color:var(--el-accent); }
 .toast.error { border-color:#e05a3a; color:#e05a3a; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 @keyframes toastIn { from{opacity:0;transform:translateX(1rem)} to{opacity:1;transform:translateX(0)} }
 
-
-/* ── ЛЕНТА ДРУЗЕЙ ── */
-.feed-section-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:1.25rem; }
-.feed-list { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
-@media(max-width:700px){.feed-list{grid-template-columns:1fr}}
-.feed-item { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:1.25rem;
-    padding:0; transition:border-color 0.3s,background 0.3s; overflow:hidden; }
-.feed-item:hover { border-color:var(--accent-2); background:rgba(232,120,64,0.04); }
-.feed-item-body { padding:1.4rem; }
-.feed-item-header { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.85rem; }
-.feed-avatar { width:1.8rem; height:1.8rem; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-family:'DM Mono',monospace; font-size:0.65rem; font-weight:600; color:#05050a; flex-shrink:0; }
-.feed-author { flex:1; }
-.feed-author-name { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.6); }
-.feed-author-time { font-family:'DM Mono',monospace; font-size:0.52rem; color:rgba(255,255,255,0.2); margin-top:0.15rem; }
-.feed-col-title { font-size:1.1rem; font-weight:300; color:#fff; margin-bottom:0.3rem; line-height:1.3; }
-.feed-col-desc { font-size:0.85rem; color:rgba(255,255,255,0.3); line-height:1.6; margin-bottom:0.6rem; }
-.feed-col-element { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--accent); opacity:0.6; display:flex; align-items:center; gap:0.35rem; margin-bottom:0.6rem; }
-.feed-col-dot { width:4px; height:4px; border-radius:50%; background:var(--accent); }
-.feed-mats-preview { display:flex; flex-direction:column; gap:0.3rem; }
-.feed-mat { font-size:0.82rem; color:rgba(255,255,255,0.38); padding:0.25rem 0;
-    border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:baseline; gap:0.5rem; }
-.feed-mat:last-child { border-bottom:none; }
-.feed-mat-num { font-family:'DM Mono',monospace; font-size:0.5rem; color:rgba(255,255,255,0.18); flex-shrink:0; }
-.feed-mat-title { cursor:pointer; transition:color 0.2s; flex:1; }
-.feed-mat-title:hover { color:#fff; }
-.feed-mat-domain { font-family:'DM Mono',monospace; font-size:0.5rem; color:var(--accent); opacity:0.5; flex-shrink:0; }
-.feed-more { font-family:'DM Mono',monospace; font-size:0.52rem; letter-spacing:0.1em; text-transform:uppercase;
-    color:rgba(255,255,255,0.2); margin-top:0.6rem; display:block; }
-.feed-invite-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;
-    margin-top:1.5rem; padding:1.25rem 1.5rem; background:rgba(255,255,255,0.02);
-    border:1px dashed rgba(255,255,255,0.07); border-radius:1.25rem; }
-.feed-invite-text { font-size:0.88rem; color:rgba(255,255,255,0.28); line-height:1.6; }
-.feed-invite-text strong { color:rgba(255,255,255,0.55); font-weight:400; }
-
-/* ── ЗАМОРОЗКА ── */
-.col-card-frozen { position:relative; pointer-events:none; }
-.col-card-frozen::after {
-    content:''; position:absolute; inset:0; border-radius:1.25rem; z-index:10;
-    background:linear-gradient(145deg, rgba(140,210,255,0.18) 0%, rgba(180,230,255,0.08) 50%, rgba(120,190,255,0.14) 100%);
-    border:1px solid rgba(160,220,255,0.25); backdrop-filter:blur(3px);
+@media (max-width:768px) {
+    .header { padding:0.75rem 1rem; }
+    .main { padding:2rem 1.25rem 4rem; }
+    .collections-grid { grid-template-columns:1fr; }
+    .element-selector { grid-template-columns:repeat(2,1fr); }
+    .btn-primary { font-size:0.58rem; padding:0.45rem 0.9rem; }
 }
-.col-card-frozen .col-card-title,
-.col-card-frozen .col-card-desc { filter:blur(3px); user-select:none; }
-.freeze-banner {
-    margin-top:1.5rem; padding:2rem 2.5rem;
-    background:linear-gradient(145deg, rgba(140,210,255,0.06) 0%, rgba(180,230,255,0.03) 100%);
-    border:1px solid rgba(160,220,255,0.15); border-radius:1.25rem; position:relative; overflow:hidden;
-}
-.freeze-banner::before {
-    content:''; position:absolute; inset:0;
-    background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(160,220,255,0.08) 0%, transparent 60%);
-    pointer-events:none;
-}
-.freeze-banner-title { font-size:1.1rem; font-weight:300; color:rgba(180,230,255,0.8); margin-bottom:0.75rem; position:relative; }
-.freeze-banner-text { font-size:0.88rem; color:rgba(255,255,255,0.3); line-height:1.85; position:relative; }
-.freeze-banner-text strong { color:rgba(255,255,255,0.6); font-weight:400; }
-@keyframes fadeUp   { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-@keyframes fadeDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
-@keyframes slideUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-@media (max-width:768px) { .header{padding:1rem 1.25rem} .main{padding:2rem 1.25rem 4rem} .collections-grid{grid-template-columns:1fr} .element-selector{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
-<body>
+<body class="element-fire">
 
+<!-- BG -->
 <div class="bg-layer">
-    <div class="fire-dark"></div>
-    <div class="fire-core"></div>
-    <div class="fire-flames-bg">
-        <div class="fire-flame-bg"></div>
-        <div class="fire-flame-bg"></div>
-        <div class="fire-flame-bg"></div>
-        <div class="fire-flame-bg"></div>
-        <div class="fire-flame-bg"></div>
+    <div class="bg-fire">
+        <div class="fire-dark"></div>
+        <div class="fire-core"></div>
+        <div class="fire-flames-bg">
+            <div class="fire-flame-bg"></div>
+            <div class="fire-flame-bg"></div>
+            <div class="fire-flame-bg"></div>
+            <div class="fire-flame-bg"></div>
+            <div class="fire-flame-bg"></div>
+        </div>
+        <div class="fire-heat"></div>
+        <div class="fire-embers-bg" id="fire-embers"></div>
     </div>
-    <div class="fire-heat"></div>
-    <div class="fire-particles" id="fire-pts"></div>
+    <div class="bg-vignette"></div>
 </div>
 <div class="grain"></div>
 <div class="toast-area" id="toast-area"></div>
 
+<!-- HEADER -->
 <header class="header">
     <div class="header-left">
-        <a href="stihii.html" class="logo-btn">БУДУМ</a>
-        <div class="element-pill" onclick="window.location.href='stihii.html'">
+        <a href="/коллекции/" class="logo-btn">БУДУМ</a>
+        <div class="element-pill" onclick="window.location.href='/stihii/'" title="Сменить стихию">
             <div class="element-pill-dot"></div>
             <span class="element-pill-name">Огонь</span>
         </div>
     </div>
     <div class="header-right">
         <button class="btn-primary" onclick="openCreateModal()">+ Коллекция</button>
-        <div class="user-avatar" id="user-avatar" onclick="window.location.href='profile.html'">?</div>
+        <div class="user-avatar" id="user-avatar" onclick="window.location.href='/profile/'">?</div>
     </div>
 </header>
 
+<!-- MAIN -->
 <main class="main">
     <div class="hero">
         <div class="hero-eyebrow">Твоя стихия сейчас</div>
         <h1 class="hero-title">Огонь</h1>
-        <p class="hero-sub">Здесь всё, что тебя зажигает, двигает и наполняет силой.</p>
+        <p class="hero-sub">Здесь всё, что тебя зажигает, двигает и создаёт.</p>
     </div>
+
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('mine',this)">Мои коллекции</button>
-        <button class="tab" onclick="switchTab('friends',this)">Лента друзей</button>
+        <button class="tab active" onclick="switchTab('mine', this)">Мои коллекции</button>
+        <button class="tab" onclick="switchTab('friends', this)">Лента</button>
     </div>
+
     <div class="panel active" id="panel-mine">
         <div class="collections-header">
             <div class="section-title">Коллекции</div>
-            <div class="section-count" id="mine-count"></div>
+            <div class="section-count" id="mine-count">загружаем...</div>
         </div>
         <div id="mine-grid"><div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем</span></div></div>
     </div>
-    <div class="panel" id="panel-friends"><div id="friends-content"></div></div>
+
+    <div class="panel" id="panel-friends">
+        <div class="collections-header">
+            <div class="section-title">Лента</div>
+            <div class="section-count" id="friends-count"></div>
+        </div>
+        <div id="friends-feed"><div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем</span></div></div>
+    </div>
 </main>
 
-<!-- MODAL: CREATE / EDIT COLLECTION -->
+<!-- MODAL: CREATE COLLECTION -->
 <div class="modal-overlay" id="create-modal" onclick="if(event.target===this)closeCreateModal()">
     <div class="modal">
-        <div class="modal-head"><div class="modal-title" id="col-modal-title">Новая коллекция</div><button class="modal-close" onclick="closeCreateModal()">×</button></div>
-        <!-- обложка в модале -->
-        <div class="form-group">
-            <label class="form-label">Обложка</label>
-            <div id="col-cover-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;height:140px;">
-                <img id="col-cover-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-            </div>
-            <div style="display:flex;gap:0.5rem">
-                <button type="button" class="btn-ghost" style="flex:1;justify-content:center" onclick="triggerModalCoverUpload()">
-                    <span id="col-cover-btn-label">+ Загрузить обложку</span>
-                </button>
-                <button type="button" id="col-cover-crop-btn" class="btn-ghost" style="display:none;padding:0.5rem 0.9rem;flex-shrink:0" onclick="triggerCoverRecrop()" title="Кадрировать">⊡ Кадрировать</button>
-            </div>
+        <div class="modal-head">
+            <div class="modal-title">Новая коллекция</div>
+            <button class="modal-close" onclick="closeCreateModal()">×</button>
         </div>
-        <div class="form-group"><label class="form-label">Название <span class="req">*</span></label><input class="form-input" id="col-title" placeholder="Треки для бега..."></div>
-        <div class="form-group"><label class="form-label">Описание</label><textarea class="form-textarea" id="col-desc" placeholder="О чём эта коллекция..."></textarea></div>
+        <div class="form-group">
+            <label class="form-label">Название <span class="req">*</span></label>
+            <input class="form-input" id="col-title" placeholder="Фильмы для расслабления...">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Описание</label>
+            <textarea class="form-textarea" id="col-desc" placeholder="О чём эта коллекция для тебя..."></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Группа <span style="color:rgba(255,255,255,0.2);font-size:0.9em;">(необязательно)</span></label>
+            <input class="form-input" id="col-group" placeholder="Например: Кино, Музыка, Путешествия...">
+        </div>
         <div class="form-group">
             <label class="form-label">Стихия</label>
             <div class="element-selector">
@@ -401,773 +326,540 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
                 <button class="el-sel-btn" data-el="earth" onclick="selectElement('earth',this)"><span class="el-icon">◉</span>Земля</button>
             </div>
         </div>
-        <div class="toggle-row"><span class="toggle-label">Публичная</span><label class="toggle"><input type="checkbox" id="col-public" checked><span class="toggle-slider"></span></label></div>
-        <div class="modal-actions" style="justify-content:space-between;align-items:center">
-            <div style="display:flex;gap:0.75rem;align-items:center">
-                <button class="btn-ghost" onclick="closeCreateModal()">Отмена</button>
-                <button id="col-delete-btn" class="btn-ghost" style="color:rgba(255,100,80,0.6);border-color:rgba(255,100,80,0.2);display:none" onclick="deleteCollectionFromModal()">Удалить</button>
-            </div>
-            <button class="btn-primary" id="col-save-btn" onclick="saveCollection()" style="flex:none">Создать →</button>
+        <div class="toggle-row">
+            <span class="toggle-label">Публичная (видна в ленте)</span>
+            <label class="toggle"><input type="checkbox" id="col-public" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-ghost" onclick="closeCreateModal()">Отмена</button>
+            <button class="btn-primary" onclick="saveCollection()">Создать →</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL: CREATE / EDIT MATERIAL -->
+<!-- MODAL: ADD MATERIAL -->
 <div class="modal-overlay" id="material-modal" onclick="if(event.target===this)closeMaterialModal()">
     <div class="modal">
-        <div class="modal-head"><div class="modal-title" id="mat-modal-title">Добавить материал</div><button class="modal-close" onclick="closeMaterialModal()">×</button></div>
-        <!-- миниатюра в модале -->
-        <div class="form-group">
-            <label class="form-label">Фото</label>
-            <div id="mat-thumb-preview" style="display:none;margin-bottom:0.6rem;border-radius:0.75rem;overflow:hidden;aspect-ratio:4/3;max-height:260px;">
-                <img id="mat-thumb-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-            </div>
-            <div style="display:flex;gap:0.5rem">
-                <button type="button" class="btn-ghost" style="flex:1;justify-content:center" onclick="triggerModalThumbUpload()">
-                    <span id="mat-thumb-btn-label">+ Загрузить фото</span>
-                </button>
-                <button type="button" id="mat-thumb-crop-btn" class="btn-ghost" style="display:none;padding:0.5rem 0.9rem;flex-shrink:0" onclick="triggerThumbRecrop()" title="Кадрировать">⊡ Кадрировать</button>
-            </div>
+        <div class="modal-head">
+            <div class="modal-title" id="mat-modal-title">Добавить материал</div>
+            <button class="modal-close" onclick="closeMaterialModal()">×</button>
+        </div>
+        <div class="mat-type-tabs">
+            <button class="mat-type-btn active" data-type="link" onclick="setMatType('link',this)">↗ Ссылка</button>
+            <button class="mat-type-btn" data-type="note" onclick="setMatType('note',this)">✎ Заметка</button>
+            <button class="mat-type-btn" data-type="image" onclick="setMatType('image',this)">◻ Образ</button>
         </div>
         <div id="mat-link-fields">
             <div class="form-group"><label class="form-label">URL <span class="req">*</span></label><input class="form-input" id="mat-url" type="url" placeholder="https://..."></div>
-            <div class="form-group"><label class="form-label">Заголовок <span class="req">*</span></label><input class="form-input" id="mat-title" placeholder="Название"></div>
+            <div class="form-group"><label class="form-label">Заголовок <span class="req">*</span></label><input class="form-input" id="mat-title" placeholder="Название материала"></div>
+            <div class="form-group"><label class="form-label">Источник</label><input class="form-input" id="mat-source" placeholder="Netflix, YouTube, The Bell..."></div>
         </div>
-        <div class="thought-box"><label class="form-label">Твоя мысль <span class="req">*</span></label><textarea class="form-textarea" id="mat-thought" style="background:transparent;border:none;padding:0.4rem 0" placeholder="Почему это важно?"></textarea></div>
+        <div id="mat-note-fields" style="display:none">
+            <div class="form-group"><label class="form-label">Заголовок</label><input class="form-input" id="mat-note-title" placeholder="Название заметки"></div>
+        </div>
+        <div id="mat-image-fields" style="display:none">
+            <div class="form-group"><label class="form-label">URL изображения <span class="req">*</span></label><input class="form-input" id="mat-image-url" type="url" placeholder="https://..."></div>
+            <div class="form-group"><label class="form-label">Подпись</label><input class="form-input" id="mat-image-caption" placeholder="Что это для тебя значит..."></div>
+        </div>
+        <div style="background:var(--el-accent-3);border:1px solid var(--el-accent-2);border-radius:0.75rem;padding:1rem;margin-bottom:1.25rem;">
+            <label class="form-label" style="color:var(--el-accent)">Твоя мысль <span class="req">*</span></label>
+            <textarea class="form-textarea" id="mat-thought" style="background:transparent;border:none;padding:0.4rem 0;font-style:italic;" placeholder="Почему это важно для тебя?"></textarea>
+        </div>
         <div class="form-group"><label class="form-label">Коллекция <span class="req">*</span></label><select class="form-select" id="mat-collection"></select></div>
-        <div class="modal-actions" style="justify-content:space-between;align-items:center">
-            <div style="display:flex;gap:0.75rem;align-items:center">
-                <button class="btn-ghost" onclick="closeMaterialModal()">Отмена</button>
-                <button id="mat-delete-btn" class="btn-ghost" style="color:rgba(255,100,80,0.6);border-color:rgba(255,100,80,0.2);display:none" onclick="deleteMaterialFromModal()">Удалить</button>
-            </div>
-            <button class="btn-primary" id="mat-save-btn" onclick="saveMaterial()" style="flex:none">Сохранить →</button>
+        <div class="modal-actions">
+            <button class="btn-ghost" onclick="closeMaterialModal()">Отмена</button>
+            <button class="btn-primary" onclick="saveMaterial()">Сохранить →</button>
         </div>
     </div>
 </div>
 
-<script type="module">
-import { supabase, LIMITS, getCurrentUser, checkCollectionLimit, checkMaterialLimit } from './js/supabase-client.js'
+<script>
+// ── STATE ──
+let currentUser = null;
+const currentElement = 'fire';
+let collectionsCache = {};
+let selectedElement = 'fire';
+let currentMatType = 'link';
+const DIANA_USER_ID = 2;
 
-const ELEMENT = 'fire'
-const ELEMENT_NAMES = { water:'Вода', air:'Воздух', fire:'Огонь', earth:'Земля' }
-let currentUser = null, userTier = 'seeker', selectedElement = 'fire', currentMatType = 'link'
-
-// ── ИСКРЫ ──
-function spawnSparks() {
-    const c = document.getElementById('fire-pts')
-    if (!c) return
-    const styleEl = document.createElement('style')
-    let css = ''
-    for (let i = 0; i < 40; i++) {
-        const sz = 1.5 + Math.random() * 4
-        const left = 15 + Math.random() * 70
-        const bottom = Math.random() * 25
-        const tx = (Math.random() - 0.5) * 80
-        const ty = -(80 + Math.random() * 180)
-        const dur = 1.5 + Math.random() * 3
-        const delay = -(Math.random() * 8)
-        const name = `spark${i}`
-        const r = Math.floor(200 + Math.random() * 55)
-        const g = Math.floor(60 + Math.random() * 120)
-        css += `@keyframes ${name}{0%{transform:translateY(0) translateX(0) scale(0.3);opacity:0}5%{opacity:0.9}80%{opacity:0.4}100%{transform:translateY(${ty}px) translateX(${tx}px) scale(0.5);opacity:0}}`
-        const p = document.createElement('div')
-        p.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;left:${left}%;bottom:${bottom}%;border-radius:50%;background:radial-gradient(circle,rgba(${r},${g},20,0.95),transparent 70%);animation:${name} ${dur}s linear ${delay}s infinite;`
-        c.appendChild(p)
+// ── PARTICLES ──
+(function spawnEmbers() {
+    const fc = document.getElementById('fire-embers');
+    if (!fc) return;
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'fire-ember-bg';
+        const sz = 1.5 + Math.random() * 4;
+        p.style.cssText = `width:${sz}px;height:${sz}px;left:${10+Math.random()*80}%;bottom:${Math.random()*25}%;--t:${-(100+Math.random()*200)}px;--s:${(Math.random()-.5)*70}px;animation-duration:${2+Math.random()*3}s;animation-delay:-${Math.random()*5}s;`;
+        fc.appendChild(p);
     }
-    styleEl.textContent = css
-    document.head.appendChild(styleEl)
+})();
+
+// ── TOAST ──
+function toast(msg, type='') {
+    const a = document.getElementById('toast-area');
+    if (!a) return;
+    const d = document.createElement('div');
+    d.className = 'toast ' + type; d.textContent = msg;
+    a.appendChild(d); setTimeout(() => d.remove(), 3500);
 }
 
-spawnSparks()
-;(async () => {
-    const user = await getCurrentUser()
-    if (!user) { window.location.href = 'login.html'; return }
-    currentUser = user; userTier = user.profile?.tier || 'seeker'
-    const av = document.getElementById('user-avatar')
-    if (av) av.textContent = (user.profile?.nickname || '?').charAt(0).toUpperCase()
+// ── API ──
+function getNonce() { return window.budumConfig?.nonce || window.wpApiSettings?.nonce || ''; }
+async function api(path, opts={}) {
+    try {
+        const headers = {'Content-Type':'application/json','X-WP-Nonce':getNonce(),...(opts.headers||{})};
+        const res = await fetch('/wp-json/wp/v2/' + path, {credentials:'same-origin', headers, ...opts});
+        if (!res.ok) { console.error('API', path, res.status); return null; }
+        return res.json();
+    } catch(e) { console.error('API', path, e); return null; }
+}
 
-    const params = new URLSearchParams(window.location.search)
-    const viewNick = params.get('view')
-    if (viewNick && viewNick.toLowerCase() !== user.profile?.nickname?.toLowerCase()) {
-        const { data: fp } = await supabase.from('profiles').select('*').eq('nickname', viewNick).single()
-        if (!fp) { toast('Пользователь не найден', 'error'); await loadMyCollections(); return }
-        enterViewMode(fp)
-        return
+// ── AUTH ──
+async function checkAuth() {
+    if (window.budumConfig?.isLogged && window.budumConfig?.userId) {
+        currentUser = { id: window.budumConfig.userId, name: window.budumConfig.userName || 'Пользователь' };
+        const av = document.getElementById('user-avatar');
+        if (av) av.textContent = currentUser.name.charAt(0).toUpperCase();
+        return;
     }
-
-    await loadMyCollections()
-})()
-
-function enterViewMode(fp) {
-    const hero = document.querySelector('.hero')
-    if (hero) {
-        const banner = document.createElement('div')
-        banner.className = 'view-banner'
-        banner.innerHTML = `<a href="profile.html?user=${encodeURIComponent(fp.nickname)}" class="view-back">← ${fp.nickname}</a><span class="view-label">публичные коллекции</span>`
-        hero.before(banner)
-        const eyebrow = document.getElementById('hero-eyebrow')
-        if (eyebrow) eyebrow.textContent = 'Стихия друга'
-    }
-    const createBtn = document.querySelector('.btn-primary[onclick*="openCreateModal"]')
-    if (createBtn) createBtn.style.display = 'none'
-    const tabs = document.querySelector('.tabs')
-    if (tabs) tabs.style.display = 'none'
-    document.getElementById('panel-mine').classList.add('active')
-    loadFriendCollections(fp)
-}
-
-async function loadFriendCollections(fp) {
-    const grid = document.getElementById('mine-grid')
-    const countEl = document.getElementById('mine-count')
-    grid.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем</span></div>'
-    const { data: cols } = await supabase.from('collections').select('*, materials(count)').eq('user_id', fp.id).eq('element', ELEMENT).eq('is_public', true).order('created_at', { ascending: false })
-    if (countEl) countEl.textContent = cols?.length ? `${cols.length} коллекций` : ''
-    if (!cols?.length) {
-        grid.innerHTML = `<div class="empty-state"><div class="empty-glyph">◎</div><div class="empty-title">Пока тихо</div><div class="empty-sub">У ${fp.nickname} нет публичных коллекций в этой стихии.</div></div>`
-        return
-    }
-    grid.innerHTML = ''
-    const gridDiv = document.createElement('div')
-    gridDiv.className = 'collections-grid'
-    for (const col of cols) gridDiv.appendChild(renderFriendCard(col, fp))
-    grid.appendChild(gridDiv)
-}
-
-function renderFriendCard(col, fp) {
-    const matCount = col.materials?.[0]?.count || 0
-    const card = document.createElement('div')
-    card.className = 'col-card'
-    const coverHtml = col.cover_url
-        ? `<img class="col-cover" src="${col.cover_url}" alt="" loading="lazy">`
-        : ''
-    card.innerHTML = `
-        ${coverHtml ? `<div>${coverHtml}</div>` : ''}
-        <div class="col-card-body">
-          <div class="col-card-header" style="cursor:default">
-            <div class="col-card-title">${col.title}</div>
-            ${col.description ? `<div class="col-card-desc">${col.description}</div>` : ''}
-            <div class="col-card-footer">
-                <div class="col-card-meta">${matCount} материалов · ${formatDate(col.created_at)}</div>
-                <span class="card-arrow" style="cursor:pointer">↓</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-card-expand" id="exp-${col.id}">
-            <div id="fmats-${col.id}"></div>
-        </div>`
-    card.querySelector('.col-card-header').addEventListener('click', () => toggleFriendExpand(col.id))
-    return card
-}
-
-function renderMaterialItem(m, i) {
-    const thumb = m.thumbnail_url
-        ? `<div class="mat-thumb" style="flex-shrink:0"><img src="${m.thumbnail_url}" alt=""></div>`
-        : ''
-    return `<div class="mat-row">${thumb}<div class="mat-row-body" style="flex:1;min-width:0">
-        <div class="mat-row-title">${m.title}</div>
-        ${m.comment ? `<div class="mat-row-thought">${m.comment}</div>` : ''}
-        ${m.url ? `<div class="mat-row-domain" onclick="window.open('${m.url}','_blank')">↗ ${getDomain(m.url)}</div>` : ''}
-    </div></div>`
-}
-
-window.toggleFriendExpand = async function(colId) {
-    const exp = document.getElementById(`exp-${colId}`)
-    const mats = document.getElementById(`fmats-${colId}`)
-    if (!exp) return
-    const open = exp.classList.toggle('open')
-    if (open && mats && !mats.dataset.loaded) {
-        mats.dataset.loaded = '1'
-        mats.innerHTML = '<div class="loading"><div class="loading-dot"></div><span>загружаем</span></div>'
-        const { data: ms } = await supabase.from('materials').select('*').eq('collection_id', colId).order('created_at').limit(20)
-        if (!ms?.length) { mats.innerHTML = '<div class="mat-empty">Нет материалов</div>'; return }
-        mats.innerHTML = ms.map((m, i) => renderMaterialItem(m, i)).join('')
+    const data = await api('users/me');
+    if (data?.id) {
+        currentUser = { id: data.id, name: data.name };
+        const av = document.getElementById('user-avatar');
+        if (av) av.textContent = data.name.charAt(0).toUpperCase();
     }
 }
 
-window.switchTab = (tab, btn) => { document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); document.getElementById('panel-'+tab).classList.add('active'); if(tab==='friends') loadFriends() }
-function toast(msg, type='') { const a=document.getElementById('toast-area'); const d=document.createElement('div'); d.className='toast '+type; d.textContent=msg; a.appendChild(d); setTimeout(()=>d.remove(),3500) }
-function getDomain(url) { try{return new URL(url).hostname.replace(/^www./,'')}catch{return ''} }
-function formatDate(iso) { try{return new Date(iso).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}catch{return ''} }
+// ── HELPERS ──
+function getUrl(m) { return m?.url?.startsWith?.('http') ? m.url : m?.meta?.url?.startsWith?.('http') ? m.meta.url : ''; }
+function getComment(m) { return m?.comment || m?.meta?.comment || ''; }
+function getDomain(url) { try { return new URL(url).hostname.replace(/^www\./,'') } catch { return '' } }
+function formatDate(iso) { try { return new Date(iso).toLocaleDateString('ru-RU',{day:'numeric',month:'long'}) } catch { return '' } }
 
+function getElementFromCollection(c) {
+    const map = {'вода':'water','воздух':'air','огонь':'fire','земля':'earth','water':'water','air':'air','fire':'fire','earth':'earth'};
+    let e = c?.element || c?.meta?.element || '';
+    if (Array.isArray(e)) e = e[0] || '';
+    return map[(typeof e === 'string' ? e.toLowerCase().trim() : '')] || '';
+}
+
+function isPublic(c) {
+    const privacy = Array.isArray(c.privacy) ? c.privacy.join('') : (c.privacy || '');
+    const p = privacy.toLowerCase();
+    return !(p.includes('private') || p.includes('приватн'));
+}
+
+function isMyCollection(c) {
+    if (!currentUser) return false;
+    const uid = String(currentUser.id);
+    const authors = c.collection_author;
+    if (authors && Array.isArray(authors) && authors.length) {
+        return authors.some(a => typeof a === 'object' ? String(a.ID||a.id||'') === uid : String(a) === uid);
+    }
+    if (authors && !Array.isArray(authors)) return String(authors) === uid;
+    return c.author ? String(c.author) === uid : false;
+}
+
+function getAuthorId(c) {
+    const authors = c.collection_author;
+    if (Array.isArray(authors) && authors.length) {
+        const a = authors[0];
+        return String(typeof a === 'object' ? (a.ID||a.id||'') : a);
+    }
+    if (authors && !Array.isArray(authors)) return String(authors);
+    return String(c.author || '');
+}
+
+function getCoverUrl(c) { return c.cover_url || c.meta?.cover_url || ''; }
+function getGroupName(c) { return c.group_name || c.meta?.group_name || ''; }
+
+function pluralMat(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return '';
+    if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'а';
+    return 'ов';
+}
+function pluralCol(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'ия';
+    if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 'ии';
+    return 'ий';
+}
+
+// ── МОИ КОЛЛЕКЦИИ ──
 async function loadMyCollections() {
-    const grid = document.getElementById('mine-grid')
-    const { data: cols, error } = await supabase.from('collections').select('*, materials(count)').eq('user_id',currentUser.id).order('created_at',{ascending:false})
-    if (error) { grid.innerHTML='<div class="empty-state"><div class="empty-title">Ошибка загрузки</div></div>'; return }
-    const elCols = cols.filter(c=>c.element===ELEMENT)
-    const limit = LIMITS[userTier].collections_per_element
-    document.getElementById('mine-count').textContent = `${elCols.length} коллекций`
-    if (!elCols.length) { grid.innerHTML=`<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Пока пусто</div><div class="empty-sub">Создай первую коллекцию огня — всё, что тебя зажигает.</div></div>`; return }
-    grid.innerHTML=''; const gd=document.createElement('div'); gd.className='collections-grid'
-    const frozenCols = userTier==='seeker' ? elCols.slice(limit) : []
-    const visibleCols = userTier==='seeker' ? elCols.slice(0, limit) : elCols
-    for (const col of visibleCols) gd.appendChild(renderCard(col))
-    for (const col of frozenCols) { const card=renderCard(col); card.classList.add('col-card-frozen'); gd.appendChild(card) }
-    grid.appendChild(gd)
-    if (frozenCols.length > 0) {
-        const b=document.createElement('div'); b.className='freeze-banner'
-        b.innerHTML=`<div class="freeze-banner-title">❄ Вы отключили подписку</div><div class="freeze-banner-text">Ваши <strong>${elCols.length} коллекций</strong> заморожены в вечном льду. Вы видите только первые <strong>${limit} коллекции</strong> и все материалы внутри них. Остальные <strong>${frozenCols.length} коллекции</strong> не удалены — они ждут вашего возвращения.<br><br>Как только вы снова станете Хранителем — они разморозятся в том же виде, в котором вы их оставили.</div><button class="btn-primary" style="margin-top:1.25rem" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>`
-        grid.appendChild(b)
-    } else if (elCols.length>=limit && userTier==='seeker') { const b=document.createElement('div'); b.className='limit-banner'; b.innerHTML=`<div class="limit-banner-title">◈ Коллекций огня: ${elCols.length} из ${limit}</div><div class="limit-banner-sub">У Искателя — 3 коллекции в каждой стихии.<br>Стань Хранителем — открой до 20.</div><button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>`; grid.appendChild(b) }
-}
+    const grid = document.getElementById('mine-grid');
+    const countEl = document.getElementById('mine-count');
+    if (!grid) return;
 
-function renderCard(col) {
-    const matCount = col.materials?.[0]?.count||0; const elName=ELEMENT_NAMES[col.element]||col.element
-    const card=document.createElement('div'); card.className='col-card'
-    const coverHtml = col.cover_url
-        ? `<img class="col-cover" src="${col.cover_url}" alt="" loading="lazy">`
-        : ''
-    card.innerHTML=`
-        ${coverHtml ? `<div>${coverHtml}</div>` : ''}
-        <div class="col-card-body">
-          <div class="col-card-header" data-col-id="${col.id}">
-            <div class="col-card-element"><div class="col-card-element-dot"></div>${elName}</div>
-            <div class="col-card-title">${col.title}</div>
-            ${col.description?`<div class="col-card-desc">${col.description}</div>`:''}
-            <div class="col-card-footer"><div class="col-card-meta">${matCount} материалов · ${formatDate(col.created_at)}</div><span class="card-arrow">↓</span></div>
-          </div>
-        </div>
-        <div class="col-card-expand" id="exp-${col.id}">
-          <div id="mats-${col.id}"><div class="loading"><div class="loading-dot"></div><span>загружаем</span></div></div>
-          <div class="col-card-controls" style="padding:0 1.4rem 1.2rem"><button class="btn-add-mat" data-col-id="${col.id}">+ Материал</button><button class="btn-edit-col" data-col-id="${col.id}">Редактировать</button></div>
-        </div>`
-    return card
-}
-
-document.addEventListener('click', async e => {
-    const h=e.target.closest('.col-card-header'); if(h){const id=h.dataset.colId;const exp=document.getElementById('exp-'+id);const arrow=h.querySelector('.card-arrow');if(!exp)return;const open=exp.classList.toggle('open');if(arrow)arrow.style.transform=open?'rotate(180deg)':'';if(open)await loadMaterials(id);return}
-    const add=e.target.closest('.btn-add-mat');if(add){e.stopPropagation();openAddMaterial(add.dataset.colId);return}
-    const editCol=e.target.closest('.btn-edit-col');if(editCol){e.stopPropagation();openEditCollection(editCol.dataset.colId);return}
-    const editMat=e.target.closest('.mat-edit-btn');if(editMat){e.stopPropagation();openEditMaterial(editMat.dataset.matId,editMat.dataset.colId);return}
-})
-
-async function loadMaterials(colId) {
-    const c=document.getElementById('mats-'+colId);if(!c)return
-    const{data:mats}=await supabase.from('materials').select('*').eq('collection_id',colId).order('created_at')
-    if(!mats?.length){c.innerHTML='<div style="font-size:0.85rem;color:rgba(255,255,255,0.18);padding:0.5rem 0">Пока нет материалов</div>';return}
-    c.innerHTML=mats.map(m=>{
-        const thumb = m.thumbnail_url
-            ? `<div class="mat-thumb" style="flex-shrink:0"><img src="${m.thumbnail_url}" alt=""></div>`
-            : ''
-        return `<div class="mat-row">${thumb}<div class="mat-row-body" style="flex:1;min-width:0"><div class="mat-row-title">${m.title}</div>${m.comment?`<div class="mat-row-thought">${m.comment}</div>`:''}${m.url?`<div class="mat-row-domain" onclick="window.open('${m.url}','_blank')">↗ ${getDomain(m.url)}</div>`:''}</div><button class="mat-edit-btn" data-mat-id="${m.id}" data-col-id="${colId}" title="Редактировать" style="flex-shrink:0;background:none;border:none;color:rgba(255,255,255,0.25);cursor:pointer;font-size:0.9rem;padding:0.2rem 0.4rem;transition:color 0.2s" onmouseenter="this.style.color='rgba(255,255,255,0.7)'" onmouseleave="this.style.color='rgba(255,255,255,0.25)'">✎</button></div>`
-    }).join('')
-}
-
-async function loadFriends() {
-    const c = document.getElementById('friends-content')
-    if (userTier === 'seeker') {
-        c.innerHTML = `<div class="friends-locked"><div class="friends-locked-glyph">◈</div><div class="friends-locked-title">Лента друзей — для Хранителей</div><div class="friends-locked-sub">Подпишись чтобы видеть коллекции друзей.</div><button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button></div>`
-        return
+    if (!currentUser) {
+        grid.innerHTML = '<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Войди, чтобы видеть коллекции</div><button class="btn-primary" onclick="window.location.href=\'/login/\'">Войти →</button></div>';
+        if (countEl) countEl.textContent = '';
+        return;
     }
-    c.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем ленту</span></div>'
-    const { data: friendships } = await supabase.from('friendships').select('user_from, user_to').eq('status','accepted').or(`user_from.eq.${currentUser.id},user_to.eq.${currentUser.id}`)
-    if (!friendships?.length) { c.innerHTML = `<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Пока тихо</div><div class="empty-sub">Пригласи друзей — их коллекции появятся здесь.</div><button class="btn-ghost" style="margin-top:1rem" onclick="window.location.href='profile.html'">Пригласить друга →</button></div>`; return }
-    const friendIds = [...new Set(friendships.map(f => f.user_from === currentUser.id ? f.user_to : f.user_from).filter(Boolean))]
-    const { data: profiles } = await supabase.from('profiles').select('id, nickname, element').in('id', friendIds)
-    const { data: cols } = await supabase.from('collections').select('*, materials(count)').in('user_id', friendIds).eq('element', ELEMENT).eq('is_public', true).order('created_at', { ascending: false }).limit(30)
-    if (!cols?.length) { c.innerHTML = `<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Пока тихо</div><div class="empty-sub">У твоих друзей пока нет коллекций этой стихии.</div><button class="btn-ghost" style="margin-top:1rem" onclick="window.location.href='profile.html'">Пригласить друга →</button></div>`; return }
-    const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]))
-    const AVATAR_COLORS = { water:'linear-gradient(135deg,#0b2448,#1a6090)', air:'linear-gradient(135deg,#06040e,#c8a860)', fire:'linear-gradient(135deg,#3a0a02,#c04020)', earth:'linear-gradient(135deg,#0a1804,#3a7820)' }
-    c.innerHTML = ''
-    const header = document.createElement('div'); header.className = 'feed-section-header'
-    header.innerHTML = `<div class="section-title">Коллекции друзей</div><div class="section-count">${cols.length} коллекций</div>`
-    c.appendChild(header)
-    const list = document.createElement('div'); list.className = 'feed-list'
-    c.appendChild(list)
-    for (const col of cols) {
-        const profile = profileMap[col.user_id] || {}
-        const nick = profile.nickname || '?'
-        const el = profile.element || 'water'
-        const matCount = col.materials?.[0]?.count || 0
-        const item = document.createElement('div'); item.className = 'feed-item'
-        const coverBlock = col.cover_url ? `<img src="${col.cover_url}" alt="" style="width:100%;height:260px;object-fit:cover;display:block;border-radius:1.2rem 1.2rem 0 0;" loading="lazy">` : ''
-        item.innerHTML = `${coverBlock}<div class="feed-item-body"><div class="feed-item-header"><div class="feed-avatar" style="background:${AVATAR_COLORS[el] || AVATAR_COLORS.water}">${nick.charAt(0).toUpperCase()}</div><div class="feed-author"><div class="feed-author-name">${nick}</div><div class="feed-author-time">${formatDate(col.created_at)}</div></div></div><div class="feed-col-element"><div class="feed-col-dot"></div>${ELEMENT_NAMES[col.element] || col.element}</div><div class="feed-col-title">${col.title}</div>${col.description ? `<div class="feed-col-desc">${col.description}</div>` : ''}<div id="feed-mats-${col.id}" class="feed-mats-preview">${matCount > 0 ? `<div class="feed-more" style="cursor:pointer" onclick="loadFeedMaterials(${col.id})">↓ Показать ${matCount} материалов</div>` : '<div class="feed-more">Материалов пока нет</div>'}</div></div>`
-        list.appendChild(item)
+
+    const all = await api('collection?per_page=100') || [];
+    const uid = String(currentUser.id);
+
+    const mine = all.filter(c => {
+        const authors = c.collection_author;
+        if (!authors || authors === false) return c.author && String(c.author) === uid;
+        const arr = Array.isArray(authors) ? authors : [authors];
+        return arr.some(a => !a ? false : typeof a === 'object' ? String(a.ID||a.id||'') === uid : String(a) === uid);
+    }).filter(c => {
+        const el = getElementFromCollection(c);
+        return !el || el === currentElement;
+    });
+
+    if (countEl) countEl.textContent = mine.length + ' коллекций';
+
+    if (!mine.length) {
+        grid.innerHTML = '<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Пока нет коллекций в Огне</div><div class="empty-sub">Создай первую — сохрани то, что тебя зажигает</div><button class="btn-primary" onclick="openCreateModal()">+ Создать коллекцию</button></div>';
+        return;
     }
-    const inviteRow = document.createElement('div'); inviteRow.className = 'feed-invite-row'
-    inviteRow.innerHTML = `<div class="feed-invite-text">Хочешь видеть больше? <strong>Пригласи ещё друзей</strong></div><button class="btn-ghost" onclick="window.location.href='profile.html'">Пригласить →</button>`
-    c.appendChild(inviteRow)
+
+    const cards = await Promise.all(mine.map(async c => {
+        const mats = await getCollectionMaterials(c.id);
+        return renderCollectionCard(c, mats, true);
+    }));
+    grid.innerHTML = '<div class="collections-grid">' + cards.join('') + '</div>';
 }
 
+// ── ЛЕНТА ──
+async function loadFriendsFeed() {
+    const feedEl = document.getElementById('friends-feed');
+    const countEl = document.getElementById('friends-count');
+    if (!feedEl) return;
+    feedEl.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div><span>загружаем</span></div>';
 
-window.loadFeedMaterials = async function(colId) {
-    const container = document.getElementById(`feed-mats-${colId}`)
-    if (!container) return
-    container.innerHTML = '<div class="loading"><div class="loading-dot"></div><span>загружаем</span></div>'
-    const { data: mats } = await supabase.from('materials').select('*').eq('collection_id', colId).order('created_at').limit(10)
-    if (!mats?.length) { container.innerHTML = '<div class="feed-more">Нет материалов</div>'; return }
-    container.innerHTML = mats.map((m, i) => {
-        const thumb = m.thumbnail_url ? `<img src="${m.thumbnail_url}" alt="" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;flex-shrink:0;">` : ''
-        return `<div class="feed-mat" style="display:flex;gap:0.75rem;align-items:flex-start;padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-            ${thumb}
-            <div style="flex:1;min-width:0">
-                <div class="feed-mat-title" style="font-size:1.1rem;color:rgba(255,255,255,0.8);margin-bottom:0.2rem">${m.title}</div>
-                ${m.comment ? `<div style="font-size:0.9rem;font-style:italic;color:rgba(255,255,255,0.35);margin-bottom:0.2rem">${m.comment}</div>` : ''}
-                ${m.url ? `<div class="mat-row-domain" onclick="window.open('${m.url}','_blank')">↗ ${getDomain(m.url)}</div>` : ''}
-            </div>
-        </div>`
-    }).join('')
-}
+    const all = await api('collection?per_page=100') || [];
 
-// ── состояние модалей ──
-let editingColId = null, editingMatId = null, editingMatColId = null
-let pendingCoverFile = null, pendingThumbFile = null
+    const friendCols = all.filter(c => {
+        if (isMyCollection(c)) return false;
+        if (!isPublic(c)) return false;
+        if (getAuthorId(c) !== String(DIANA_USER_ID)) return false;
+        const el = getElementFromCollection(c);
+        return !el || el === currentElement;
+    });
 
-// ── КОЛЛЕКЦИЯ: открыть создание ──
-window.openCreateModal=async()=>{
-    const can=await checkCollectionLimit(currentUser.id,ELEMENT,userTier)
-    if(!can){toast(userTier==='seeker'?'Лимит 3 коллекции. Стань Хранителем!':'Лимит 20 коллекций','error');return}
-    editingColId=null; pendingCoverFile=null
-    document.getElementById('col-modal-title').textContent='Новая коллекция'
-    document.getElementById('col-save-btn').textContent='Создать →'
-    document.getElementById('col-title').value=''
-    document.getElementById('col-desc').value=''
-    document.getElementById('col-cover-preview').style.display='none'
-    document.getElementById('col-cover-btn-label').textContent='+ Загрузить обложку'
-    document.getElementById('col-cover-crop-btn').style.display='none'
-    selectElement(ELEMENT,document.querySelector(`.el-sel-btn[data-el="${ELEMENT}"]`))
-    document.getElementById('create-modal').classList.add('open')
-    document.body.style.overflow='hidden'
-}
+    const groups = {};
+    const soloCollections = [];
 
-// ── КОЛЛЕКЦИЯ: открыть редактирование ──
-async function openEditCollection(colId) {
-    const{data:col}=await supabase.from('collections').select('*').eq('id',colId).single()
-    if(!col) return
-    editingColId=colId; pendingCoverFile=null
-    document.getElementById('col-modal-title').textContent='Редактировать коллекцию'
-    document.getElementById('col-save-btn').textContent='Сохранить →'
-    document.getElementById('col-title').value=col.title||''
-    document.getElementById('col-desc').value=col.description||''
-    document.getElementById('col-public').checked=col.is_public!==false
-    if(col.cover_url){
-        document.getElementById('col-cover-preview-img').src=col.cover_url
-        document.getElementById('col-cover-preview').style.display='block'
-        document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
-        document.getElementById('col-cover-crop-btn').style.display='inline-flex'
-    } else {
-        document.getElementById('col-cover-preview').style.display='none'
-        document.getElementById('col-cover-btn-label').textContent='+ Загрузить обложку'
-        document.getElementById('col-cover-crop-btn').style.display='none'
+    friendCols.forEach(c => {
+        const gn = getGroupName(c);
+        if (gn) { if (!groups[gn]) groups[gn] = []; groups[gn].push(c); }
+        else soloCollections.push(c);
+    });
+
+    const totalItems = Object.keys(groups).length + soloCollections.length;
+    if (countEl) countEl.textContent = totalItems ? totalItems + ' обновлений' : '';
+
+    if (!totalItems) {
+        feedEl.innerHTML = '<div class="empty-state"><div class="empty-title">Лента пока пустая</div><div class="empty-sub">Здесь будут появляться публичные коллекции друзей</div></div>';
+        return;
     }
-    selectElement(col.element||ELEMENT,document.querySelector(`.el-sel-btn[data-el="${col.element||ELEMENT}"]`))
-    document.getElementById('col-delete-btn').style.display='inline-flex'
-    document.getElementById('create-modal').classList.add('open')
-    document.body.style.overflow='hidden'
+
+    const feedItems = [];
+    for (const [gn, cols] of Object.entries(groups)) {
+        cols.sort((a,b) => new Date(b.date) - new Date(a.date));
+        feedItems.push({ type:'group', groupName:gn, cols, date:cols[0].date });
+    }
+    for (const c of soloCollections) {
+        const mats = await getCollectionMaterials(c.id);
+        feedItems.push({ type:'collection', col:c, mats, date:c.date });
+    }
+    feedItems.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    feedEl.innerHTML = feedItems.map(item =>
+        item.type === 'group'
+            ? renderFeedGroupCard(item.groupName, item.cols, 'Диана')
+            : renderFeedCollectionCard(item.col, item.mats, 'Диана')
+    ).join('');
 }
 
-window.closeCreateModal=()=>{ document.getElementById('create-modal').classList.remove('open'); document.getElementById('col-delete-btn').style.display='none'; pendingCoverFile=null; document.body.style.overflow='' }
-window.deleteCollectionFromModal=async()=>{ if(!editingColId)return; await deleteCollection(editingColId); closeCreateModal() }
-window.selectElement=(el,btn)=>{selectedElement=el;document.querySelectorAll('.el-sel-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected')}
+// ── GET MATERIALS ──
+async function getCollectionMaterials(id) {
+    if (collectionsCache[id]) return collectionsCache[id];
+    const data = await api('material?per_page=100') || [];
+    const filtered = data.filter(m => {
+        const col = m.collection;
+        if (!col) return false;
+        if (Array.isArray(col)) return col.some(v => String(v?.ID||v?.id||v) === String(id));
+        if (typeof col === 'object') return String(col.ID||col.id) === String(id);
+        return String(col) === String(id);
+    });
+    collectionsCache[id] = filtered;
+    return filtered;
+}
 
-// ── выбор обложки в модале ──
-window.triggerModalCoverUpload=()=>{
-    const inp=document.createElement('input');inp.type='file';inp.accept='image/*'
-    inp.onchange=e=>{
-        const f=e.target.files?.[0]; if(!f) return
-        if(f.size>10*1024*1024){toast('Макс 10MB','error');return}
-        cropperOpen(f, 16/9, blob=>{
-            pendingCoverFile=new File([blob],'cover.jpg',{type:'image/jpeg'})
-            const url=URL.createObjectURL(blob)
-            document.getElementById('col-cover-preview-img').src=url
-            document.getElementById('col-cover-preview').style.display='block'
-            document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
-            document.getElementById('col-cover-crop-btn').style.display='inline-flex'
+// ── RENDER: МОЯ КОЛЛЕКЦИЯ ──
+function renderCollectionCard(c, mats, isOwner) {
+    const id = c.id;
+    const title = c.title?.rendered || 'Без названия';
+    const desc = c.content?.rendered ? c.content.rendered.replace(/<[^>]+>/g,'') : '';
+    const groupName = getGroupName(c);
+
+    const matHtml = mats.length === 0
+        ? '<div style="padding:0.5rem 0;font-size:0.85rem;color:rgba(240,236,228,0.3);font-style:italic">Пока нет материалов</div>'
+        : mats.map((m, i) => {
+            const url = getUrl(m);
+            const domain = url ? getDomain(url) : '';
+            const thought = getComment(m);
+            const imgUrl = m.image_url || m.meta?.image_url || '';
+            return '<div class="mat-row">'
+                + (imgUrl ? '<div class="mat-row-cover" style="background-image:url(\'' + imgUrl + '\')"></div>' : '<div class="mat-row-cover mat-row-cover--empty"></div>')
+                + '<span class="mat-row-num">' + (i+1) + '</span>'
+                + '<div class="mat-row-body">'
+                + '<div class="mat-row-title' + (url?' clickable':'') + '"' + (url?' onclick="window.open(\'' + url.replace(/'/g,"\\'") + '\',\'_blank\')"' : '') + '>' + (m.title?.rendered||'Материал') + '</div>'
+                + (thought ? '<div class="mat-row-thought">' + thought + '</div>' : '')
+                + (domain ? '<div class="mat-row-domain">↗ ' + domain + '</div>' : '')
+                + '</div>'
+                + (isOwner ? '<button class="mat-del-btn" data-mat-id="' + m.id + '" data-col-id="' + id + '" title="Удалить">✕</button>' : '')
+                + '</div>';
+        }).join('');
+
+    const controls = isOwner
+        ? '<div class="col-card-controls"><button class="btn-add-mat" data-col-id="' + id + '">+ Добавить материал</button><button class="btn-del-col" data-col-id="' + id + '">Удалить</button></div>'
+        : '';
+
+    return '<div class="col-card" data-id="' + id + '">'
+        + '<div class="col-card-header" data-col-id="' + id + '">'
+        + '<div class="col-card-element"><div class="col-card-element-dot"></div>Огонь' + (groupName ? ' · ' + groupName : '') + '</div>'
+        + '<div class="col-card-title">' + title + '</div>'
+        + (desc ? '<div class="col-card-desc">' + desc + '</div>' : '')
+        + '<div class="col-card-footer"><span class="col-card-meta">' + mats.length + ' материалов · ' + formatDate(c.date) + '</span><span class="card-arrow">▾</span></div>'
+        + '</div>'
+        + '<div class="col-card-expand" id="exp-' + id + '">' + matHtml + controls + '</div>'
+        + '</div>';
+}
+
+// ── RENDER: КАРТОЧКА КОЛЛЕКЦИИ В ЛЕНТЕ (с шапкой) ──
+function renderFeedCollectionCard(c, mats, authorName) {
+    const id = c.id;
+    const title = c.title?.rendered || 'Без названия';
+    const desc = c.content?.rendered ? c.content.rendered.replace(/<[^>]+>/g,'') : '';
+    const coverUrl = getCoverUrl(c);
+    const groupName = getGroupName(c);
+
+    const coverHtml = coverUrl
+        ? '<div class="feed-col-cover" style="background-image:url(\'' + coverUrl + '\')"></div>'
+        : '<div class="feed-col-cover feed-col-cover--empty"><span class="feed-col-cover-label">обложка</span></div>';
+
+    const matPreview = mats.length
+        ? '<div class="feed-col-mats">' + mats.slice(0,3).map(m => {
+            const url = getUrl(m);
+            const domain = url ? getDomain(url) : '';
+            const imgUrl = m.image_url || m.meta?.image_url || '';
+            return '<div class="feed-mat-row"' + (url ? ' onclick="window.open(\'' + url.replace(/'/g,"\\'") + '\',\'_blank\')" style="cursor:pointer"' : '') + '>'
+                + (imgUrl ? '<div class="feed-mat-thumb" style="background-image:url(\'' + imgUrl + '\')"></div>' : '<div class="feed-mat-thumb feed-mat-thumb--empty"></div>')
+                + '<div class="feed-mat-text"><div class="feed-mat-title">' + (m.title?.rendered||'Материал') + '</div>' + (domain ? '<div class="feed-mat-domain">↗ ' + domain + '</div>' : '') + '</div>'
+                + '</div>';
+          }).join('') + '</div>'
+        : '';
+
+    return '<div class="feed-col-card">'
+        + coverHtml
+        + '<div class="feed-col-body">'
+        + '<div class="feed-col-author"><div class="feed-avatar-sm">' + authorName.charAt(0) + '</div><span class="feed-author-name">' + authorName + '</span><span class="feed-author-time">' + formatDate(c.date) + '</span></div>'
+        + '<div class="feed-col-name">' + title + '</div>'
+        + (desc ? '<div class="feed-col-desc">' + desc + '</div>' : '')
+        + '<div class="feed-col-meta">' + mats.length + ' материал' + pluralMat(mats.length) + (groupName ? ' · ' + groupName : '') + '</div>'
+        + matPreview
+        + '<button class="btn-follow" onclick="handleFollow(this,\'col\',' + id + ')">+ Следить</button>'
+        + '</div></div>';
+}
+
+// ── RENDER: КАРТОЧКА ГРУППЫ В ЛЕНТЕ ──
+function renderFeedGroupCard(groupName, cols, authorName) {
+    const totalMats = cols.reduce((s, c) => s + (collectionsCache[c.id]?.length || 0), 0);
+    const newestDate = cols[0].date;
+
+    const colList = cols.map(c => {
+        const title = c.title?.rendered || 'Без названия';
+        const cnt = collectionsCache[c.id]?.length || 0;
+        return '<div class="feed-group-col-row"><span class="feed-group-col-dot">◈</span><span class="feed-group-col-name">' + title + '</span><span class="feed-group-col-cnt">' + cnt + '</span></div>';
+    }).join('');
+
+    return '<div class="feed-group-card">'
+        + '<div class="feed-group-header">'
+        + '<div class="feed-col-author"><div class="feed-avatar-sm">' + authorName.charAt(0) + '</div><span class="feed-author-name">' + authorName + '</span><span class="feed-author-time">' + formatDate(newestDate) + '</span></div>'
+        + '<div class="feed-group-name">' + groupName + '</div>'
+        + '<div class="feed-group-meta">' + cols.length + ' коллекц' + pluralCol(cols.length) + ' · ' + totalMats + ' материал' + pluralMat(totalMats) + '</div>'
+        + '</div>'
+        + (colList ? '<div class="feed-group-cols">' + colList + '</div>' : '')
+        + '<button class="btn-follow" onclick="handleFollow(this,\'group\',\'' + groupName.replace(/'/g,"\\'") + '\')">+ Следить</button>'
+        + '</div>';
+}
+
+// ── FOLLOW ──
+function handleFollow(btn, type, id) {
+    const isFollowing = btn.dataset.following === '1';
+    if (isFollowing) { btn.textContent = '+ Следить'; btn.dataset.following = '0'; btn.classList.remove('following'); }
+    else { btn.textContent = '✓ Следите'; btn.dataset.following = '1'; btn.classList.add('following'); }
+}
+
+// ── TABS ──
+function switchTab(tab, btn) {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + tab)?.classList.add('active');
+    if (tab === 'friends') loadFriendsFeed();
+}
+
+// ── CREATE MODAL ──
+function openCreateModal() {
+    if (!currentUser) { window.location.href='/login/'; return; }
+    document.getElementById('col-title').value = '';
+    document.getElementById('col-desc').value = '';
+    const cg = document.getElementById('col-group'); if (cg) cg.value = '';
+    document.getElementById('col-public').checked = true;
+    selectedElement = currentElement;
+    document.querySelectorAll('.el-sel-btn').forEach(b => b.classList.toggle('selected', b.dataset.el === currentElement));
+    document.getElementById('create-modal')?.classList.add('open');
+    setTimeout(() => document.getElementById('col-title')?.focus(), 100);
+}
+function closeCreateModal() { document.getElementById('create-modal')?.classList.remove('open'); }
+
+function selectElement(el, btn) {
+    selectedElement = el;
+    document.querySelectorAll('.el-sel-btn').forEach(b => b.classList.remove('selected'));
+    if (btn) btn.classList.add('selected');
+}
+
+async function saveCollection() {
+    const title = document.getElementById('col-title')?.value.trim();
+    if (!title) { toast('Введи название коллекции','error'); return; }
+    const btn = document.querySelector('#create-modal .btn-primary');
+    if (btn) { btn.textContent='Создаём...'; btn.disabled=true; }
+
+    const groupName = document.getElementById('col-group')?.value.trim() || '';
+    const result = await api('collection', {
+        method:'POST',
+        body: JSON.stringify({
+            title,
+            content: document.getElementById('col-desc')?.value.trim() || '',
+            status: 'publish',
+            author: currentUser?.id,
+            collection_author: [currentUser?.id],
+            element: selectedElement,
+            privacy: document.getElementById('col-public')?.checked ? 'Публичная/public' : 'Приватная/private',
+            group_name: groupName,
         })
-    }
-    inp.click()
+    });
+
+    if (btn) { btn.textContent='Создать →'; btn.disabled=false; }
+    if (result?.id) { toast('Коллекция создана!','success'); collectionsCache={}; closeCreateModal(); loadMyCollections(); }
+    else toast('Ошибка при создании','error');
 }
 
-// ── КОЛЛЕКЦИЯ: сохранить ──
-window.saveCollection=async()=>{
-    const title=document.getElementById('col-title').value.trim()
-    if(!title){toast('Введи название','error');return}
-    const btn=document.getElementById('col-save-btn'); btn.textContent='Сохраняем...'; btn.disabled=true
-    let cover_url=undefined
-    if(pendingCoverFile){
-        const ext=pendingCoverFile.name.split('.').pop()
-        const colIdForPath=editingColId||('new_'+Date.now())
-        const path=`${currentUser.id}/cover-${colIdForPath}.${ext}`
-        const{error:upErr}=await supabase.storage.from('covers').upload(path,pendingCoverFile,{upsert:true})
-        if(upErr){toast('Ошибка загрузки фото: '+upErr.message,'error');btn.textContent=editingColId?'Сохранить →':'Создать →';btn.disabled=false;return}
-        const{data:ud}=supabase.storage.from('covers').getPublicUrl(path)
-        cover_url=ud.publicUrl+'?t='+Date.now()
-    }
-    if(editingColId){
-        const upd={title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked}
-        if(cover_url!==undefined) upd.cover_url=cover_url
-        const{error}=await supabase.from('collections').update(upd).eq('id',editingColId).eq('user_id',currentUser.id)
-        btn.textContent='Сохранить →'; btn.disabled=false
-        if(error){toast('Ошибка: '+error.message,'error');return}
-        toast('Коллекция обновлена!','success')
-    } else {
-        const can=await checkCollectionLimit(currentUser.id,selectedElement,userTier)
-        if(!can){toast('Лимит достигнут','error');btn.textContent='Создать →';btn.disabled=false;return}
-        const ins={user_id:currentUser.id,title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked}
-        if(cover_url!==undefined) ins.cover_url=cover_url
-        const{error}=await supabase.from('collections').insert(ins)
-        btn.textContent='Создать →'; btn.disabled=false
-        if(error){toast('Ошибка: '+error.message,'error');return}
-        toast('Коллекция создана!','success')
-    }
-    closeCreateModal(); await loadMyCollections()
+// ── MATERIAL MODAL ──
+function openAddMaterial(collectionId) {
+    if (!currentUser) { window.location.href='/login/'; return; }
+    const modal = document.getElementById('material-modal');
+    if (!modal) return;
+    ['mat-url','mat-title','mat-source','mat-thought','mat-note-title','mat-image-url','mat-image-caption'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    loadCollectionsForSelect(collectionId);
+    setMatType('link', document.querySelector('.mat-type-btn[data-type="link"]'));
+    modal.classList.add('open');
+    setTimeout(() => document.getElementById('mat-url')?.focus(), 100);
+}
+function closeMaterialModal() { document.getElementById('material-modal')?.classList.remove('open'); }
+
+function setMatType(type, btn) {
+    currentMatType = type;
+    document.querySelectorAll('.mat-type-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.getElementById('mat-link-fields').style.display = type==='link' ? '' : 'none';
+    document.getElementById('mat-note-fields').style.display = type==='note' ? '' : 'none';
+    document.getElementById('mat-image-fields').style.display = type==='image' ? '' : 'none';
 }
 
-// ── МАТЕРИАЛ: открыть создание ──
-window.openAddMaterial=async colId=>{
-    const can=await checkMaterialLimit(colId,userTier)
-    if(!can){toast(userTier==='seeker'?'Лимит 5 материалов. Стань Хранителем!':'Лимит 50','error');return}
-    editingMatId=null; editingMatColId=colId; pendingThumbFile=null
-    document.getElementById('mat-modal-title').textContent='Добавить материал'
-    document.getElementById('mat-save-btn').textContent='Сохранить →'
-    ;['mat-url','mat-title','mat-thought'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})
-    document.getElementById('mat-thumb-preview').style.display='none'
-    document.getElementById('mat-thumb-btn-label').textContent='+ Загрузить фото'
-    document.getElementById('mat-thumb-crop-btn').style.display='none'
-    document.getElementById('mat-delete-btn').style.display='none'
-    await loadCollectionsForSelect(colId)
-    document.getElementById('material-modal').classList.add('open')
-    document.body.style.overflow='hidden'
+async function loadCollectionsForSelect(selectedId) {
+    const select = document.getElementById('mat-collection');
+    if (!select) return;
+    select.innerHTML = '<option>Загружаем...</option>';
+    const all = await api('collection?per_page=100&author=' + (currentUser?.id||0)) || [];
+    select.innerHTML = all.length
+        ? all.map(c => '<option value="' + c.id + '"' + (c.id==selectedId?' selected':'') + '>' + (c.title?.rendered||'Без названия') + '</option>').join('')
+        : '<option value="">Сначала создайте коллекцию</option>';
 }
 
-// ── МАТЕРИАЛ: открыть редактирование ──
-async function openEditMaterial(matId, colId) {
-    const{data:m}=await supabase.from('materials').select('*').eq('id',matId).single()
-    if(!m) return
-    editingMatId=matId; editingMatColId=colId; pendingThumbFile=null
-    document.getElementById('mat-modal-title').textContent='Редактировать материал'
-    document.getElementById('mat-save-btn').textContent='Сохранить →'
-    document.getElementById('mat-url').value=m.url||''
-    document.getElementById('mat-title').value=m.title||''
-    document.getElementById('mat-thought').value=m.comment||''
-    if(m.thumbnail_url){
-        document.getElementById('mat-thumb-preview-img').src=m.thumbnail_url
-        document.getElementById('mat-thumb-preview').style.display='block'
-        document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
-        document.getElementById('mat-thumb-crop-btn').style.display='inline-flex'
-    } else {
-        document.getElementById('mat-thumb-preview').style.display='none'
-        document.getElementById('mat-thumb-btn-label').textContent='+ Загрузить фото'
-        document.getElementById('mat-thumb-crop-btn').style.display='none'
+async function saveMaterial() {
+    const thought = document.getElementById('mat-thought')?.value.trim();
+    const collectionId = document.getElementById('mat-collection')?.value;
+    if (!thought) { toast('Добавь свою мысль — это главное','error'); return; }
+    if (!collectionId) { toast('Выбери коллекцию','error'); return; }
+
+    let title='', url='', source='';
+    if (currentMatType==='link') {
+        url = document.getElementById('mat-url')?.value.trim();
+        title = document.getElementById('mat-title')?.value.trim();
+        source = document.getElementById('mat-source')?.value.trim()||'';
+        if (!url) { toast('Введи ссылку','error'); return; }
+        if (!title) { toast('Введи заголовок','error'); return; }
+    } else if (currentMatType==='note') {
+        title = document.getElementById('mat-note-title')?.value.trim()||'Заметка';
+    } else if (currentMatType==='image') {
+        url = document.getElementById('mat-image-url')?.value.trim();
+        title = document.getElementById('mat-image-caption')?.value.trim()||'Образ';
+        if (!url) { toast('Введи URL изображения','error'); return; }
     }
-    await loadCollectionsForSelect(colId)
-    document.getElementById('mat-delete-btn').style.display='inline-flex'
-    document.getElementById('material-modal').classList.add('open')
-    document.body.style.overflow='hidden'
+
+    const btn = document.querySelector('#material-modal .btn-primary');
+    if (btn) { btn.textContent='Сохраняем...'; btn.disabled=true; }
+
+    const result = await api('material', {
+        method:'POST',
+        body: JSON.stringify({ title, status:'publish', url, source, comment:thought, collection:collectionId })
+    });
+
+    if (btn) { btn.textContent='Сохранить →'; btn.disabled=false; }
+    if (result?.id) { toast('Материал добавлен!','success'); delete collectionsCache[collectionId]; closeMaterialModal(); loadMyCollections(); }
+    else toast('Ошибка при сохранении','error');
 }
 
-window.closeMaterialModal=()=>{ document.getElementById('material-modal').classList.remove('open'); document.getElementById('mat-delete-btn').style.display='none'; pendingThumbFile=null; document.body.style.overflow='' }
-window.deleteMaterialFromModal=async()=>{ if(!editingMatId)return; await deleteMaterial(editingMatId,editingMatColId); closeMaterialModal() }
-
-// ── выбор фото материала в модале ──
-window.triggerModalThumbUpload=()=>{
-    const inp=document.createElement('input');inp.type='file';inp.accept='image/*'
-    inp.onchange=e=>{
-        const f=e.target.files?.[0]; if(!f) return
-        if(f.size>10*1024*1024){toast('Макс 10MB','error');return}
-        cropperOpen(f, 1, blob=>{
-            pendingThumbFile=new File([blob],'thumb.jpg',{type:'image/jpeg'})
-            const url=URL.createObjectURL(blob)
-            document.getElementById('mat-thumb-preview-img').src=url
-            document.getElementById('mat-thumb-preview').style.display='block'
-            document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
-            document.getElementById('mat-thumb-crop-btn').style.display='inline-flex'
-        })
-    }
-    inp.click()
+// ── DELETE ──
+async function deleteCollection(id) {
+    const res = await api('collection/' + id + '?force=true', {method:'DELETE'});
+    if (res !== null) { toast('Коллекция удалена','success'); collectionsCache={}; loadMyCollections(); }
+    else toast('Ошибка при удалении','error');
+}
+async function deleteMaterial(matId, colId) {
+    const res = await api('material/' + matId + '?force=true', {method:'DELETE'});
+    if (res !== null) { toast('Материал удалён','success'); delete collectionsCache[colId]; loadMyCollections(); }
+    else toast('Ошибка при удалении','error');
 }
 
-async function loadCollectionsForSelect(selectedId){const sel=document.getElementById('mat-collection');sel.innerHTML='<option>Загружаем...</option>';const{data:cols}=await supabase.from('collections').select('id,title').eq('user_id',currentUser.id).order('created_at');sel.innerHTML=cols?.length?cols.map(c=>`<option value="${c.id}"${c.id==selectedId?' selected':''}>${c.title}</option>`).join(''):'<option value="">Сначала создай коллекцию</option>'}
+// ── КЛИКИ ──
+document.addEventListener('click', function(e) {
+    const addBtn = e.target.closest('.btn-add-mat');
+    if (addBtn) { e.preventDefault(); e.stopPropagation(); openAddMaterial(addBtn.dataset.colId); return; }
 
-// ── МАТЕРИАЛ: сохранить ──
-window.saveMaterial=async()=>{
-    const thought=document.getElementById('mat-thought').value.trim()
-    const colId=document.getElementById('mat-collection').value
-    const url=document.getElementById('mat-url').value.trim()
-    const title=document.getElementById('mat-title').value.trim()
-    if(!url){toast('Введи ссылку','error');return}
-    if(!title){toast('Введи заголовок','error');return}
-    if(!thought){toast('Добавь мысль','error');return}
-    if(!colId){toast('Выбери коллекцию','error');return}
-    const btn=document.getElementById('mat-save-btn'); btn.textContent='Сохраняем...'; btn.disabled=true
-    let thumbnail_url=undefined
-    if(pendingThumbFile){
-        const ext=pendingThumbFile.name.split('.').pop()
-        const matIdForPath=editingMatId||('new_'+Date.now())
-        const path=`${currentUser.id}/thumb-${matIdForPath}.${ext}`
-        const{error:upErr}=await supabase.storage.from('material-thumbs').upload(path,pendingThumbFile,{upsert:true})
-        if(upErr){toast('Ошибка загрузки фото: '+upErr.message,'error');btn.textContent='Сохранить →';btn.disabled=false;return}
-        const{data:ud}=supabase.storage.from('material-thumbs').getPublicUrl(path)
-        thumbnail_url=ud.publicUrl+'?t='+Date.now()
+    const delCol = e.target.closest('.btn-del-col');
+    if (delCol) { e.preventDefault(); e.stopPropagation(); if (confirm('Удалить коллекцию?')) deleteCollection(delCol.dataset.colId); return; }
+
+    const delMat = e.target.closest('.mat-del-btn');
+    if (delMat) { e.preventDefault(); e.stopPropagation(); if (confirm('Удалить материал?')) deleteMaterial(delMat.dataset.matId, delMat.dataset.colId); return; }
+
+    const header = e.target.closest('.col-card-header');
+    if (header) {
+        const colId = header.dataset.colId;
+        const expand = document.getElementById('exp-' + colId);
+        const arrow = header.querySelector('.card-arrow');
+        if (!expand) return;
+        const isOpen = expand.classList.contains('open');
+        expand.classList.toggle('open', !isOpen);
+        if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
     }
-    if(editingMatId){
-        const upd={title,url,comment:thought,collection_id:parseInt(colId)}
-        if(thumbnail_url!==undefined) upd.thumbnail_url=thumbnail_url
-        const{error}=await supabase.from('materials').update(upd).eq('id',editingMatId).eq('user_id',currentUser.id)
-        btn.textContent='Сохранить →'; btn.disabled=false
-        if(error){toast('Ошибка: '+error.message,'error');return}
-        toast('Материал обновлён!','success')
-    } else {
-        const can=await checkMaterialLimit(colId,userTier)
-        if(!can){toast('Лимит материалов','error');btn.textContent='Сохранить →';btn.disabled=false;return}
-        const ins={collection_id:parseInt(colId),user_id:currentUser.id,title,url,comment:thought}
-        if(thumbnail_url!==undefined) ins.thumbnail_url=thumbnail_url
-        const{error}=await supabase.from('materials').insert(ins)
-        btn.textContent='Сохранить →'; btn.disabled=false
-        if(error){toast('Ошибка: '+error.message,'error');return}
-        toast('Материал добавлен!','success')
-    }
-    closeMaterialModal(); await loadMaterials(editingMatColId||colId)
-}
+});
 
-async function deleteCollection(id){if(!confirm('Удалить коллекцию и все материалы?'))return;const{error}=await supabase.from('collections').delete().eq('id',id).eq('user_id',currentUser.id);if(error){toast('Ошибка','error');return};toast('Коллекция удалена','success');await loadMyCollections()}
-async function deleteMaterial(matId,colId){const{error}=await supabase.from('materials').delete().eq('id',matId).eq('user_id',currentUser.id);if(error){toast('Ошибка','error');return};toast('Материал удалён','success');await loadMaterials(colId)}
-
-// ══════════════════════════════════════════
-// CROPPER
-// ══════════════════════════════════════════
-;(()=>{
-    let img=null, rotation=0, scale=1, minScale=1
-    let offsetX=0, offsetY=0
-    let dragStart=null, lastDist=null
-    let onApply=null, targetAspect=1, canvasH=0
-
-    const OV  = ()=>document.getElementById('cropper-overlay')
-    const CVW = ()=>document.getElementById('cropper-canvas-wrap')
-    const CV  = ()=>document.getElementById('cropper-canvas')
-    const ZR  = ()=>document.getElementById('cropper-zoom-range')
-
-    function draw(){
-        const cv=CV(); if(!cv||!img) return
-        const ctx=cv.getContext('2d')
-        const W=cv.width, H=cv.height
-        ctx.clearRect(0,0,W,H)
-        ctx.save()
-        ctx.translate(W/2+offsetX, H/2+offsetY)
-        ctx.rotate(rotation*Math.PI/180)
-        ctx.scale(scale,scale)
-        ctx.drawImage(img, -img.naturalWidth/2, -img.naturalHeight/2)
-        ctx.restore()
-        // frame guide
-        ctx.strokeStyle='rgba(232,120,64,0.35)'
-        ctx.lineWidth=1.5
-        ctx.strokeRect(1,1,W-2,H-2)
-    }
-
-    function computeMinScale(cvW,cvH){
-        const iW=img.naturalWidth, iH=img.naturalHeight
-        const sw=cvW/iW, sh=cvH/iH
-        return Math.max(sw,sh)
-    }
-
-    function clampOffset(ox,oy){
-        const cv=CV()
-        const W=cv.width, H=cv.height
-        const hw=img.naturalWidth*scale/2, hh=img.naturalHeight*scale/2
-        const maxX=Math.max(0,hw-W/2), maxY=Math.max(0,hh-H/2)
-        return [Math.max(-maxX,Math.min(maxX,ox)), Math.max(-maxY,Math.min(maxY,oy))]
-    }
-
-    function setScale(s){
-        scale=Math.max(minScale,Math.min(8,s))
-        ;[offsetX,offsetY]=clampOffset(offsetX,offsetY)
-        ZR().value=scale
-        draw()
-    }
-
-    window.cropperOpenFromUrl=function(url, aspect, onDone){
-        // загружаем через canvas чтобы обойти CORS-ограничения на blob/objectURL
-        const proxyImg=new Image()
-        proxyImg.crossOrigin='anonymous'
-        proxyImg.onload=()=>{
-            // рисуем в canvas и берём blob
-            const tmp=document.createElement('canvas')
-            tmp.width=proxyImg.naturalWidth; tmp.height=proxyImg.naturalHeight
-            tmp.getContext('2d').drawImage(proxyImg,0,0)
-            tmp.toBlob(blob=>{ if(blob){cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone)}else{toast('Не удалось загрузить фото','error')} },'image/jpeg',0.95)
-        }
-        proxyImg.onerror=()=>{
-            // если CORS не пропустил — грузим напрямую через fetch
-            fetch(url).then(r=>r.blob()).then(blob=>cropperOpen(new File([blob],'edit.jpg',{type:'image/jpeg'}),aspect,onDone)).catch(()=>toast('Не удалось загрузить фото для кадрирования','error'))
-        }
-        proxyImg.src=url
-    }
-
-    window.triggerCoverRecrop=function(){
-        const src=document.getElementById('col-cover-preview-img').src
-        if(!src) return
-        cropperOpenFromUrl(src, 16/9, blob=>{
-            pendingCoverFile=new File([blob],'cover.jpg',{type:'image/jpeg'})
-            const url=URL.createObjectURL(blob)
-            document.getElementById('col-cover-preview-img').src=url
-            document.getElementById('col-cover-preview').style.display='block'
-            document.getElementById('col-cover-btn-label').textContent='Заменить обложку'
-            document.getElementById('col-cover-crop-btn').style.display='inline-flex'
-        })
-    }
-
-    window.triggerThumbRecrop=function(){
-        const src=document.getElementById('mat-thumb-preview-img').src
-        if(!src) return
-        cropperOpenFromUrl(src, 1, blob=>{
-            pendingThumbFile=new File([blob],'thumb.jpg',{type:'image/jpeg'})
-            const url=URL.createObjectURL(blob)
-            document.getElementById('mat-thumb-preview-img').src=url
-            document.getElementById('mat-thumb-preview').style.display='block'
-            document.getElementById('mat-thumb-btn-label').textContent='Заменить фото'
-            document.getElementById('mat-thumb-crop-btn').style.display='inline-flex'
-        })
-    }
-
-    window.cropperOpen=function(file, aspect, onDone){
-        onApply=onDone
-        targetAspect=aspect||1
-        rotation=0; scale=1; offsetX=0; offsetY=0
-
-        const cvw=CVW(), cv=CV()
-        // canvas size: fit modal width, height by aspect
-        const w=Math.min(520,cvw.getBoundingClientRect().width||480)
-        canvasH=Math.round(w/targetAspect)
-        cv.width=w; cv.height=canvasH
-        cvw.style.height=canvasH+'px'
-
-        img=new Image()
-        img.onload=()=>{
-            minScale=computeMinScale(w,canvasH)
-            scale=minScale
-            ZR().min=minScale; ZR().max=minScale*6; ZR().step=0.01; ZR().value=scale
-            draw()
-        }
-        const reader=new FileReader()
-        reader.onload=e=>{ img.src=e.target.result }
-        reader.readAsDataURL(file)
-
-        OV().classList.add('open')
-        document.body.style.overflow='hidden'
-    }
-
-    window.cropperClose=function(){
-        OV().classList.remove('open')
-        document.body.style.overflow=''
-        img=null
-    }
-
-    window.cropperRotate=function(deg){
-        rotation=(rotation+deg+360)%360
-        // after rotation swap natural dims effectively; recompute minScale
-        const cv=CV()
-        const rotated90=(rotation%180!==0)
-        const iW=rotated90?img.naturalHeight:img.naturalWidth
-        const iH=rotated90?img.naturalWidth:img.naturalHeight
-        minScale=Math.max(cv.width/iW, cv.height/iH)
-        scale=Math.max(scale,minScale)
-        ;[offsetX,offsetY]=clampOffset(offsetX,offsetY)
-        ZR().min=minScale; ZR().value=scale
-        draw()
-    }
-
-    window.cropperApply=function(){
-        if(!img||!onApply) return
-        const cv=CV()
-        // export at 2× resolution
-        const outW=cv.width*2, outH=cv.height*2
-        const out=document.createElement('canvas')
-        out.width=outW; out.height=outH
-        const ctx=out.getContext('2d')
-        ctx.clearRect(0,0,outW,outH)
-        ctx.save()
-        ctx.translate(outW/2+offsetX*2, outH/2+offsetY*2)
-        ctx.rotate(rotation*Math.PI/180)
-        ctx.scale(scale*2,scale*2)
-        ctx.drawImage(img,-img.naturalWidth/2,-img.naturalHeight/2)
-        ctx.restore()
-        out.toBlob(blob=>{
-            cropperClose()
-            onApply(blob)
-        },'image/jpeg',0.92)
-    }
-
-    // ── pointer events ──
-    function getPos(e){
-        if(e.touches){
-            if(e.touches.length===2){
-                const dx=e.touches[0].clientX-e.touches[1].clientX
-                const dy=e.touches[0].clientY-e.touches[1].clientY
-                return {x:(e.touches[0].clientX+e.touches[1].clientX)/2,
-                        y:(e.touches[0].clientY+e.touches[1].clientY)/2,
-                        dist:Math.hypot(dx,dy)}
-            }
-            return {x:e.touches[0].clientX,y:e.touches[0].clientY,dist:null}
-        }
-        return {x:e.clientX,y:e.clientY,dist:null}
-    }
-
-    document.addEventListener('pointerdown',e=>{
-        if(!e.target.closest('#cropper-canvas-wrap')) return
-        e.preventDefault()
-        dragStart={x:e.clientX,y:e.clientY,ox:offsetX,oy:offsetY}
-    },{passive:false})
-
-    document.addEventListener('touchstart',e=>{
-        if(!e.target.closest('#cropper-canvas-wrap')) return
-        if(e.touches.length===2){
-            lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)
-        }
-    },{passive:true})
-
-    document.addEventListener('touchmove',e=>{
-        if(!e.target.closest('#cropper-canvas-wrap')) return
-        e.preventDefault()
-        if(e.touches.length===2){
-            const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)
-            if(lastDist) setScale(scale*(d/lastDist))
-            lastDist=d
-        } else if(e.touches.length===1 && dragStart){
-            const dx=e.touches[0].clientX-dragStart.x, dy=e.touches[0].clientY-dragStart.y
-            ;[offsetX,offsetY]=clampOffset(dragStart.ox+dx,dragStart.oy+dy)
-            draw()
-        }
-    },{passive:false})
-
-    document.addEventListener('pointermove',e=>{
-        if(!dragStart) return
-        const dx=e.clientX-dragStart.x, dy=e.clientY-dragStart.y
-        ;[offsetX,offsetY]=clampOffset(dragStart.ox+dx,dragStart.oy+dy)
-        draw()
-    })
-
-    document.addEventListener('pointerup',()=>{ dragStart=null; lastDist=null })
-
-    document.addEventListener('wheel',e=>{
-        if(!e.target.closest('#cropper-canvas-wrap')) return
-        e.preventDefault()
-        setScale(scale*(1-e.deltaY*0.001))
-    },{passive:false})
-
-    // zoom range input
-    document.addEventListener('input',e=>{
-        if(e.target.id==='cropper-zoom-range') setScale(parseFloat(e.target.value))
-    })
-})()
+// ── INIT ──
+(async () => {
+    await checkAuth();
+    await loadMyCollections();
+})();
 </script>
-
-<!-- CROPPER OVERLAY -->
-<div class="cropper-overlay" id="cropper-overlay">
-    <div class="cropper-canvas-wrap" id="cropper-canvas-wrap">
-        <canvas id="cropper-canvas"></canvas>
-    </div>
-    <div class="cropper-controls">
-        <button class="cropper-btn" onclick="cropperRotate(-90)">↺ Влево</button>
-        <button class="cropper-btn" onclick="cropperRotate(90)">↻ Вправо</button>
-        <div class="cropper-zoom">
-            <span style="font-family:'DM Mono',monospace;font-size:0.55rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase">Масштаб</span>
-            <input type="range" id="cropper-zoom-range" min="0.1" max="4" step="0.01" value="1">
-        </div>
-    </div>
-    <div class="cropper-actions">
-        <button class="cropper-btn" onclick="cropperClose()">Отмена</button>
-        <button class="btn-primary" onclick="cropperApply()">Применить →</button>
-    </div>
-</div>
-
 </body>
 </html>
