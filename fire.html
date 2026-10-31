@@ -319,6 +319,29 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 @keyframes fadeDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
 @keyframes slideUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 @media (max-width:768px) { .header{padding:1rem 1.25rem} .main{padding:2rem 1.25rem 4rem} .collections-grid{grid-template-columns:1fr} .element-selector{grid-template-columns:repeat(2,1fr)} }
+
+/* ── ГРУППЫ КОЛЛЕКЦИЙ ── */
+.group-block { margin-bottom: 0.25rem; }
+.group-banner {
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    background:linear-gradient(100deg, rgba(180,50,10,0.18) 0%, rgba(232,120,64,0.08) 60%, transparent 100%);
+    border:1px solid rgba(232,120,64,0.18); border-radius:0.75rem;
+    padding:0.75rem 1rem 0.75rem 1.1rem; margin-bottom:0.75rem;
+}
+.group-banner-left { display:flex; align-items:baseline; gap:0.65rem; min-width:0; }
+.group-banner-name { font-size:0.9rem; font-weight:400; color:#fff; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.group-banner-count { font-family:'DM Mono',monospace; font-size:0.52rem; color:rgba(255,255,255,0.22); flex-shrink:0; letter-spacing:0.06em; }
+.group-banner-actions { display:flex; gap:0.4rem; flex-shrink:0; }
+.btn-edit-group { font-family:'DM Mono',monospace; font-size:0.52rem; color:rgba(255,255,255,0.3); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:0.4rem; padding:0.28rem 0.6rem; cursor:pointer; letter-spacing:0.04em; transition:all 0.2s; }
+.btn-edit-group:hover { color:rgba(255,255,255,0.7); border-color:rgba(255,255,255,0.2); }
+.group-cols-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; margin-bottom:1.5rem; }
+@media(max-width:700px){.group-cols-grid{grid-template-columns:1fr}}
+.ungrouped-label { font-family:'DM Mono',monospace; font-size:0.5rem; color:rgba(255,255,255,0.2); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:0.85rem; margin-top:0.5rem; padding-left:0.15rem; }
+.btn-create-group { display:flex; align-items:center; gap:0.5rem; width:100%; background:none; border:1px dashed rgba(232,120,64,0.2); border-radius:0.75rem; padding:0.85rem 1.25rem; font-family:'DM Mono',monospace; font-size:0.52rem; color:rgba(232,120,64,0.45); cursor:pointer; letter-spacing:0.08em; transition:border-color 0.2s,color 0.2s; margin-top:0.75rem; }
+.btn-create-group:hover { border-color:rgba(232,120,64,0.5); color:var(--accent); }
+/* поле группы в модале */
+.group-field-upsell { background:rgba(232,120,64,0.05); border:1px solid rgba(232,120,64,0.15); border-radius:0.75rem; padding:0.85rem 1rem; font-size:0.82rem; color:rgba(255,255,255,0.35); line-height:1.6; }
+.group-field-upsell a { color:var(--accent); text-decoration:none; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -402,6 +425,11 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
             </div>
         </div>
         <div class="toggle-row"><span class="toggle-label">Публичная</span><label class="toggle"><input type="checkbox" id="col-public" checked><span class="toggle-slider"></span></label></div>
+        <div class="form-group" id="col-group-field">
+            <label class="form-label">Группа</label>
+            <div id="col-group-input-wrap"><input class="form-input" id="col-group" placeholder="Например: Формула 1, Кино..."></div>
+            <div id="col-group-upsell" style="display:none" class="group-field-upsell">Группы коллекций — для Хранителей. <a onclick="window.location.href='subscribe.html'">Стать Хранителем →</a></div>
+        </div>
         <div class="modal-actions" style="justify-content:space-between;align-items:center">
             <div style="display:flex;gap:0.75rem;align-items:center">
                 <button class="btn-ghost" onclick="closeCreateModal()">Отмена</button>
@@ -597,17 +625,74 @@ async function loadMyCollections() {
     const limit = LIMITS[userTier].collections_per_element
     document.getElementById('mine-count').textContent = `${elCols.length} коллекций`
     if (!elCols.length) { grid.innerHTML=`<div class="empty-state"><div class="empty-glyph">◈</div><div class="empty-title">Пока пусто</div><div class="empty-sub">Создай первую коллекцию огня — всё, что тебя зажигает.</div></div>`; return }
-    grid.innerHTML=''; const gd=document.createElement('div'); gd.className='collections-grid'
+    grid.innerHTML=''
     const frozenCols = userTier==='seeker' ? elCols.slice(limit) : []
     const visibleCols = userTier==='seeker' ? elCols.slice(0, limit) : elCols
-    for (const col of visibleCols) gd.appendChild(renderCard(col))
-    for (const col of frozenCols) { const card=renderCard(col); card.classList.add('col-card-frozen'); gd.appendChild(card) }
-    grid.appendChild(gd)
+    renderGroupedCollections(grid, visibleCols, frozenCols)
     if (frozenCols.length > 0) {
         const b=document.createElement('div'); b.className='freeze-banner'
         b.innerHTML=`<div class="freeze-banner-title">❄ Вы отключили подписку</div><div class="freeze-banner-text">Ваши <strong>${elCols.length} коллекций</strong> заморожены в вечном льду. Вы видите только первые <strong>${limit} коллекции</strong> и все материалы внутри них. Остальные <strong>${frozenCols.length} коллекции</strong> не удалены — они ждут вашего возвращения.<br><br>Как только вы снова станете Хранителем — они разморозятся в том же виде, в котором вы их оставили.</div><button class="btn-primary" style="margin-top:1.25rem" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>`
         grid.appendChild(b)
     } else if (elCols.length>=limit && userTier==='seeker') { const b=document.createElement('div'); b.className='limit-banner'; b.innerHTML=`<div class="limit-banner-title">◈ Коллекций огня: ${elCols.length} из ${limit}</div><div class="limit-banner-sub">У Искателя — 3 коллекции в каждой стихии.<br>Стань Хранителем — открой до 20.</div><button class="btn-primary" onclick="window.location.href='subscribe.html'">Стать Хранителем →</button>`; grid.appendChild(b) }
+}
+
+function renderGroupedCollections(container, visibleCols, frozenCols) {
+    // группируем видимые коллекции по group_name
+    const groups = new Map()   // group_name -> [col, ...]
+    const ungrouped = []
+    for (const col of visibleCols) {
+        const g = col.group_name?.trim() || ''
+        if (g) {
+            if (!groups.has(g)) groups.set(g, [])
+            groups.get(g).push(col)
+        } else {
+            ungrouped.push(col)
+        }
+    }
+    // рендерим группы
+    for (const [groupName, cols] of groups) {
+        const block = document.createElement('div')
+        block.className = 'group-block'
+        const n = cols.length
+        const countLabel = n === 1 ? '1 коллекция' : n < 5 ? `${n} коллекции` : `${n} коллекций`
+        const banner = document.createElement('div')
+        banner.className = 'group-banner'
+        banner.innerHTML = `<div class="group-banner-left"><span class="group-banner-name">${groupName}</span><span class="group-banner-count">${countLabel}</span></div><div class="group-banner-actions"><button class="btn-edit-group" data-group="${groupName}">Изменить</button></div>`
+        block.appendChild(banner)
+        const gGrid = document.createElement('div')
+        gGrid.className = 'group-cols-grid'
+        for (const col of cols) gGrid.appendChild(renderCard(col))
+        block.appendChild(gGrid)
+        container.appendChild(block)
+    }
+    // рендерим без группы
+    if (ungrouped.length) {
+        if (groups.size > 0) {
+            const label = document.createElement('div')
+            label.className = 'ungrouped-label'
+            label.textContent = 'Без группы'
+            container.appendChild(label)
+        }
+        const gd = document.createElement('div')
+        gd.className = 'collections-grid'
+        for (const col of ungrouped) gd.appendChild(renderCard(col))
+        container.appendChild(gd)
+    }
+    // заморозки без группы — просто добавляем в конец
+    if (frozenCols.length) {
+        const frozenGrid = document.createElement('div')
+        frozenGrid.className = 'collections-grid'
+        for (const col of frozenCols) { const card=renderCard(col); card.classList.add('col-card-frozen'); frozenGrid.appendChild(card) }
+        container.appendChild(frozenGrid)
+    }
+    // кнопка создать группу (только для keeper)
+    if (userTier === 'keeper') {
+        const btn = document.createElement('button')
+        btn.className = 'btn-create-group'
+        btn.textContent = '+ Создать группу'
+        btn.onclick = () => openCreateGroupModal()
+        container.appendChild(btn)
+    }
 }
 
 function renderCard(col) {
@@ -638,6 +723,7 @@ document.addEventListener('click', async e => {
     const add=e.target.closest('.btn-add-mat');if(add){e.stopPropagation();openAddMaterial(add.dataset.colId);return}
     const editCol=e.target.closest('.btn-edit-col');if(editCol){e.stopPropagation();openEditCollection(editCol.dataset.colId);return}
     const editMat=e.target.closest('.mat-edit-btn');if(editMat){e.stopPropagation();openEditMaterial(editMat.dataset.matId,editMat.dataset.colId);return}
+    const editGroup=e.target.closest('.btn-edit-group');if(editGroup){e.stopPropagation();renameGroup(editGroup.dataset.group);return}
 })
 
 async function loadMaterials(colId) {
@@ -724,6 +810,8 @@ window.openCreateModal=async()=>{
     document.getElementById('col-cover-preview').style.display='none'
     document.getElementById('col-cover-btn-label').textContent='+ Загрузить обложку'
     document.getElementById('col-cover-crop-btn').style.display='none'
+    if(document.getElementById('col-group')) document.getElementById('col-group').value=''
+    showGroupField()
     selectElement(ELEMENT,document.querySelector(`.el-sel-btn[data-el="${ELEMENT}"]`))
     document.getElementById('create-modal').classList.add('open')
     document.body.style.overflow='hidden'
@@ -750,12 +838,50 @@ async function openEditCollection(colId) {
         document.getElementById('col-cover-crop-btn').style.display='none'
     }
     selectElement(col.element||ELEMENT,document.querySelector(`.el-sel-btn[data-el="${col.element||ELEMENT}"]`))
+    if(document.getElementById('col-group')) document.getElementById('col-group').value=col.group_name||''
+    showGroupField()
     document.getElementById('col-delete-btn').style.display='inline-flex'
     document.getElementById('create-modal').classList.add('open')
     document.body.style.overflow='hidden'
 }
 
 window.closeCreateModal=()=>{ document.getElementById('create-modal').classList.remove('open'); document.getElementById('col-delete-btn').style.display='none'; pendingCoverFile=null; document.body.style.overflow='' }
+
+// ── показать/скрыть поле группы в зависимости от тира ──
+function showGroupField() {
+    const inputWrap = document.getElementById('col-group-input-wrap')
+    const upsell = document.getElementById('col-group-upsell')
+    if (!inputWrap || !upsell) return
+    if (userTier === 'keeper') {
+        inputWrap.style.display = 'block'
+        upsell.style.display = 'none'
+    } else {
+        inputWrap.style.display = 'none'
+        upsell.style.display = 'block'
+    }
+}
+
+// ── создание группы (открывает модал создания коллекции с фокусом на группе) ──
+function openCreateGroupModal() {
+    if (userTier !== 'keeper') return
+    openCreateModal().then(() => {
+        const g = document.getElementById('col-group')
+        if (g) { g.focus(); g.select() }
+    })
+}
+
+// ── переименовать группу: ставим новое имя на все коллекции группы ──
+window.renameGroup = async function(oldName) {
+    const newName = prompt(`Новое название группы "${oldName}":`, oldName)
+    if (!newName || newName.trim() === oldName) return
+    const { error } = await supabase.from('collections')
+        .update({ group_name: newName.trim() || null })
+        .eq('user_id', currentUser.id)
+        .eq('group_name', oldName)
+    if (error) { toast('Ошибка: '+error.message, 'error'); return }
+    toast('Группа переименована', 'success')
+    await loadMyCollections()
+}
 window.deleteCollectionFromModal=async()=>{ if(!editingColId)return; await deleteCollection(editingColId); closeCreateModal() }
 window.selectElement=(el,btn)=>{selectedElement=el;document.querySelectorAll('.el-sel-btn').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected')}
 
@@ -792,8 +918,9 @@ window.saveCollection=async()=>{
         const{data:ud}=supabase.storage.from('covers').getPublicUrl(path)
         cover_url=ud.publicUrl+'?t='+Date.now()
     }
+    const groupName = userTier==='keeper' ? (document.getElementById('col-group')?.value.trim()||null) : null
     if(editingColId){
-        const upd={title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked}
+        const upd={title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked,group_name:groupName}
         if(cover_url!==undefined) upd.cover_url=cover_url
         const{error}=await supabase.from('collections').update(upd).eq('id',editingColId).eq('user_id',currentUser.id)
         btn.textContent='Сохранить →'; btn.disabled=false
@@ -802,7 +929,7 @@ window.saveCollection=async()=>{
     } else {
         const can=await checkCollectionLimit(currentUser.id,selectedElement,userTier)
         if(!can){toast('Лимит достигнут','error');btn.textContent='Создать →';btn.disabled=false;return}
-        const ins={user_id:currentUser.id,title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked}
+        const ins={user_id:currentUser.id,title,description:document.getElementById('col-desc').value.trim(),element:selectedElement,is_public:document.getElementById('col-public').checked,group_name:groupName}
         if(cover_url!==undefined) ins.cover_url=cover_url
         const{error}=await supabase.from('collections').insert(ins)
         btn.textContent='Создать →'; btn.disabled=false
