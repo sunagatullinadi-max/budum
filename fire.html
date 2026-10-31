@@ -346,6 +346,7 @@ html, body { width:100%; min-height:100%; background:#080200; font-family:'Cormo
 /* ── DRAG & DROP ГРУППЫ ── */
 .col-card.dragging { opacity:0.3; pointer-events:none; }
 .col-card.merge-target { box-shadow:0 0 0 2px var(--accent); background:rgba(232,120,64,0.08); transition:box-shadow 0.15s,background 0.15s; }
+.col-card.reorder-target { box-shadow:0 0 0 2px rgba(255,255,255,0.3); background:rgba(255,255,255,0.04); transition:box-shadow 0.15s,background 0.15s; }
 .group-block.drop-target-group > .group-banner { box-shadow:0 0 0 2px var(--accent); background:linear-gradient(100deg, rgba(232,120,64,0.25) 0%, rgba(232,120,64,0.1) 60%, transparent 100%); transition:box-shadow 0.15s,background 0.15s; }
 .drag-ghost { opacity:0.85; pointer-events:none; z-index:9999; box-shadow:0 8px 32px rgba(0,0,0,0.5); transform:rotate(2deg); }
 
@@ -640,7 +641,7 @@ function formatDate(iso) { try{return new Date(iso).toLocaleDateString('ru-RU',{
 
 async function loadMyCollections() {
     const grid = document.getElementById('mine-grid')
-    const { data: cols, error } = await supabase.from('collections').select('*, materials(count)').eq('user_id',currentUser.id).order('created_at',{ascending:false})
+    const { data: cols, error } = await supabase.from('collections').select('*, materials(count)').eq('user_id',currentUser.id).order('sort_order',{ascending:true,nullsFirst:false}).order('created_at',{ascending:false})
     if (error) { grid.innerHTML='<div class="empty-state"><div class="empty-title">Ошибка загрузки</div></div>'; return }
     const elCols = cols.filter(c=>c.element===ELEMENT)
     const limit = LIMITS[userTier].collections_per_element
@@ -737,16 +738,18 @@ function renderCard(col) {
 
 function reloadCollections() { loadMyCollections() }
 
-/* ── DRAG & DROP: СОЗДАНИЕ ГРУПП ── */
+/* ── DRAG & DROP: ГРУППЫ + СОРТИРОВКА ── */
 ;(function() {
-    let dragState = null  // { colId, groupName, el, ghost, offsetX, offsetY }
-    let pendingGroupCols = null  // { dragColId, targetColId } для диалога
+    // Состояние drag
+    let pending = null   // { pointerId, startX, startY, card, colId, groupName, rect }
+    let dragState = null // активный drag после порога движения
+    let pendingGroupCols = null
+
+    const DRAG_THRESHOLD = 8 // px до активации drag
 
     function initDragAndDrop(container) {
         container.querySelectorAll('.col-card:not(.col-card-frozen)').forEach(card => {
-            // Убираем старые обработчики через замену
-            const newCard = card
-            newCard.addEventListener('pointerdown', onPointerDown, { passive: false })
+            card.addEventListener('pointerdown', onPointerDown)
         })
     }
     window.initDragAndDrop = initDragAndDrop
@@ -754,49 +757,73 @@ function reloadCollections() { loadMyCollections() }
     function getColId(card) {
         return card.querySelector('[data-col-id]')?.dataset?.colId || null
     }
-
     function getGroupName(card) {
         const block = card.closest('.group-block')
-        if (!block) return null
-        return block.querySelector('.group-banner-name')?.textContent?.trim() || null
+        return block?.querySelector('.group-banner-name')?.textContent?.trim() || null
     }
 
+    // ── POINTERDOWN: запоминаем, но НЕ начинаем drag ──
     function onPointerDown(e) {
-        // Только левая кнопка мыши или один палец
         if (e.button !== undefined && e.button !== 0) return
-        // Не начинать drag если кликнули на кнопку/ссылку
         if (e.target.closest('button, a, input')) return
-
         const card = e.currentTarget
         const colId = getColId(card)
         if (!colId) return
 
-        e.preventDefault()
+        pending = {
+            pointerId: e.pointerId,
+            startX: e.clientX,
+            startY: e.clientY,
+            card, colId,
+            groupName: getGroupName(card),
+            rect: card.getBoundingClientRect()
+        }
+        document.addEventListener('pointermove', onEarlyMove)
+        document.addEventListener('pointerup', onEarlyUp, { once: true })
+        document.addEventListener('pointercancel', clearPending, { once: true })
+    }
 
-        const rect = card.getBoundingClientRect()
+    // Проверяем порог — начинаем drag только при реальном движении
+    function onEarlyMove(e) {
+        if (!pending) return
+        const dx = e.clientX - pending.startX
+        const dy = e.clientY - pending.startY
+        if (Math.sqrt(dx*dx + dy*dy) < DRAG_THRESHOLD) return
+
+        // Порог пройден — начинаем drag
+        document.removeEventListener('pointermove', onEarlyMove)
+        document.removeEventListener('pointerup', onEarlyUp)
+        document.removeEventListener('pointercancel', clearPending)
+        startDrag(e)
+    }
+
+    function onEarlyUp() {
+        // Отпустили без движения — это клик, не мешаем
+        clearPending()
+    }
+
+    function clearPending() {
+        document.removeEventListener('pointermove', onEarlyMove)
+        document.removeEventListener('pointerup', onEarlyUp)
+        document.removeEventListener('pointercancel', clearPending)
+        pending = null
+    }
+
+    // ── НАЧАЛО DRAG ──
+    function startDrag(e) {
+        const { card, colId, groupName, rect, startX, startY } = pending
+        pending = null
+
+        // Создаём ghost
         const ghost = card.cloneNode(true)
         ghost.className = 'col-card drag-ghost'
-        ghost.style.cssText = `
-            position:fixed;
-            width:${rect.width}px;
-            top:${rect.top}px;
-            left:${rect.left}px;
-            pointer-events:none;
-            z-index:9999;
-            box-shadow:0 8px 32px rgba(0,0,0,0.5);
-            transform:rotate(2deg);
-            opacity:0.85;
-            transition:none;
-        `
+        ghost.style.cssText = `position:fixed;width:${rect.width}px;top:${rect.top}px;left:${rect.left}px;pointer-events:none;z-index:9999;box-shadow:0 12px 40px rgba(0,0,0,0.6);transform:rotate(2deg) scale(1.02);opacity:0.9;transition:none;`
         document.body.appendChild(ghost)
         card.classList.add('dragging')
-        card.setPointerCapture(e.pointerId)
 
         dragState = {
-            colId,
-            groupName: getGroupName(card),
-            el: card,
-            ghost,
+            colId, groupName,
+            el: card, ghost,
             offsetX: e.clientX - rect.left,
             offsetY: e.clientY - rect.top,
             currentTarget: null
@@ -807,31 +834,38 @@ function reloadCollections() { loadMyCollections() }
         document.addEventListener('pointercancel', cancelDrag, { once: true })
     }
 
+    // ── ДВИЖЕНИЕ ──
     function onPointerMove(e) {
         if (!dragState) return
         e.preventDefault()
-
         const { ghost, offsetX, offsetY } = dragState
         ghost.style.left = (e.clientX - offsetX) + 'px'
         ghost.style.top  = (e.clientY - offsetY) + 'px'
 
-        // Временно скрываем ghost чтобы найти элемент под ним
         ghost.style.visibility = 'hidden'
         const under = document.elementFromPoint(e.clientX, e.clientY)
         ghost.style.visibility = ''
 
-        // Убираем все highlighting
         clearHighlights()
-
-        if (!under) return
+        if (!under) { dragState.currentTarget = null; return }
 
         const targetCard = under.closest('.col-card:not(.dragging):not(.col-card-frozen)')
         const targetGroup = under.closest('.group-block')
 
+        // Режим: перетаскиваем внутри группы → reorder (подсветка позиции)
         if (targetCard && targetCard !== dragState.el) {
-            targetCard.classList.add('merge-target')
-            dragState.currentTarget = { type: 'card', el: targetCard }
-        } else if (targetGroup) {
+            const srcGroup = dragState.groupName
+            const tgtGroup = getGroupName(targetCard)
+            if (srcGroup && srcGroup === tgtGroup) {
+                // Reorder внутри группы
+                targetCard.classList.add('reorder-target')
+                dragState.currentTarget = { type: 'reorder', el: targetCard }
+            } else {
+                targetCard.classList.add('merge-target')
+                dragState.currentTarget = { type: 'card', el: targetCard }
+            }
+        } else if (targetGroup && !targetCard) {
+            // Наведение на баннер группы (не на карточку)
             targetGroup.classList.add('drop-target-group')
             dragState.currentTarget = { type: 'group', el: targetGroup }
         } else {
@@ -840,24 +874,30 @@ function reloadCollections() { loadMyCollections() }
     }
 
     function clearHighlights() {
-        document.querySelectorAll('.merge-target').forEach(el => el.classList.remove('merge-target'))
+        document.querySelectorAll('.merge-target, .reorder-target').forEach(el => {
+            el.classList.remove('merge-target', 'reorder-target')
+        })
         document.querySelectorAll('.drop-target-group').forEach(el => el.classList.remove('drop-target-group'))
     }
 
+    // ── ОТПУСКАНИЕ ──
     async function onPointerUp(e) {
         if (!dragState) return
-
         const { colId, groupName, el, ghost, currentTarget } = dragState
+
         ghost.style.visibility = 'hidden'
         const under = document.elementFromPoint(e.clientX, e.clientY)
         ghost.style.visibility = ''
 
-        // Проверяем под курсором ещё раз в момент отпускания
         const finalTarget = currentTarget || (() => {
             if (!under) return null
             const tCard = under.closest('.col-card:not(.dragging):not(.col-card-frozen)')
             const tGroup = under.closest('.group-block')
-            if (tCard && tCard !== el) return { type: 'card', el: tCard }
+            if (tCard && tCard !== el) {
+                const srcG = groupName, tgtG = getGroupName(tCard)
+                if (srcG && srcG === tgtG) return { type: 'reorder', el: tCard }
+                return { type: 'card', el: tCard }
+            }
             if (tGroup) return { type: 'group', el: tGroup }
             return null
         })()
@@ -865,34 +905,27 @@ function reloadCollections() { loadMyCollections() }
         cancelDrag()
 
         if (!finalTarget) {
-            // Бросили вне группы — убираем из группы
-            if (groupName) {
-                await updateGroupName(colId, null)
-            }
+            // Бросили в пустое место — убираем из группы
+            if (groupName) await updateGroupName(colId, null)
             return
         }
 
         if (finalTarget.type === 'group') {
-            // Добавляем карточку в существующую группу
             const grpName = finalTarget.el.querySelector('.group-banner-name')?.textContent?.trim()
-            if (grpName && grpName !== groupName) {
-                await updateGroupName(colId, grpName)
-            }
+            if (grpName && grpName !== groupName) await updateGroupName(colId, grpName)
+
+        } else if (finalTarget.type === 'reorder') {
+            // Reorder внутри группы — swap sort_order
+            await swapOrder(colId, getColId(finalTarget.el))
+
         } else if (finalTarget.type === 'card') {
             const targetCard = finalTarget.el
             const targetGroupName = getGroupName(targetCard)
-
             if (targetGroupName) {
-                // Цель уже в группе — добавляем туда
-                if (targetGroupName !== groupName) {
-                    await updateGroupName(colId, targetGroupName)
-                }
+                if (targetGroupName !== groupName) await updateGroupName(colId, targetGroupName)
             } else {
-                // Обе карточки без группы — открываем диалог
                 const targetColId = getColId(targetCard)
-                if (targetColId && targetColId !== colId) {
-                    openGroupDialog(colId, targetColId, targetCard)
-                }
+                if (targetColId && targetColId !== colId) openGroupDialog(colId, targetColId, targetCard)
             }
         }
     }
@@ -906,20 +939,36 @@ function reloadCollections() { loadMyCollections() }
         dragState = null
     }
 
+    // ── SWAP SORT ORDER ──
+    async function swapOrder(colIdA, colIdB) {
+        if (!colIdA || !colIdB) return
+        const { data } = await supabase
+            .from('collections')
+            .select('id, sort_order')
+            .in('id', [colIdA, colIdB])
+        if (!data || data.length < 2) return
+        const [a, b] = data
+        // Если sort_order не задан — используем created_at порядок (числа 0..N)
+        // просто swapаем значения
+        const oA = a.sort_order ?? 0
+        const oB = b.sort_order ?? 1
+        await Promise.all([
+            supabase.from('collections').update({ sort_order: oB }).eq('id', a.id),
+            supabase.from('collections').update({ sort_order: oA }).eq('id', b.id)
+        ])
+        reloadCollections()
+    }
+
+    // ── ДИАЛОГ ИМЕНОВАНИЯ ──
     function openGroupDialog(dragColId, targetColId, targetCardEl) {
         pendingGroupCols = { dragColId, targetColId }
-
-        // Превью двух коллекций
         const preview = document.getElementById('group-dialog-preview')
         const dragCard = document.querySelector(`[data-col-id="${dragColId}"]`)?.closest('.col-card')
         const titles = [
             dragCard?.querySelector('.col-card-title')?.textContent || '…',
             targetCardEl?.querySelector('.col-card-title')?.textContent || '…'
         ]
-        preview.innerHTML = titles.map(t =>
-            `<div class="group-dialog-preview-card">${t}</div>`
-        ).join('')
-
+        preview.innerHTML = titles.map(t => `<div class="group-dialog-preview-card">${t}</div>`).join('')
         const input = document.getElementById('group-name-input')
         input.value = ''
         document.getElementById('group-dialog').hidden = false
@@ -927,10 +976,7 @@ function reloadCollections() { loadMyCollections() }
     }
 
     async function updateGroupName(colId, groupName) {
-        const { error } = await supabase
-            .from('collections')
-            .update({ group_name: groupName })
-            .eq('id', colId)
+        const { error } = await supabase.from('collections').update({ group_name: groupName }).eq('id', colId)
         if (!error) reloadCollections()
     }
 
@@ -939,11 +985,8 @@ function reloadCollections() { loadMyCollections() }
         const name = document.getElementById('group-name-input').value.trim()
         if (!name) return
         document.getElementById('group-dialog').hidden = true
-
         const { dragColId, targetColId } = pendingGroupCols
         pendingGroupCols = null
-
-        // Обновляем обе коллекции
         await Promise.all([
             supabase.from('collections').update({ group_name: name }).eq('id', dragColId),
             supabase.from('collections').update({ group_name: name }).eq('id', targetColId)
@@ -956,7 +999,6 @@ function reloadCollections() { loadMyCollections() }
         pendingGroupCols = null
     }
 
-    // Подключаем кнопки диалога
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('group-dialog-confirm').addEventListener('click', confirmGroupCreate)
         document.getElementById('group-dialog-cancel').addEventListener('click', cancelGroupDialog)
