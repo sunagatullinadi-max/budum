@@ -994,13 +994,21 @@ function reloadCollections() { loadMyCollections() }
             popup.style.top  = Math.max(8, y) + 'px'
         })
 
-        // Закрыть по клику вне
-        setTimeout(() => document.addEventListener('pointerdown', closeDropActionPopup, { once: true }), 0)
+        // Закрыть по клику вне (через click чтобы не конфликтовать с кнопками попапа)
+        setTimeout(() => document.addEventListener('click', onOutsideClick), 0)
+
+        function onOutsideClick(ev) {
+            if (!ev.target.closest('#drop-action-popup')) {
+                closeDropActionPopup()
+                document.removeEventListener('click', onOutsideClick)
+            }
+        }
     }
 
     function closeDropActionPopup() {
         document.getElementById('drop-action-popup').hidden = true
         dropActionState = null
+        // listener убирается внутри onOutsideClick сам, здесь ничего не нужно
     }
 
     // ── ДИАЛОГ ИМЕНОВАНИЯ ──
